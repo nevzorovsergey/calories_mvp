@@ -1,6 +1,6 @@
 {
  "promptVersion": "v2-scale",
- "ranAt": "2026-07-27T10:54:36.568Z",
+ "ranAt": "2026-07-27T12:56:50.162Z",
  "raw": [
   {
    "model": {
@@ -1412,6 +1412,170 @@
      "Соль 1г"
     ]
    }
+  },
+  {
+   "model": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": false,
+    "error": "Таймаут 180000 мс",
+    "schemaStrict": true,
+    "ingredients": 0,
+    "matchedRequired": 0,
+    "totalRequired": 2,
+    "missing": [
+     "курин",
+     "масл"
+    ],
+    "totalWeight": null,
+    "weightPlausible": false,
+    "container": null,
+    "scaleRefFound": null,
+    "scaleMode": null,
+    "chainFlags": [],
+    "latencyMs": 360013,
+    "costRub": null,
+    "names": []
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 285,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 82255,
+    "costRub": 0.06619169,
+    "names": [
+     "смесь салатных листьев 120г",
+     "гренки 45г",
+     "тертый пармезан 20г",
+     "оливковое масло 10г",
+     "соль 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": false,
+    "error": "Таймаут 180000 мс",
+    "schemaStrict": true,
+    "ingredients": 0,
+    "matchedRequired": 0,
+    "totalRequired": 3,
+    "missing": [
+     "борщ",
+     "хлеб",
+     "масл"
+    ],
+    "totalWeight": null,
+    "weightPlausible": false,
+    "container": null,
+    "scaleRefFound": null,
+    "scaleMode": null,
+    "chainFlags": [],
+    "latencyMs": 360009,
+    "costRub": null,
+    "names": []
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": false,
+    "error": "Ответ не соответствует схеме: dish_name_ru: Invalid input: expected string, received undefined; dish_name_en: Invalid input: expected string, received undefined; cuisine: Invalid input: expected string, received undefined; total_weight_g: Invalid input: expected number, received undefined; overall_confidence: Invalid input: expected number, received undefined",
+    "schemaStrict": false,
+    "ingredients": 0,
+    "matchedRequired": 0,
+    "totalRequired": 4,
+    "missing": [
+     "бекон",
+     "яйц",
+     "тост",
+     "масл"
+    ],
+    "totalWeight": null,
+    "weightPlausible": false,
+    "container": null,
+    "scaleRefFound": null,
+    "scaleMode": null,
+    "chainFlags": [],
+    "latencyMs": 377891,
+    "costRub": 0.03100981,
+    "names": []
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 6,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 420,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 130888,
+    "costRub": 0.05601259,
+    "names": [
+     "спагетти, отварные 180г",
+     "фарш говяжий, обжаренный 80г",
+     "брокколи, отварная 70г",
+     "горошек, консервированный 40г",
+     "томатный соус 40г",
+     "растительное масло 10г"
+    ]
+   }
   }
  ],
  "summary": [
@@ -1422,6 +1586,7 @@
     "vendor": "anthropic",
     "priceNote": "212 / 1062"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 1,
    "strictSchema": true,
@@ -1440,6 +1605,7 @@
     "vendor": "google",
     "priceNote": "159 / 797"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1458,6 +1624,7 @@
     "vendor": "openai",
     "priceNote": "133 / 1062"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1476,6 +1643,7 @@
     "vendor": "google",
     "priceNote": "53 / 319"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1494,6 +1662,7 @@
     "vendor": "xai",
     "priceNote": "212 / 637"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1512,6 +1681,7 @@
     "vendor": "alibaba",
     "priceNote": "28 / 110"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1530,6 +1700,7 @@
     "vendor": "alibaba",
     "priceNote": "20 / 119"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1548,6 +1719,7 @@
     "vendor": "openai",
     "priceNote": "106 / 636"
    },
+   "maxTokens": 4000,
    "runs": 5,
    "failures": 0,
    "strictSchema": true,
@@ -1558,6 +1730,25 @@
    "chainOk": 0.6,
    "avgLatency": 37499,
    "avgCost": 5.568742946
+  },
+  {
+   "candidate": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "label": "Gemma 4 26B A4B",
+    "vendor": "google",
+    "priceNote": "6 / 35"
+   },
+   "runs": 5,
+   "failures": 3,
+   "strictSchema": false,
+   "recall": 1,
+   "weightOk": 1,
+   "avgIngredients": 5.5,
+   "refDetect": 1,
+   "chainOk": 0,
+   "avgLatency": 106571.5,
+   "avgCost": 0.06110214,
+   "maxTokens": 8000
   }
  ]
 }

@@ -62,6 +62,10 @@ export async function deleteTestUser(userId: string): Promise<void> {
   const paths = (meals ?? [])
     .flatMap((m) => [m.photo_sent_path, m.photo_original_path])
     .filter((p): p is string => !!p);
+  // Оригиналы клиент заливает до создания приёма пищи, поэтому в тестах с
+  // подменённым маршрутом они не попадают ни в одну строку meals.
+  const { data: originals } = await db.storage.from("meals").list(`${userId}/originals`);
+  paths.push(...(originals ?? []).map((o) => `${userId}/originals/${o.name}`));
   if (paths.length > 0) await db.storage.from("meals").remove(paths);
   await db.auth.admin.deleteUser(userId);
 }

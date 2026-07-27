@@ -7,7 +7,54 @@ import { useRouter } from "next/navigation";
 import { Camera, CreditCard } from "lucide-react";
 import { Button, Fab, Popup, Preloader } from "konsta/react";
 import { compressImage, type CompressedImage } from "@/lib/image";
+import { createClient } from "@/lib/supabase/client";
 import { getDefaultModel } from "@config/models";
+
+interface MealResponse {
+  meal_id?: string;
+  status?: string;
+  error?: string;
+}
+
+/**
+ * Кладёт оригинал в Storage под `<uid>/originals/<uuid>` (политики бакета
+ * `meals` разрешают запись в свою папку) и возвращает путь. Оригинал нужен для
+ * будущих экспериментов, но не критичен (§5.2) — если не залился, распознавание
+ * продолжаем без него.
+ */
+async function uploadOriginal(file: File): Promise<string | null> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const path = `${user.id}/originals/${crypto.randomUUID()}`;
+  const { error } = await supabase.storage
+    .from("meals")
+    .upload(path, file, { contentType: file.type || "image/jpeg" });
+  if (error) {
+    console.error("original upload failed", error);
+    return null;
+  }
+  return path;
+}
+
+/**
+ * Ошибки платформы (413 на большом теле, 504 на долгом ответе) приходят
+ * HTML-страницей, а не JSON. Без этой обёртки `response.json()` падал, и Safari
+ * показывал пользователю «The string did not match the expected pattern».
+ */
+async function readJson(response: Response): Promise<MealResponse> {
+  const text = await response.text();
+  try {
+    return JSON.parse(text) as MealResponse;
+  } catch {
+    if (response.status === 413) throw new Error("фото слишком большое для сервера");
+    if (response.status === 504) throw new Error("сервер не ответил вовремя (504)");
+    throw new Error(`сервер вернул ${response.status} без JSON`);
+  }
+}
 
 /**
  * Съёмка (§11.3).
@@ -57,17 +104,23 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
     setPhase("sending");
     setError(null);
 
-    const form = new FormData();
-    form.append("sent", compressed.blob, "sent.jpg");
-    if (original) form.append("original", original, original.name);
-    form.append("meal_date", mealDate);
-    form.append("photo_width", String(compressed.width));
-    form.append("photo_height", String(compressed.height));
-    if (hint.trim()) form.append("user_hint", hint.trim());
-
     try {
+      // Оригинал уходит в Storage напрямую из браузера, а в API — только путь:
+      // снимок с телефона легко весит 5+ МБ, а тело запроса к функции Vercel
+      // ограничено 4,5 МБ, и превышение приходит HTML-страницей 413, до кода
+      // роута дело не доходит. В API остаётся только сжатый кадр (~150 КБ).
+      const originalPath = original ? await uploadOriginal(original) : null;
+
+      const form = new FormData();
+      form.append("sent", compressed.blob, "sent.jpg");
+      if (originalPath) form.append("original_path", originalPath);
+      form.append("meal_date", mealDate);
+      form.append("photo_width", String(compressed.width));
+      form.append("photo_height", String(compressed.height));
+      if (hint.trim()) form.append("user_hint", hint.trim());
+
       const response = await fetch("/api/meals", { method: "POST", body: form });
-      const data = await response.json();
+      const data = await readJson(response);
 
       if (!response.ok) {
         throw new Error(data.error ?? `Ошибка сервера (${response.status})`);

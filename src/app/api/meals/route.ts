@@ -31,7 +31,6 @@ export async function POST(request: Request) {
   }
 
   const sent = form.get("sent");
-  const original = form.get("original");
   if (!(sent instanceof File)) {
     return NextResponse.json(
       { error: "Не передано сжатое изображение (поле sent)" },
@@ -64,19 +63,15 @@ export async function POST(request: Request) {
     );
   }
 
-  let originalPath: string | null = null;
-  if (original instanceof File && original.size > 0) {
-    originalPath = `${basePath}/original`;
-    const { error } = await supabase.storage
-      .from("meals")
-      .upload(originalPath, new Uint8Array(await original.arrayBuffer()), {
-        contentType: original.type || "image/jpeg",
-      });
-    if (error) {
-      console.error("original upload failed", error);
-      originalPath = null; // оригинал не критичен, распознавание продолжаем
-    }
-  }
+  // Оригинал клиент кладёт в Storage сам (тело запроса к функции ограничено
+  // 4,5 МБ, а снимок с телефона бывает больше) — сюда приходит только путь.
+  // Проверяем, что он ведёт в папку этого пользователя: `photo_original_path`
+  // потом используется при удалении приёма пищи.
+  const originalField = form.get("original_path");
+  const originalPath =
+    typeof originalField === "string" && originalField.startsWith(`${user.id}/`)
+      ? originalField
+      : null;
 
   const { error: mealError } = await supabase.from("meals").insert({
     id: mealId,

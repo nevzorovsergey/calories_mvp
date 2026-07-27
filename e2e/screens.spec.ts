@@ -128,5 +128,9 @@ test.describe("Экраны открываются", () => {
     await expect(page.getByLabel("Блюдо")).toHaveValue("Тост с беконом и яичницей");
     await expect(page.getByLabel("Общий вес, г")).toHaveValue("190");
     await expect(page.getByRole("button", { name: /Сохранить/ })).toBeVisible();
+
+    // Выйти с экрана можно кнопкой, а не только системным жестом «назад».
+    await clickReact(page.getByRole("link", { name: "Приём пищи" }));
+    await expect(page).toHaveURL(`/meal/${meal.mealId}`);
   });
 });

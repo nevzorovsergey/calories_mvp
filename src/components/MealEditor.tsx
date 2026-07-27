@@ -15,6 +15,7 @@ import {
 } from "@/lib/format";
 import { NUTRIENTS } from "@config/nutrients";
 import NutrientPanel from "@/components/NutrientPanel";
+import BackLink from "@/components/BackLink";
 import IngredientSearch, { type IngredientOption } from "@/components/IngredientSearch";
 import WeightEvidenceSheet from "@/components/WeightEvidenceSheet";
 
@@ -258,6 +259,16 @@ export default function MealEditor({
 
   return (
     <div className="px-4 pt-4">
+      <header className="mb-3">
+        <BackLink
+          href={`/meal/${mealId}`}
+          label="Приём пищи"
+          confirmMessage={
+            changed ? "Изменения не сохранены. Выйти без сохранения?" : null
+          }
+        />
+      </header>
+
       {photoUrl && (
         <img
           src={photoUrl}

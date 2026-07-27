@@ -45,6 +45,7 @@ const CANDIDATES: { id: string; label: string; vendor: string; priceNote: string
   { id: "x-ai/grok-4.5", label: "Grok 4.5", vendor: "xai", priceNote: "212 / 637" },
   { id: "thinkingmachines/inkling", label: "Inkling", vendor: "thinkingmachines", priceNote: "106 / 430" },
   { id: "google/gemma-4-31b-it", label: "Gemma 4 31B", vendor: "google", priceNote: "13 / 39" },
+  { id: "google/gemma-4-26b-a4b-it", label: "Gemma 4 26B A4B", vendor: "google", priceNote: "6 / 35" },
 ];
 
 interface Expectation {
@@ -243,6 +244,10 @@ async function main() {
     const withRef = ok.filter((r) => r.scaleRefFound !== null);
     return {
       candidate,
+      // Лимит записываем в строку модели, а не в шапку файла: медленным моделям
+      // его поднимают отдельно, и в сводной таблице должно быть видно, кого
+      // мерили в других условиях.
+      maxTokens,
       runs: rows.length,
       failures: rows.length - ok.length,
       strictSchema: rows.every((r) => r.schemaStrict),
