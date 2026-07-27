@@ -99,10 +99,14 @@ as $$
     select * from fuzzy_match
   ),
   -- Одна строка может попасть в несколько ярусов — оставляем её лучший скор.
+  -- При равенстве скоров выигрывает exact: у позиции, чьё name_en буквально
+  -- равно запросу, триграммное сходство тоже 1.0, и без этого условия строка
+  -- могла бы приехать со статусом 'fuzzy'. А на 'exact' короткозамыкается
+  -- matchIngredient (src/lib/catalog/match.ts) и завязаны проверки test-flow.
   best as (
     select distinct on (r.id) r.*
     from ranked r
-    order by r.id, r.match_score desc
+    order by r.id, r.match_score desc, (r.match_status = 'exact') desc
   )
   select b.id, b.name_ru, b.name_en, b.category, b.match_status, b.match_score
   from best b
