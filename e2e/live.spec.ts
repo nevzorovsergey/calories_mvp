@@ -26,7 +26,7 @@ test.describe("Живое распознавание", () => {
   test("снял → распознали → поправил → сохранилось", async ({ page, user, signIn }) => {
     await signIn(user);
 
-    await page.setInputFiles('input[type="file"]', PHOTO);
+    await page.setInputFiles('input[data-source="camera"]', PHOTO);
     await expect(page.getByRole("heading", { name: "Проверьте кадр" })).toBeVisible();
     await fillReact(page.getByLabel(/Подсказка/), "завтрак: бекон, яичница и тост");
     await clickReact(page.getByRole("button", { name: "Распознать" }));

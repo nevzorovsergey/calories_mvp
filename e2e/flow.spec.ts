@@ -40,7 +40,7 @@ test.describe("Съёмка и распознавание", () => {
     });
 
     await signIn(user);
-    await page.setInputFiles('input[type="file"]', PHOTO);
+    await page.setInputFiles('input[data-source="camera"]', PHOTO);
 
     // Экран предпросмотра (FR-CAP-2, FR-CAP-3)
     await expect(page.getByRole("heading", { name: "Проверьте кадр" })).toBeVisible();
@@ -59,14 +59,50 @@ test.describe("Съёмка и распознавание", () => {
 
   test("отмена на предпросмотре возвращает на «Сегодня»", async ({ page, user, signIn }) => {
     await signIn(user);
-    await page.setInputFiles('input[type="file"]', PHOTO);
+    await page.setInputFiles('input[data-source="camera"]', PHOTO);
     await expect(page.getByRole("heading", { name: "Проверьте кадр" })).toBeVisible();
 
-    await clickReact(page.getByRole("button", { name: "Отмена" }));
+    // «Отмена» есть и в предпросмотре, и в выборе источника фото — берём ту,
+    // что внутри попапа предпросмотра.
+    await clickReact(page.locator(".k-popup").getByRole("button", { name: "Отмена" }));
     // Konsta оставляет попап в DOM и просто уводит его за экран, поэтому
     // проверяем исчезновение самого предпросмотра, а не заголовка окна.
     await expect(page.getByAltText("Предпросмотр снимка")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Сегодня" })).toBeVisible();
+  });
+
+  test("фото можно и снять, и выбрать из галереи", async ({ page, user, signIn }) => {
+    await signIn(user);
+    await clickReact(page.getByRole("button", { name: /Добавить фото/ }));
+
+    // Konsta не убирает лист из DOM, а уводит за экран — открытость видно по
+    // снятому translate-y-full, а не по видимости кнопок.
+    const sheet = page.locator(".k-actions");
+    await expect(sheet).not.toHaveClass(/translate-y-full/);
+    await expect(sheet.getByRole("button", { name: "Сделать фото" })).toBeVisible();
+    await expect(sheet.getByRole("button", { name: "Выбрать из галереи" })).toBeVisible();
+
+    // FR-CAP-1: два источника — два инпута. Только у камеры есть capture,
+    // иначе она открывалась бы вместо галереи.
+    await expect(page.locator('input[data-source="camera"]')).toHaveAttribute(
+      "capture",
+      "environment",
+    );
+    await expect(page.locator('input[data-source="gallery"]')).not.toHaveAttribute(
+      "capture",
+      /.*/,
+    );
+
+    // Кнопка должна дёргать именно галерейный инпут, а не камеру — иначе
+    // доработка ничего не меняет. Дальше путь общий: предпросмотр и «Распознать».
+    const chooser = page.waitForEvent("filechooser");
+    await clickReact(sheet.getByRole("button", { name: "Выбрать из галереи" }));
+    const fileChooser = await chooser;
+    expect(await fileChooser.element().getAttribute("data-source")).toBe("gallery");
+    await fileChooser.setFiles(PHOTO);
+
+    await expect(page.getByRole("heading", { name: "Проверьте кадр" })).toBeVisible();
+    await expect(page.getByAltText("Предпросмотр снимка")).toBeVisible();
   });
 });
 

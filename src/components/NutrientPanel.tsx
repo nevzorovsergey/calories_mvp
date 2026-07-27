@@ -11,6 +11,10 @@ import { formatNutrient } from "@/lib/format";
  * Калории и БЖУ — всегда на виду; 13 витаминов и 10 минералов — под
  * сворачиваемым блоком «Подробнее», с абсолютными значениями и % от суточной
  * нормы. Норма одна общая для всех, без учёта пола и возраста (§8.3).
+ *
+ * Переключатель «Порция / 100 г» (FR-DET-6, FR-EDIT-12) пересчитывает всю
+ * панель на 100 г блюда. Это единственный вид, который можно с чем-то сверить:
+ * калорийность порции зависит от оценки веса, а на 100 г — нет.
  */
 
 export type NutrientTotals = Record<string, number>;
@@ -23,15 +27,24 @@ const GROUP_TITLES: Record<NutrientGroup, string> = {
 
 export default function NutrientPanel({
   totals,
+  /** Общий вес блюда: без него пересчитывать на 100 г не из чего, переключателя нет. */
+  totalWeightG,
   /** true — итог целиком построен на оценке модели, показываем это цветом (§13.6). */
   estimated = false,
 }: {
   totals: NutrientTotals;
+  totalWeightG?: number;
   estimated?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [per100, setPer100] = useState(false);
 
-  const kcal = totals.energy_kcal ?? 0;
+  const canPer100 = typeof totalWeightG === "number" && totalWeightG > 0;
+  const showPer100 = per100 && canPer100;
+  const factor = showPer100 ? 100 / (totalWeightG as number) : 1;
+  const amountOf = (code: string) => (totals[code] ?? 0) * factor;
+
+  const kcal = amountOf("energy_kcal");
   const macros = [
     { code: "protein", label: "Белки" },
     { code: "fat", label: "Жиры" },
@@ -40,9 +53,38 @@ export default function NutrientPanel({
   ];
 
   return (
-    <div className="rounded-2xl bg-card p-4">
+    <div role="group" aria-label="Итог по нутриентам" className="rounded-2xl bg-card p-4">
+      {canPer100 && (
+        <div
+          role="group"
+          aria-label="Пересчёт нутриентов"
+          className="mb-2 flex justify-end"
+        >
+          <div className="inline-flex rounded-full bg-screen p-0.5 text-caption">
+            {[
+              { value: false, label: "Порция" },
+              { value: true, label: "100 г" },
+            ].map(({ value, label }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setPer100(value)}
+                aria-pressed={per100 === value}
+                className={`tap-target rounded-full px-3 ${
+                  per100 === value ? "bg-card font-medium" : "text-ink-secondary"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-baseline justify-between">
-        <span className="text-caption text-ink-secondary">Калорийность</span>
+        <span className="text-caption text-ink-secondary">
+          {showPer100 ? "Калорийность 100 г" : "Калорийность"}
+        </span>
         <span
           className={`tnum text-title font-semibold ${estimated ? "text-warning" : ""}`}
         >
@@ -58,7 +100,7 @@ export default function NutrientPanel({
         {macros.map(({ code, label }) => (
           <div key={code} className="text-center">
             <div className="tnum text-body font-medium">
-              {formatNutrient(totals[code] ?? 0)}
+              {formatNutrient(amountOf(code))}
             </div>
             <div className="text-micro text-ink-secondary">{label}, г</div>
           </div>
@@ -84,7 +126,7 @@ export default function NutrientPanel({
               </h3>
               <ul className="divide-y divide-separator">
                 {NUTRIENTS.filter((n) => n.group === group).map((n) => {
-                  const amount = totals[n.code] ?? 0;
+                  const amount = amountOf(n.code);
                   const percent = n.rdi ? Math.round((amount / n.rdi) * 100) : null;
                   return (
                     <li
@@ -112,7 +154,8 @@ export default function NutrientPanel({
             </section>
           ))}
           <p className="text-micro text-ink-secondary">
-            Проценты — от общей суточной нормы, без учёта пола и возраста.
+            Проценты — от общей суточной нормы, без учёта пола и возраста
+            {showPer100 && ", в пересчёте на 100 г блюда"}.
           </p>
         </div>
       )}

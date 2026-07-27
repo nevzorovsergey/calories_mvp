@@ -15,6 +15,7 @@ import {
 } from "@/lib/format";
 import { NUTRIENTS } from "@config/nutrients";
 import NutrientPanel from "@/components/NutrientPanel";
+import Per100gLine from "@/components/Per100gLine";
 import BackLink from "@/components/BackLink";
 import IngredientSearch, { type IngredientOption } from "@/components/IngredientSearch";
 import WeightEvidenceSheet from "@/components/WeightEvidenceSheet";
@@ -321,7 +322,7 @@ export default function MealEditor({
         </p>
       </div>
 
-      <NutrientPanel totals={totals} />
+      <NutrientPanel totals={totals} totalWeightG={totalWeight} />
 
       <h2 className="mt-6 mb-2 text-caption text-ink-secondary uppercase">
         Ингредиенты
@@ -363,6 +364,10 @@ export default function MealEditor({
                       {!item.visible && " · выведено логически"}
                       {item.ingredient_id === null && " · нет в справочнике"}
                     </span>
+                    {/* FR-EDIT-12: сверять и сравнивать продукты можно только
+                        по значениям на 100 г — калории порции зависят от
+                        оценки веса, которую мы как раз и правим. */}
+                    <Per100gLine per100g={item.per100g} />
                   </span>
                 </button>
 

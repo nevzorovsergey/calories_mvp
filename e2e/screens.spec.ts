@@ -60,7 +60,7 @@ test.describe("Экраны открываются", () => {
     await expect(page.getByRole("heading", { name: "Сегодня" })).toBeVisible();
     await expect(page.getByText("Пока пусто")).toBeVisible();
     await expect(page.getByText(/Сфотографируйте первое блюдо/)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Сфотографировать/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Добавить фото/ })).toBeVisible();
     await expect(page.getByText("Калорийность")).toBeVisible();
   });
 
@@ -118,6 +118,20 @@ test.describe("Экраны открываются", () => {
     await expect(page.getByText("яйцо жареное")).toBeVisible();
     await expect(page.getByRole("link", { name: "Редактировать" })).toBeVisible();
 
+    // FR-DET-6: у каждого продукта — КБЖУ на 100 г. По ним видно, какой
+    // продукт калорийный, и есть с чем сверяться: вес порции оценила модель,
+    // а 100 г — константа.
+    await expect(
+      page.getByText("на 100 г: 541 ккал · Б 37 · Ж 42 · У 1,4"),
+    ).toBeVisible();
+
+    // Итоговая панель переключается на 100 г блюда: 664 ккал на 190 г → 350.
+    const panel = page.getByRole("group", { name: "Итог по нутриентам" });
+    await expect(panel).toContainText("664");
+    await clickReact(panel.getByRole("button", { name: "100 г" }));
+    await expect(panel).toContainText("Калорийность 100 г");
+    await expect(panel).toContainText("350");
+
     // Возврат на день приёма пищи — кнопкой, а не системным жестом «назад».
     await clickReact(page.locator('a[href^="/today?date="]'));
     await expect(page).toHaveURL(/\/today\?date=/);
@@ -132,6 +146,12 @@ test.describe("Экраны открываются", () => {
     await expect(page.getByLabel("Блюдо")).toHaveValue("Тост с беконом и яичницей");
     await expect(page.getByLabel("Общий вес, г")).toHaveValue("190");
     await expect(page.getByRole("button", { name: /Сохранить/ })).toBeVisible();
+
+    // FR-EDIT-12: правя вес, видно и значения на 100 г — они от веса не зависят
+    // и позволяют проверить, тот ли вообще продукт подставлен.
+    await expect(
+      page.getByText("на 100 г: 541 ккал · Б 37 · Ж 42 · У 1,4"),
+    ).toBeVisible();
 
     // Выйти с экрана можно кнопкой, а не только системным жестом «назад».
     await clickReact(page.getByRole("link", { name: "Приём пищи" }));

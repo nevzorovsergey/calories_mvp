@@ -64,6 +64,18 @@ export async function computeTotals(
   supabase: SupabaseClient,
   items: MealItemRow[],
 ): Promise<NutrientMap> {
+  return sumNutrition(await loadItemsNutrition(supabase, items));
+}
+
+/**
+ * То же самое, но с разбивкой по позициям: экранам нужны не только итоги, но и
+ * значения на 100 г по каждому продукту (FR-DET-6). Порядок совпадает с
+ * `items`.
+ */
+export async function loadItemsNutrition(
+  supabase: SupabaseClient,
+  items: MealItemRow[],
+): Promise<ComputedItem[]> {
   const catalog = await loadCatalogNutrition(
     supabase,
     items
@@ -71,7 +83,7 @@ export async function computeTotals(
       .filter((id): id is number => id !== null),
   );
 
-  const computed: ComputedItem[] = items.map((item) => {
+  return items.map((item) => {
     const catalogMap =
       item.ingredient_id !== null
         ? catalog.byIngredient.get(item.ingredient_id)
@@ -97,8 +109,6 @@ export async function computeTotals(
       nutrition_source: "model",
     };
   });
-
-  return sumNutrition(computed);
 }
 
 export async function getMealItems(

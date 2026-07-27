@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { computeTotals, getMealItems, signPhoto } from "@/lib/data/meals";
+import { getMealItems, loadItemsNutrition, signPhoto } from "@/lib/data/meals";
+import { sumNutrition } from "@/lib/nutrition/calc";
 import { formatMealDate, formatNumber, formatTime, localDateIso } from "@/lib/format";
 import BackLink from "@/components/BackLink";
 import NutrientPanel from "@/components/NutrientPanel";
+import Per100gLine from "@/components/Per100gLine";
 import ModelRerun from "@/components/ModelRerun";
 import DeleteMealButton from "@/components/DeleteMealButton";
 import ModelProposal from "@/components/ModelProposal";
@@ -43,7 +45,11 @@ export default async function MealPage({
     getMealItems(supabase, id),
     signPhoto(supabase, meal.photo_sent_path),
   ]);
-  const totals = await computeTotals(supabase, items);
+  // Разбивка по позициям нужна дважды: для итогов и для строки «на 100 г»
+  // у каждого продукта (FR-DET-6). Порядок совпадает с `items`.
+  const itemNutrition = await loadItemsNutrition(supabase, items);
+  const totals = sumNutrition(itemNutrition);
+  const totalWeight = items.reduce((sum, i) => sum + Number(i.weight_g), 0);
 
   const { data: recognitions } = await supabase
     .from("recognitions")
@@ -150,30 +156,36 @@ export default async function MealPage({
       </h1>
       <p className="mb-4 text-caption text-ink-secondary">
         {formatMealDate(meal.meal_date, today)}, {formatTime(meal.eaten_at)} ·{" "}
-        {formatNumber(
-          items.reduce((sum, i) => sum + Number(i.weight_g), 0),
-          0,
-        )}{" "}
-        г
+        {formatNumber(totalWeight, 0)} г
         {untouched && " · состав как предложила модель"}
       </p>
 
-      <NutrientPanel totals={totals} estimated={untouched} />
+      <NutrientPanel
+        totals={totals}
+        totalWeightG={totalWeight}
+        estimated={untouched}
+      />
 
       <h2 className="mt-6 mb-2 text-caption text-ink-secondary uppercase">Состав</h2>
       <ul className="overflow-hidden rounded-2xl bg-card">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li
             key={item.id}
             className="flex items-baseline justify-between border-b border-separator p-3 last:border-0"
           >
-            <span className="min-w-0 flex-1 truncate">
-              {item.name_ru}
-              {item.nutrition_source === "model" && (
-                <span className="ml-1 text-warning" title="Оценка модели">
-                  ≈
-                </span>
-              )}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate">
+                {item.name_ru}
+                {item.nutrition_source === "model" && (
+                  <span className="ml-1 text-warning" title="Оценка модели">
+                    ≈
+                  </span>
+                )}
+              </span>
+              <Per100gLine
+                per100g={itemNutrition[index]?.per100g ?? {}}
+                className="mt-0.5"
+              />
             </span>
             <span className="tnum ml-2">
               {item.origin === "model_edited" && item.original_weight_g !== null ? (

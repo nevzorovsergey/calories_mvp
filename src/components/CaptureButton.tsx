@@ -2,10 +2,19 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useRef, useState } from "react";
+import { useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, CreditCard } from "lucide-react";
-import { Button, Fab, Popup, Preloader } from "konsta/react";
+import {
+  Actions,
+  ActionsButton,
+  ActionsGroup,
+  ActionsLabel,
+  Button,
+  Fab,
+  Popup,
+  Preloader,
+} from "konsta/react";
 import { compressImage, type CompressedImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { getDefaultModel } from "@config/models";
@@ -59,15 +68,22 @@ async function readJson(response: Response): Promise<MealResponse> {
 /**
  * Съёмка (§11.3).
  *
- * Тап → камера устройства (`capture="environment"`, работает и в Safari iOS, и
- * в Chrome Android без нативного кода). Дальше предпросмотр с необязательной
- * подсказкой и ненавязчивым советом положить в кадр банковскую карту — именно
- * карту, а не монету: её размер стандартизирован ISO и одинаков во всём мире,
- * тогда как монету модель должна сначала опознать по стране и номиналу (§7.5.3).
+ * Тап → выбор источника: камера устройства или галерея (FR-CAP-1). Источника
+ * два, потому что одним инпутом их не покрыть: `capture="environment"` в
+ * Safari iOS и Chrome Android открывает камеру сразу, не оставляя пути к уже
+ * снятым фотографиям, а без него камеру ещё надо найти в системном меню. Так
+ * что камера и галерея — два разных скрытых `input[type=file]`.
+ *
+ * Дальше предпросмотр с необязательной подсказкой и ненавязчивым советом
+ * положить в кадр банковскую карту — именно карту, а не монету: её размер
+ * стандартизирован ISO и одинаков во всём мире, тогда как монету модель должна
+ * сначала опознать по стране и номиналу (§7.5.3).
  */
 export default function CaptureButton({ mealDate }: { mealDate: string }) {
   const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [sourcePicker, setSourcePicker] = useState(false);
   const [original, setOriginal] = useState<File | null>(null);
   const [compressed, setCompressed] = useState<CompressedImage | null>(null);
   const [hint, setHint] = useState("");
@@ -89,6 +105,16 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
+  }
+
+  /**
+   * Клик по инпуту делаем синхронно внутри обработчика: Safari открывает
+   * файловый диалог только по живому пользовательскому жесту, после await
+   * молча ничего не происходит.
+   */
+  function pickFrom(ref: RefObject<HTMLInputElement | null>) {
+    setSourcePicker(false);
+    ref.current?.click();
   }
 
   function reset() {
@@ -146,10 +172,19 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
   return (
     <>
       <input
-        ref={inputRef}
+        ref={cameraRef}
+        data-source="camera"
         type="file"
         accept="image/*"
         capture="environment"
+        onChange={handleFile}
+        className="hidden"
+      />
+      <input
+        ref={galleryRef}
+        data-source="gallery"
+        type="file"
+        accept="image/*"
         onChange={handleFile}
         className="hidden"
       />
@@ -157,9 +192,29 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
       <Fab
         className="fixed right-4 bottom-24 z-20"
         icon={<Camera size={24} />}
-        text="Сфотографировать"
-        onClick={() => inputRef.current?.click()}
+        text="Добавить фото"
+        onClick={() => setSourcePicker(true)}
       />
+
+      <Actions
+        opened={sourcePicker}
+        onBackdropClick={() => setSourcePicker(false)}
+      >
+        <ActionsGroup>
+          <ActionsLabel>Фото блюда</ActionsLabel>
+          <ActionsButton bold onClick={() => pickFrom(cameraRef)}>
+            Сделать фото
+          </ActionsButton>
+          <ActionsButton onClick={() => pickFrom(galleryRef)}>
+            Выбрать из галереи
+          </ActionsButton>
+        </ActionsGroup>
+        <ActionsGroup>
+          <ActionsButton bold onClick={() => setSourcePicker(false)}>
+            Отмена
+          </ActionsButton>
+        </ActionsGroup>
+      </Actions>
 
       <Popup opened={phase !== "idle"} onBackdropClick={() => phase === "preview" && reset()}>
         <div className="mx-auto flex h-full max-w-screen-sm flex-col overflow-y-auto p-4">
