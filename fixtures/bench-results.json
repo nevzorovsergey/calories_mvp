@@ -1,0 +1,1167 @@
+{
+ "promptVersion": "v2-scale",
+ "ranAt": "2026-07-26T18:28:43.805Z",
+ "raw": [
+  {
+   "model": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 390,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 34099,
+    "costRub": 4.80771729,
+    "names": [
+     "Куриное филе, жареное на гриле 375г",
+     "Растительное масло для жарки 8г",
+     "Паприка/специи (чили, паприка) 2г",
+     "Соль 2г",
+     "Чеснок (в маринаде) 3г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 220,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 23623,
+    "costRub": 3.58060833,
+    "names": [
+     "Смесь листовой зелени (руккола, мангольд, салат) 110г",
+     "Сухарики (крутоны) 45г",
+     "Тертый сыр пармезан 25г",
+     "Оливковое масло (заправка) 15г",
+     "Соль 1г",
+     "Черный перец 1г",
+     "Уксус (в заправке) 5г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": false,
+    "error": "Модель вернула пустой ответ",
+    "schemaStrict": true,
+    "ingredients": 0,
+    "matchedRequired": 0,
+    "totalRequired": 3,
+    "missing": [
+     "борщ",
+     "хлеб",
+     "масл"
+    ],
+    "totalWeight": null,
+    "weightPlausible": false,
+    "container": null,
+    "scaleRefFound": null,
+    "scaleMode": null,
+    "chainFlags": [],
+    "latencyMs": 49046,
+    "costRub": 6.04035089,
+    "names": []
+   }
+  },
+  {
+   "model": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 220,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 20301,
+    "costRub": 3.32668708,
+    "names": [
+     "Яйцо жареное (глазунья) 60г",
+     "Бекон жареный 55г",
+     "Тост пшеничный 70г",
+     "Сливочное масло 8г",
+     "Чёрный перец молотый 1г",
+     "Соль 1г",
+     "Масло для жарки бекона и яйца 5г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 8,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 480,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 19948,
+    "costRub": 3.46161594,
+    "names": [
+     "Спагетти отварные 220г",
+     "Соус болоньезе (фарш с томатами и овощами) 150г",
+     "Брокколи отварная 70г",
+     "Зеленый горошек 30г",
+     "Шпинат тушеный 10г",
+     "Оливковое масло 8г",
+     "Сыр пармезан тертый 5г",
+     "Соль 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 3,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 251,
+    "weightPlausible": false,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 12361,
+    "costRub": 1.92879217,
+    "names": [
+     "Куриное филе (приготовленное) 240г",
+     "Растительное масло (для жарки) 8г",
+     "Специи и приправы 3г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 206,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 16637,
+    "costRub": 2.63350332,
+    "names": [
+     "Микс салатных листьев 120г",
+     "Сухарики пшеничные (крутоны) 35г",
+     "Сыр Пармезан тертый 20г",
+     "Соус Цезарь 30г",
+     "Соль поваренная 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 3,
+    "totalRequired": 3,
+    "missing": [],
+    "totalWeight": 294,
+    "weightPlausible": true,
+    "container": "cup",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [],
+    "latencyMs": 13053,
+    "costRub": 1.9834543,
+    "names": [
+     "Борщ (свекольный суп с овощами) 240г",
+     "Сметана 15г",
+     "Хлеб пшеничный 30г",
+     "Масло сливочное 5г",
+     "Масло растительное (в зажарке) 4г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 123,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 12839,
+    "costRub": 2.26584873,
+    "names": [
+     "Яйцо куриное, жареное (глазунья) 50г",
+     "Бекон, жареный до хруста 30г",
+     "Тост из белого хлеба 35г",
+     "Сливочное масло 5г",
+     "Растительное масло для жарки 3г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 388,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 12765,
+    "costRub": 2.52481653,
+    "names": [
+     "Спагетти отварные 180г",
+     "Фарш говяжий обжаренный 60г",
+     "Томатно-овощной соус 40г",
+     "Брокколи отварная 60г",
+     "Зеленый горошек отварной 30г",
+     "Шпинат припущенный 10г",
+     "Масло оливковое 8г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 4,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 260,
+    "weightPlausible": false,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 9558,
+    "costRub": 1.41608905,
+    "names": [
+     "Куриная грудка, жареная 250г",
+     "Растительное масло 7г",
+     "Соль поваренная 2г",
+     "Специи (перец, паприка и др.) 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 280,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [],
+    "latencyMs": 59980,
+    "costRub": 1.25141209,
+    "names": [
+     "Листья салата (смесь зелени) 120г",
+     "Сухарики из пшеничного хлеба, обжаренные 60г",
+     "Сыр твёрдый тёртый (например, пармезан) 40г",
+     "Растительное масло (в заправке и для обжаривания сухариков) 30г",
+     "Соус заправка на основе уксуса/лимонного сока 20г",
+     "Соль поваренная 1г",
+     "Перец чёрный молотый 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 3,
+    "totalRequired": 3,
+    "missing": [],
+    "totalWeight": 310,
+    "weightPlausible": true,
+    "container": "cup",
+    "scaleRefFound": true,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 26616,
+    "costRub": 1.13029484,
+    "names": [
+     "Свекольный суп (основной объём, без сметаны) 230г",
+     "Сметана в супе 25г",
+     "Хлеб пшеничный ломтик 40г",
+     "Сливочное масло на хлебе 10г",
+     "Соль в супе 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 170,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 12596,
+    "costRub": 1.14304403,
+    "names": [
+     "бекон жареный 50г",
+     "яйцо куриное жареное (глазунья) 55г",
+     "хлеб пшеничный тостовый, поджаренный 30г",
+     "сливочное масло на тосте 8г",
+     "масло для жарки (смесь/растительное) 5г",
+     "соль поваренная 1г",
+     "черный перец молотый 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 10,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 420,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 15943,
+    "costRub": 1.5372063,
+    "names": [
+     "Спагетти, отварные 180г",
+     "Говяжий фарш, обжаренный 90г",
+     "Соус томатный (пюре/пассатта) 70г",
+     "Горошек зелёный, отварной 35г",
+     "Морковь, тушёная (мелко нарезанная) 20г",
+     "Шпинат или зелёные листовые овощи, тушёные 10г",
+     "Брокколи, приготовленная (варёная/запечённая) 40г",
+     "Растительное масло для жарки соуса 10г",
+     "Соль поваренная 2г",
+     "Специи (чёрный перец, травы, чеснок и др.) 3г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 4,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 265,
+    "weightPlausible": false,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 21678,
+    "costRub": 0.43841256,
+    "names": [
+     "куриная грудка, жареная 250г",
+     "растительное масло 12г",
+     "соль поваренная 2г",
+     "специи (паприка, перец) 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 265,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 12899,
+    "costRub": 0.65626425,
+    "names": [
+     "Микс салатных листьев (ромен, месклам) 150г",
+     "Гренки (крутоны) 40г",
+     "Сыр пармезан, тертый 25г",
+     "Соус Цезарь 45г",
+     "Оливковое масло (в соусе/на гренках) 5г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 6,
+    "matchedRequired": 3,
+    "totalRequired": 3,
+    "missing": [],
+    "totalWeight": 335,
+    "weightPlausible": true,
+    "container": "bowl",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [],
+    "latencyMs": 11007,
+    "costRub": 0.65807038,
+    "names": [
+     "Бульон овощной со свеклой 200г",
+     "Картофель 40г",
+     "Капуста белокочанная 30г",
+     "Сметана 15% 20г",
+     "Хлеб пшеничный 35г",
+     "Сливочное масло 10г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 6,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 145,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 13303,
+    "costRub": 0.66359503,
+    "names": [
+     "яйцо куриное, жареное 50г",
+     "бекон, жареный 40г",
+     "хлеб пшеничный, тост 45г",
+     "масло сливочное 5г",
+     "масло растительное для жарки 4г",
+     "соль и черный перец 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 425,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 14701,
+    "costRub": 0.72383492,
+    "names": [
+     "спагетти, вареные 180г",
+     "говяжий фарш, тушеный 80г",
+     "брокколи, на пару 70г",
+     "зеленый горошек 35г",
+     "томатный соус 40г",
+     "оливковое масло 12г",
+     "лук и морковь (в соусе) 8г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 4,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 333,
+    "weightPlausible": false,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 18108,
+    "costRub": 0.13463563,
+    "names": [
+     "куриная грудка, жареная 320г",
+     "растительное масло, для жарки 10г",
+     "соль 2г",
+     "черный перец 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 420,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 34718,
+    "costRub": 0.17584949,
+    "names": [
+     "Салатные листья 180г",
+     "Сухарики 60г",
+     "Пармезан 25г",
+     "Соус Цезарь 80г",
+     "Оливковое масло 10г",
+     "Соль 2г",
+     "Чёрный перец 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 3,
+    "totalRequired": 3,
+    "missing": [],
+    "totalWeight": 450,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": false,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch",
+     "mass_mismatch"
+    ],
+    "latencyMs": 23302,
+    "costRub": 0.26475699,
+    "names": [
+     "Борщ 350г",
+     "Хлеб 50г",
+     "Масло сливочное 5г",
+     "Соль 1г",
+     "Сахар 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 6,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 280,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 27221,
+    "costRub": 0.29144741,
+    "names": [
+     "Яйцо, жареное 60г",
+     "Бекон, жареный 50г",
+     "Хлеб, тостовый 40г",
+     "Масло, для жарки 5г",
+     "Соль 1г",
+     "Перец черный молотый 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 6,
+    "matchedRequired": 4,
+    "totalRequired": 5,
+    "missing": [
+     "фарш"
+    ],
+    "totalWeight": 420,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 33598,
+    "costRub": 0.1601425,
+    "names": [
+     "Спагетти, варёные 180г",
+     "Соус болоньезе 120г",
+     "Брокколи, приготовленная 80г",
+     "Зелёный горошек, варёный 40г",
+     "Оливковое масло 10г",
+     "Соль 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "result": {
+    "dish": "sent-dish-1.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 4,
+    "matchedRequired": 2,
+    "totalRequired": 2,
+    "missing": [],
+    "totalWeight": 402,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 40538,
+    "costRub": 2.16102919,
+    "names": [
+     "Куриная грудка жареная 385г",
+     "Масло растительное 14г",
+     "Соль 2г",
+     "Специи (паприка, перец) 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "result": {
+    "dish": "sent-dish-2.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 11,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 265,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 31326,
+    "costRub": 2.09282105,
+    "names": [
+     "Смесь салатных листьев 120г",
+     "Сухарики пшеничные 40г",
+     "Сыр пармезан тёртый 25г",
+     "Соус Цезарь 45г",
+     "Оливковое масло 8г",
+     "Соль 2г",
+     "Чёрный перец 1г",
+     "Лимонный сок 5г",
+     "Чеснок 2г",
+     "Анчоусы 3г",
+     "Вяленые томаты 15г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "result": {
+    "dish": "sent-dish-3.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 5,
+    "matchedRequired": 3,
+    "totalRequired": 3,
+    "missing": [],
+    "totalWeight": 385,
+    "weightPlausible": true,
+    "container": "cup",
+    "scaleRefFound": true,
+    "scaleMode": "reference",
+    "chainFlags": [],
+    "latencyMs": 20684,
+    "costRub": 1.37886675,
+    "names": [
+     "Борщ 300г",
+     "Сметана 20г",
+     "Хлеб белый 55г",
+     "Масло сливочное 8г",
+     "Соль 2г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "result": {
+    "dish": "sent-dish-4.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 4,
+    "totalRequired": 4,
+    "missing": [],
+    "totalWeight": 148,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [
+     "volume_mismatch"
+    ],
+    "latencyMs": 20856,
+    "costRub": 1.1624281,
+    "names": [
+     "Яичница-глазунья 55г",
+     "Бекон жареный 35г",
+     "Тост из белого хлеба 35г",
+     "Сливочное масло 8г",
+     "Масло для жарки 3г",
+     "Чёрный перец 1г",
+     "Соль 1г"
+    ]
+   }
+  },
+  {
+   "model": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "result": {
+    "dish": "sent-dish-5.jpg",
+    "ok": true,
+    "error": null,
+    "schemaStrict": true,
+    "ingredients": 7,
+    "matchedRequired": 5,
+    "totalRequired": 5,
+    "missing": [],
+    "totalWeight": 390,
+    "weightPlausible": true,
+    "container": "plate",
+    "scaleRefFound": null,
+    "scaleMode": "container",
+    "chainFlags": [],
+    "latencyMs": 21707,
+    "costRub": 1.16051572,
+    "names": [
+     "Спагетти варёные 180г",
+     "Мясной соус болоньезе 120г",
+     "Брокколи варёная 55г",
+     "Зелёный горошек 25г",
+     "Шпинат 8г",
+     "Оливковое масло 5г",
+     "Соль 2г"
+    ]
+   }
+  }
+ ],
+ "summary": [
+  {
+   "candidate": {
+    "id": "anthropic/claude-sonnet-5",
+    "label": "Claude Sonnet 5",
+    "vendor": "anthropic",
+    "priceNote": "212 / 1062"
+   },
+   "runs": 5,
+   "failures": 1,
+   "strictSchema": true,
+   "recall": 1,
+   "weightOk": 1,
+   "avgIngredients": 6.75,
+   "refDetect": 1,
+   "chainOk": 0.25,
+   "avgLatency": 24492.75,
+   "avgCost": 3.7941571599999997
+  },
+  {
+   "candidate": {
+    "id": "google/gemini-3.6-flash",
+    "label": "Gemini 3.6 Flash",
+    "vendor": "google",
+    "priceNote": "159 / 797"
+   },
+   "runs": 5,
+   "failures": 0,
+   "strictSchema": true,
+   "recall": 1,
+   "weightOk": 0.8,
+   "avgIngredients": 5,
+   "refDetect": 1,
+   "chainOk": 0.6,
+   "avgLatency": 13531,
+   "avgCost": 2.26728301
+  },
+  {
+   "candidate": {
+    "id": "openai/gpt-5.1",
+    "label": "GPT-5.1",
+    "vendor": "openai",
+    "priceNote": "133 / 1062"
+   },
+   "runs": 5,
+   "failures": 0,
+   "strictSchema": true,
+   "recall": 1,
+   "weightOk": 0.8,
+   "avgIngredients": 6.6,
+   "refDetect": 1,
+   "chainOk": 1,
+   "avgLatency": 24938.6,
+   "avgCost": 1.2956092620000002
+  },
+  {
+   "candidate": {
+    "id": "google/gemini-3-flash-preview",
+    "label": "Gemini 3 Flash (preview)",
+    "vendor": "google",
+    "priceNote": "53 / 319"
+   },
+   "runs": 5,
+   "failures": 0,
+   "strictSchema": true,
+   "recall": 1,
+   "weightOk": 0.8,
+   "avgIngredients": 5.6,
+   "refDetect": 1,
+   "chainOk": 0.4,
+   "avgLatency": 14717.6,
+   "avgCost": 0.6280354279999999
+  },
+  {
+   "candidate": {
+    "id": "x-ai/grok-4.5",
+    "label": "Grok 4.5",
+    "vendor": "xai",
+    "priceNote": "212 / 637"
+   },
+   "runs": 5,
+   "failures": 0,
+   "strictSchema": true,
+   "recall": 1,
+   "weightOk": 1,
+   "avgIngredients": 6.8,
+   "refDetect": 1,
+   "chainOk": 0.6,
+   "avgLatency": 27022.2,
+   "avgCost": 1.591132162
+  },
+  {
+   "candidate": {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "label": "Qwen3-VL 235B",
+    "vendor": "alibaba",
+    "priceNote": "28 / 110"
+   },
+   "runs": 5,
+   "failures": 0,
+   "strictSchema": true,
+   "recall": 0.96,
+   "weightOk": 0.8,
+   "avgIngredients": 5.6,
+   "refDetect": 0.5,
+   "chainOk": 0,
+   "avgLatency": 27389.4,
+   "avgCost": 0.205366404
+  }
+ ]
+}

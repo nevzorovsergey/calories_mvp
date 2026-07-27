@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Дампы USDA — большие, качаются отдельно (см. data/README.md)
+/data/usda/**/*.csv
+/fixtures/*.jpg
+/fixtures/*.jpeg
+/fixtures/*.png
+
+# Playwright
+/test-results/
+/e2e/report/
+/playwright-report/

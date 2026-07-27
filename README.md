@@ -1,36 +1,254 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Что я ем — прототип распознавания состава блюда по фото
 
-## Getting Started
+Исследовательский прототип (PWA) по [PRD_food_photo_mvp.md](./PRD_food_photo_mvp.md).
+Пользователь фотографирует еду, мультимодальная модель через [polza.ai](https://polza.ai)
+возвращает состав и массы, человек правит результат. **Обе версии сохраняются
+навсегда и никогда не перезаписывают друг друга** — в этом весь смысл: продукт
+оптимизируется не под точность, а под качество собираемого датасета
+«фото → что распознала модель → что исправил человек».
 
-First, run the development server:
+## Стек
+
+| Слой | Решение |
+|---|---|
+| Фронтенд + бэкенд | Next.js 16 (App Router, TypeScript) на Vercel |
+| UI | Tailwind CSS v4 + Konsta UI 5 (iOS-тема) + Lucide |
+| БД, авторизация, хранилище | Supabase (Postgres + Auth + Storage) |
+| Модели | polza.ai, OpenAI-совместимый API |
+
+---
+
+## Быстрый старт
+
+### 1. Зависимости
+
+Нужен **Node.js 22 или новее** (`@supabase/supabase-js` требует нативный
+WebSocket, которого нет в Node 20). В репозитории есть `.nvmrc`:
+
+```bash
+nvm install && nvm use     # или любой другой способ получить Node 22+
+node -v                    # должно быть v22+
+npm install
+cp .env.local.example .env.local
+```
+
+### 2. Проверьте доступность сервисов из вашей страны
+
+Сделайте это **до** заведения проектов: если Vercel или Supabase недоступны у
+тестировщиков, план Б — Timeweb Cloud / Selectel (риск §16 PRD).
+
+### 3. Supabase
+
+1. Создайте проект на [supabase.com](https://supabase.com) (Free-план).
+2. Заберите ключи. Быстрее всего — кнопка **Connect** вверху страницы проекта
+   → вкладка **App Frameworks** → Next.js: там готовый блок с URL и публичным
+   ключом. Секретный — в **Settings → API Keys** (новый `sb_secret_…`
+   показывается только в момент создания; legacy `service_role` — на вкладке
+   Legacy API keys). В `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (или legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+   - `SUPABASE_SERVICE_ROLE_KEY` (или `SUPABASE_SECRET_KEY`) — обходит RLS,
+     только для скриптов и cron, никогда не с префиксом `NEXT_PUBLIC_`
+3. **SQL Editor** → выполните `supabase/migrations/all_in_one.sql` (это те же
+   четыре миграции подряд, склеенные для первого применения). Отдельные файлы
+   лежат рядом и применяются строго по порядку `0001 → 0002 → 0003 → 0004`.
+   `0002` заодно создаёт приватный бакет Storage `meals` и политики к нему.
+
+   Проверить, что всё встало:
+   ```bash
+   npm run test:flow -- --no-http
+   ```
+4. **Authentication → Providers → Email** → выключите «Enable signup».
+   Регистрации в продукте нет: пользователей заводит владелец (FR-AUTH-2).
+5. Заведите 3–8 тестировщиков. Проще скриптом, он же проставит имя и роль:
+   ```bash
+   npm run user:create -- ivan@example.com --name "Иван"
+   npm run user:create -- вы@example.com --name "Вы" --admin   # админ видит «Лабораторию»
+   ```
+   Пароль генерируется и печатается один раз. Можно и руками через
+   **Authentication → Users → Add user**: профиль создастся триггером, но
+   `display_name` и `is_admin` придётся править в **Table Editor → profiles**.
+
+### 4. polza.ai
+
+Положите ключ в `.env.local` (`POLZA_API_KEY`), затем сверьте конфиг моделей с
+живым каталогом:
+
+```bash
+npx tsx scripts/sync-models-catalog.ts
+```
+
+Скрипт печатает мультимодальные модели с ценами в рублях и ругается на каждый
+id из `config/models.ts`, которого нет в каталоге. **Замените id на реальные до
+первого прогона:** иначе распознавание будет падать с 404, а расходы на
+неудачные попытки всё равно попадут в статистику.
+
+Проверьте связку целиком, без БД и интерфейса:
+
+```bash
+npm run smoke -- ./fixtures/sent-dish-4.jpg
+```
+
+Скрипт печатает разобранный JSON, `usage`, стоимость в рублях и долларах и
+результат трёх проверок согласованности масштабной цепочки (§7.5.2).
+
+### 5. Справочник USDA (этап 0.5)
+
+Самая трудоёмкая разовая задача. Без неё приложение работает, но все нутриенты
+будут только от модели, с пометкой «≈».
+
+1. Скачайте CSV-дампы FoodData Central (**SR Legacy** и **Foundation Foods**) с
+   <https://fdc.nal.usda.gov/download-datasets> и распакуйте:
+   ```
+   data/usda/sr_legacy/{food.csv,food_nutrient.csv,nutrient.csv}
+   data/usda/foundation/{food.csv,food_nutrient.csv,nutrient.csv}
+   ```
+2. Переведите названия (батчами по 50 через дешёвую модель):
+   ```bash
+   npx tsx scripts/translate-ingredients.ts
+   ```
+   Результат копится в `data/translations.json` и **коммитится**: повторный
+   импорт не тратит деньги заново и даёт тот же результат.
+3. Вычитайте руками топ-500 самых частых продуктов (мясо, крупы, овощи,
+   молочка — они закроют 80% реальных приёмов пищи) и положите правки в
+   `data/translations.override.csv`. Они имеют приоритет.
+4. Импортируйте:
+   ```bash
+   npx tsx scripts/import-usda.ts --limit 50 --dry-run   # прогон вхолостую
+   npx tsx scripts/import-usda.ts                        # полный импорт
+   ```
+
+Проверка: `select count(*) from ingredients;` — ожидаем ~8000.
+
+### 6. Запуск
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 7. Деплой на Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Импортируйте репозиторий, добавьте те же переменные окружения
+   (`POLZA_API_KEY`, три ключа Supabase, `CRON_SECRET`).
+2. `vercel.json` уже настраивает ежедневный cron `/api/cron/daily`: он пингует
+   БД (**Supabase Free засыпает после 7 дней простоя** — риск №1 в §16),
+   снимает снапшот цен polza.ai и синхронизирует конфиг моделей в таблицу.
+3. Hobby-план — только некоммерческое использование; при первом намёке на
+   монетизацию переезжайте на Pro.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Проверки
 
-To learn more about Next.js, take a look at the following resources:
+| Команда | Что делает |
+|---|---|
+| `npm run typecheck` | Типы |
+| `npm run build` | Сборка целиком |
+| `npm run sync:models` | Сверяет id и цены в `config/models.ts` с живым каталогом polza.ai |
+| `npm run smoke -- ./fixtures/sent-dish-4.jpg` | Один реальный вызов модели: JSON, usage, стоимость, проверки масштаба |
+| `npm run bench` | Сравнивает модели-кандидаты на пяти фото из `fixtures/` |
+| `npm run test:ui` | Браузерные тесты интерфейса (WebKit, профиль iPhone) — бесплатно |
+| `npm run test:ui:live` | То же, но с настоящим вызовом модели (платно) |
+| `npm run test:flow` | Сквозной тест: схема → RLS → Storage → модель → правка → вьюхи |
+| `npm run db:migrate` | Применяет миграции через Management API (нужен `SUPABASE_ACCESS_TOKEN`) |
+| `npm run user:create -- mail@example.com --name "Имя" [--admin]` | Заводит пользователя |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Браузерные тесты
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run test:ui            # ~3 минуты, денег не тратит
+npm run test:ui:headed     # то же, но видно, что происходит
+npm run test:ui:report     # отчёт с трассировкой падений
+```
 
-## Deploy on Vercel
+Гоняются в **WebKit на профиле iPhone 14** — PRD целится в Safari iOS, и
+проверять надо там же. Ключевое отличие от проверок «страница отдала 200»:
+**любая ошибка в консоли браузера роняет тест**. Именно этот класс поломок
+(разметка приезжает с сервера, а компонент падает при гидратации) выглядит для
+пользователя как «вижу только ошибки» и не ловится проверкой HTML.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Вызов модели в этих тестах подменяется — они про интерфейс. Что покрыто и что
+намеренно не покрыто: [docs/ui-checklist.md](docs/ui-checklist.md).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Сквозной тест
+
+```bash
+npm run dev                 # в одном терминале
+npm run test:flow           # в другом
+```
+
+Проходит тот же путь, что тестировщик, и проверяет не «не упало», а что именно
+записалось: сохранился ли сырой ответ модели, посчитаны ли обе стоимости,
+проставил ли сервер `origin='model_edited'` и исходный вес, не изменилось ли
+предложение модели после правки (FR-EDIT-10), не видит ли посторонний чужой
+приём пищи, сходится ли арифметика вьюх с ручным пересчётом. После прогона
+удаляет за собой всё созданное (`--keep` — оставить, `--no-http` — только
+проверки БД, без запущенного приложения).
+
+Тест делает **реальные** вызовы модели: один прогон стоит около 2–4 ₽.
+
+### Бенчмарк моделей
+
+`npm run bench` гоняет кандидатов из `scripts/bench-models.ts` по пяти
+фотографиям блюд и сравнивает по проверяемым признакам: доля названных
+обязательных ингредиентов (разметка в `fixtures/expectations.json`),
+попадание массы в здравую полосу, обнаружение эталона масштаба там, где он
+есть, согласованность масштабной цепочки, латентность и цена. Результат
+последнего прогона зафиксирован в комментарии к `config/models.ts` и в
+`fixtures/bench-results.json`.
+
+Фотографии в `fixtures/` — с Викисклада под свободными лицензиями
+(CC BY / CC BY-SA), источники и авторство перечислены в `fixtures/SOURCES.json`.
+Прогон стоит около 60–90 ₽.
+
+---
+
+## Структура
+
+```
+config/               конфиг моделей, нутриентов и эталонов масштаба
+supabase/migrations/  схема, RLS, аналитические вьюхи, справочник нутриентов
+scripts/              импорт USDA, перевод названий, сверка каталога, бенчмарк, тесты
+fixtures/             фото блюд для тестов + ручная разметка ожиданий
+src/app/(app)/        экраны: today, meal/[id], meal/[id]/edit, history, profile, lab
+src/app/api/          route handlers (распознавание, сохранение, экспорт, cron)
+src/lib/llm/          клиент polza.ai, промпты, JSON Schema, проверки масштаба
+src/lib/catalog/      сопоставление названий со справочником (§8.4)
+src/lib/nutrition/    расчёт нутриентов, двойной итог catalog/model (§8.5)
+```
+
+## Что важно знать при доработке
+
+- **`recognitions` и `recognition_items` неизменяемы.** Правки человека пишутся
+  только в `meal_items` / `meal_removed_items`, `origin` вычисляет сервер
+  (FR-EDIT-10). Понадобилось «поправить» результат модели — заводите новое
+  распознавание, а не редактируйте старое.
+- **Перепрогон использует тот же файл** `photo_sent_path` (FR-CMP-4). Sha256
+  записан при первой отправке; менять пайплайн сжатия задним числом нельзя,
+  иначе сравнение моделей станет недействительным.
+- **Валюты не смешиваются** (§9.2): факт — в рублях из `usage.cost_rub`,
+  гипотетическая цена «напрямую» — в долларах по `vendorPricing`. Пустая
+  колонка `cost_direct_usd` означает «цена вендора не сверена», и это честнее
+  выдуманного числа.
+- **A/B промптов** живёт в конфиге: одна и та же модель может быть заведена
+  дважды с `promptVersion: "v2-scale"` и `"v1-plain"` — это и есть проверка H6
+  (§7.5.5). Поэтому модель ищется по паре (id, promptVersion), а не по id.
+- **RLS — настоящая граница.** Приложение ходит в БД от имени пользователя;
+  сервисный ключ используют только скрипты и cron.
+- **Proxy вместо middleware.** В Next.js 16 файл называется `src/proxy.ts`, а
+  экспорт — `proxy`; функциональность прежняя.
+
+## Известные ограничения
+
+- `npm audit` показывает high-уязвимости в транзитивных зависимостях Next
+  (`postcss`, `sharp`). Исправляются только обновлением Next; `audit fix --force`
+  откатит фреймворк и сломает сборку.
+- Иконки в `public/icons/` — временные, сгенерированы программно. Замените на
+  нормальные перед раздачей тестировщикам.
+- Node 20 не подходит: `@supabase/supabase-js` падает с
+  «native WebSocket not found». Нужен 22+.
+- `vendorPricing` заполнен для GPT-5.1, Gemini 3 Flash и Claude Sonnet 5;
+  для Grok, Gemini 3.6 и Qwen — `null`, и колонка «напрямую, $» по ним будет
+  пустой, пока не проставите цены с сайтов вендоров и `checkedAt`. Цены
+  GPT-5.1 и Gemini взяты с агрегаторов, а не с сайтов вендоров — перепроверьте,
+  прежде чем опираться на них в выводах.

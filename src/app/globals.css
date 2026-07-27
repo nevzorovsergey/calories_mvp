@@ -1,26 +1,132 @@
 @import "tailwindcss";
+@import "konsta/theme.css";
+
+/* Tailwind v4 по умолчанию не заглядывает в node_modules, а классы Konsta
+   лежат именно там. Без этой строки библиотека приезжает вообще без стилей:
+   разметка есть, а кнопки, списки и таббар выглядят как голый HTML. */
+@source "../../node_modules/konsta/**/*.{js,mjs}";
+
+/* ── Дизайн-система (§13 PRD) ────────────────────────────────────────────────
+   Семантическая палитра на основе системных цветов iOS. Тёмная тема —
+   автоматически через prefers-color-scheme, отдельного переключателя нет. */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --c-accent: #007aff;
+  --c-success: #34c759;
+  --c-warning: #ff9500;
+  --c-error: #ff3b30;
+  --c-bg: #f2f2f7;
+  --c-card: #ffffff;
+  --c-text: #000000;
+  --c-text-secondary: #3c3c4399;
+  --c-separator: #3c3c4336;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --c-accent: #0a84ff;
+    --c-success: #30d158;
+    --c-warning: #ff9f0a;
+    --c-error: #ff453a;
+    --c-bg: #000000;
+    --c-card: #1c1c1e;
+    --c-text: #ffffff;
+    --c-text-secondary: #ebebf599;
+    --c-separator: #54545899;
   }
 }
 
+@theme inline {
+  --color-accent: var(--c-accent);
+  --color-success: var(--c-success);
+  --color-warning: var(--c-warning);
+  --color-error: var(--c-error);
+  --color-screen: var(--c-bg);
+  --color-card: var(--c-card);
+  --color-ink: var(--c-text);
+  --color-ink-secondary: var(--c-text-secondary);
+  --color-separator: var(--c-separator);
+
+  /* Шкала типографики HIG: размер/интерлиньяж */
+  --text-title: 2.125rem; /* 34/41 — заголовок экрана */
+  --text-title--line-height: 2.5625rem;
+  --text-section: 1.25rem; /* 20/25 — заголовок секции */
+  --text-section--line-height: 1.5625rem;
+  --text-body: 1.0625rem; /* 17/22 — основной текст */
+  --text-body--line-height: 1.375rem;
+  --text-caption: 0.8125rem; /* 13/18 — подпись */
+  --text-caption--line-height: 1.125rem;
+  --text-micro: 0.6875rem; /* 11/13 — мелкая подпись */
+  --text-micro--line-height: 0.8125rem;
+}
+
+html {
+  /* SF Pro не бандлим (§13.3) — системный стек даёт San Francisco на Apple,
+     Roboto на Android, Segoe UI на Windows. */
+  font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-size: var(--text-body);
+  line-height: 1.375rem;
+  overscroll-behavior-y: none;
+}
+
+/* Числа в таблицах и нутриентных панелях не должны «плясать» (§13.3). */
+.tnum,
+input[inputmode="decimal"],
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* §13.9: видимый фокус с клавиатуры на всех интерактивных элементах. */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* §13.9: уважаем prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Скелетоны вместо спиннеров (§13.8). */
+@utility skeleton {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c-text) 8%, transparent) 25%,
+    color-mix(in srgb, var(--c-text) 14%, transparent) 37%,
+    color-mix(in srgb, var(--c-text) 8%, transparent) 63%
+  );
+  background-size: 400% 100%;
+  animation: k-skeleton 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+@keyframes k-skeleton {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Минимальная область нажатия 44×44 px (§13.7, требование HIG). */
+@utility tap-target {
+  min-width: 44px;
+  min-height: 44px;
 }

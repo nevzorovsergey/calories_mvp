@@ -5,19 +5,45 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "sync:models": "tsx scripts/sync-models-catalog.ts",
+    "smoke": "tsx scripts/smoke-recognize.ts",
+    "usda:translate": "tsx scripts/translate-ingredients.ts",
+    "usda:import": "tsx scripts/import-usda.ts",
+    "bench": "tsx scripts/bench-models.ts",
+    "test:flow": "tsx scripts/test-flow.ts",
+    "db:migrate": "tsx scripts/apply-migrations.ts",
+    "db:check": "tsx scripts/apply-migrations.ts --check",
+    "user:create": "tsx scripts/create-user.ts",
+    "test:ui": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts",
+    "test:ui:headed": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts --headed",
+    "test:ui:live": "E2E_LIVE=1 playwright test e2e/live.spec.ts",
+    "test:ui:report": "playwright show-report e2e/report"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.109.0",
+    "konsta": "^5.2.0",
+    "lucide-react": "^1.27.0",
     "next": "16.2.12",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "csv-parse": "^7.0.1",
+    "dotenv": "^17.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.23.1",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
