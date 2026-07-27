@@ -117,6 +117,10 @@ test.describe("Экраны открываются", () => {
     await expect(page.getByRole("img", { name: "Фото блюда" })).toBeVisible();
     await expect(page.getByText("яйцо жареное")).toBeVisible();
     await expect(page.getByRole("link", { name: "Редактировать" })).toBeVisible();
+
+    // Возврат на день приёма пищи — кнопкой, а не системным жестом «назад».
+    await clickReact(page.locator('a[href^="/today?date="]'));
+    await expect(page).toHaveURL(/\/today\?date=/);
   });
 
   test("экран правки", async ({ page, user, signIn, catalogIds }) => {

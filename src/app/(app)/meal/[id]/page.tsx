@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { computeTotals, getMealItems, signPhoto } from "@/lib/data/meals";
 import { formatMealDate, formatNumber, formatTime, localDateIso } from "@/lib/format";
+import BackLink from "@/components/BackLink";
 import NutrientPanel from "@/components/NutrientPanel";
 import ModelRerun from "@/components/ModelRerun";
 import DeleteMealButton from "@/components/DeleteMealButton";
@@ -76,6 +77,10 @@ export default async function MealPage({
 
   const untouched = items.every((i) => i.origin === "model_kept");
   const today = localDateIso();
+  // Назад — на день приёма пищи, а не на «сегодня»: иначе из истории
+  // возвращаешься не туда, откуда пришёл. День недели в кнопку не влезает.
+  const dayHref = `/today?date=${meal.meal_date}`;
+  const dayLabel = formatMealDate(meal.meal_date, today).split(",")[0];
 
   // Модели для перепрогона: enabled, исключая уже прогнанные варианты (FR-DET-4).
   const alreadyRun = new Set(
@@ -93,6 +98,10 @@ export default async function MealPage({
     const lastError = (recognitions ?? []).at(-1)?.error_text;
     return (
       <div className="px-4 pt-4">
+        <header className="mb-3">
+          <BackLink href={dayHref} label={dayLabel} />
+        </header>
+
         {photoUrl && (
           <img src={photoUrl} alt="Фото блюда" className="mb-4 w-full rounded-2xl" />
         )}
@@ -124,6 +133,10 @@ export default async function MealPage({
 
   return (
     <div className="px-4 pt-4">
+      <header className="mb-3">
+        <BackLink href={dayHref} label={dayLabel} />
+      </header>
+
       {photoUrl && (
         <img
           src={photoUrl}
