@@ -41,6 +41,8 @@ const CANDIDATES: { id: string; label: string; vendor: string; priceNote: string
   { id: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (preview)", vendor: "google", priceNote: "53 / 319" },
   { id: "qwen/qwen3-vl-235b-a22b-instruct", label: "Qwen3-VL 235B", vendor: "alibaba", priceNote: "28 / 110" },
   { id: "x-ai/grok-4.5", label: "Grok 4.5", vendor: "xai", priceNote: "212 / 637" },
+  { id: "thinkingmachines/inkling", label: "Inkling", vendor: "thinkingmachines", priceNote: "106 / 430" },
+  { id: "google/gemma-4-31b-it", label: "Gemma 4 31B", vendor: "google", priceNote: "13 / 39" },
 ];
 
 interface Expectation {
@@ -176,6 +178,10 @@ async function main() {
   const dishesArg = args.indexOf("--dishes");
   const promptArg = args.indexOf("--prompt");
   const promptVersion = (promptArg >= 0 ? args[promptArg + 1] : "v2-scale") as PromptVersion;
+  // Рассуждающим моделям 4000 токенов может не хватить: размышления съедают
+  // лимит, и ответ приходит пустым. Тогда прогон повторяют с большим лимитом.
+  const maxTokensArg = args.indexOf("--max-tokens");
+  const maxTokens = maxTokensArg >= 0 ? Number(args[maxTokensArg + 1]) : 4000;
 
   const selected =
     modelsArg >= 0
@@ -209,7 +215,7 @@ async function main() {
       vendor: candidate.vendor,
       enabled: true,
       imageDetail: "high",
-      maxTokens: 4000,
+      maxTokens,
       temperature: 0.2,
       promptVersion,
       vendorPricing: null,

@@ -112,6 +112,8 @@ export interface SeededMeal {
   mealId: string;
   recognitionId: string;
   itemIds: string[];
+  /** Название позиции без справочника — уникально на прогон, см. seedRecognisedMeal. */
+  unmatchedName: string;
 }
 
 /**
@@ -121,11 +123,16 @@ export interface SeededMeal {
  */
 export async function seedRecognisedMeal(
   userId: string,
-  opts: { date?: string; catalogIds?: number[] } = {},
+  opts: { date?: string; catalogIds?: number[]; unmatchedName?: string } = {},
 ): Promise<SeededMeal> {
   const db = admin();
   const mealId = randomUUID();
   const date = opts.date ?? new Date().toISOString().slice(0, 10);
+  // Привязка unmatched-позиции создаёт алиас, а уникальность
+  // ingredient_aliases (alias, lang) — общая на весь справочник. С фиксированной
+  // строкой тест конкурировал бы за алиас с импортом USDA: чей insert первый,
+  // того и запись. Уникальное на прогон имя убирает этот класс флака целиком.
+  const unmatchedName = opts.unmatchedName ?? `масло для жарки ${randomUUID().slice(0, 8)}`;
 
   const bytes = readFileSync(join(process.cwd(), "fixtures", "sent-dish-4.jpg"));
   const sentPath = `${userId}/${mealId}/sent.jpg`;
@@ -186,7 +193,7 @@ export async function seedRecognisedMeal(
     { name_ru: "бекон жареный", name_en: "bacon, cooked", weight_g: 55, kcal: 541, protein: 37, fat: 42, carbs: 1.4, ingredient_id: catalogIds[1] ?? null, visible: true },
     { name_ru: "тост пшеничный", name_en: "bread, toasted", weight_g: 70, kcal: 293, protein: 9, fat: 3.6, carbs: 55, ingredient_id: catalogIds[2] ?? null, visible: true },
     // Позиция без справочника — проверяем пометку «≈» и «Привязать к справочнику».
-    { name_ru: "масло для жарки", name_en: "cooking oil", weight_g: 5, kcal: 884, protein: 0, fat: 100, carbs: 0, ingredient_id: null, visible: false },
+    { name_ru: unmatchedName, name_en: "cooking oil", weight_g: 5, kcal: 884, protein: 0, fat: 100, carbs: 0, ingredient_id: null, visible: false },
   ];
 
   const { data: insertedItems } = await db
@@ -236,5 +243,5 @@ export async function seedRecognisedMeal(
 
   await db.from("meals").update({ primary_recognition_id: recognitionId }).eq("id", mealId);
 
-  return { mealId, recognitionId, itemIds };
+  return { mealId, recognitionId, itemIds, unmatchedName };
 }

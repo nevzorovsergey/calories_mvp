@@ -7,6 +7,12 @@
  * защищает от молчаливого рассинхрона при смене версии дампа. `usdaFallbackId` —
  * страховка на случай, если имя в дампе поменяли.
  *
+ * ВАЖНО: `usdaNames` — это список **по убыванию приоритета**, а не набор
+ * равноправных синонимов. У одного продукта в дампе может быть сразу несколько
+ * подходящих нутриентов (у калорийности их три), и импорт берёт первый
+ * найденный по этому порядку. Дописывать новое имя в конец безопасно, вставлять
+ * в начало — значит менять то, какое значение попадёт в справочник.
+ *
  * `rdi` — суточная норма, одна общая для всех (без учёта пола и возраста, §8.3).
  * Значения — Daily Value FDA для взрослых.
  */
@@ -37,7 +43,14 @@ export const NUTRIENTS: NutrientDef[] = [
     group: "macro",
     rdi: 2000,
     sortOrder: 10,
-    usdaNames: ["Energy"],
+    // Дамп Foundation 2026 постепенно переезжает на явные факторы Атуотера:
+    // «Energy» (1008) есть только у 135 из 469 позиций, 2047 — у 347, 2048 — у 312.
+    // SR Legacy целиком на 1008. Порядок — от самого общего к частному.
+    usdaNames: [
+      "Energy",
+      "Energy (Atwater General Factors)",
+      "Energy (Atwater Specific Factors)",
+    ],
     usdaUnit: "KCAL",
     usdaFallbackId: 1008,
   },
@@ -92,7 +105,8 @@ export const NUTRIENTS: NutrientDef[] = [
     group: "macro",
     rdi: 50,
     sortOrder: 60,
-    usdaNames: ["Total Sugars", "Sugars, total including NLEA"],
+    // «Sugars, Total» — написание id 2000 в дампе SR Legacy 2018.
+    usdaNames: ["Total Sugars", "Sugars, Total", "Sugars, total including NLEA"],
     usdaUnit: "G",
     usdaFallbackId: 2000,
   },

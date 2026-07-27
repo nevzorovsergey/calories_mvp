@@ -98,27 +98,39 @@ npm run smoke -- ./fixtures/sent-dish-4.jpg
 будут только от модели, с пометкой «≈».
 
 1. Скачайте CSV-дампы FoodData Central (**SR Legacy** и **Foundation Foods**) с
-   <https://fdc.nal.usda.gov/download-datasets> и распакуйте:
+   <https://fdc.nal.usda.gov/download-datasets> и распакуйте (точные ссылки — в
+   `data/README.md`):
    ```
-   data/usda/sr_legacy/{food.csv,food_nutrient.csv,nutrient.csv}
-   data/usda/foundation/{food.csv,food_nutrient.csv,nutrient.csv}
+   data/usda/sr_legacy/{food.csv,food_nutrient.csv,nutrient.csv,food_category.csv}
+   data/usda/foundation/…то же самое
    ```
-2. Переведите названия (батчами по 50 через дешёвую модель):
+2. Разложите названия на перевод:
    ```bash
-   npx tsx scripts/translate-ingredients.ts
+   npm run usda:chunks
+   ```
+   Получите `data/translations/round-1/in/chunk-*.json` — по 300 позиций в файле.
+3. Раздайте чанки субагентам Claude Code: каждый читает свой `in/chunk-NN.json`
+   и пишет `out/chunk-NN.json` (промпт — в `data/README.md`). Внешний LLM API
+   для этого не нужен.
+4. Соберите и проверьте:
+   ```bash
+   npm run usda:merge -- --sample 30
    ```
    Результат копится в `data/translations.json` и **коммитится**: повторный
-   импорт не тратит деньги заново и даёт тот же результат.
-3. Вычитайте руками топ-500 самых частых продуктов (мясо, крупы, овощи,
+   импорт даёт тот же результат. Если покрытие неполное — `npm run usda:chunks --
+   --round 2` нарежет только остаток.
+5. Вычитайте руками топ-500 самых частых продуктов (мясо, крупы, овощи,
    молочка — они закроют 80% реальных приёмов пищи) и положите правки в
    `data/translations.override.csv`. Они имеют приоритет.
-4. Импортируйте:
+6. Импортируйте:
    ```bash
-   npx tsx scripts/import-usda.ts --limit 50 --dry-run   # прогон вхолостую
-   npx tsx scripts/import-usda.ts                        # полный импорт
+   npx tsx scripts/import-usda.ts --dry-run   # прогон вхолостую, в БД не пишет
+   npm run usda:import                        # полный импорт
    ```
 
-Проверка: `select count(*) from ingredients;` — ожидаем ~8000.
+Проверка: `select count(*) from ingredients where is_active;` — ожидаем ~8090
+(8262 строки дампов минус 170 дублей: один продукт бывает опубликован в обоих
+дампах или дважды внутри Foundation).
 
 ### 6. Запуск
 

@@ -42,6 +42,11 @@ next-env.d.ts
 
 # Дампы USDA — большие, качаются отдельно (см. data/README.md)
 /data/usda/**/*.csv
+# Рабочие каталоги раундов перевода — воспроизводимы из дампов.
+# Итоговый data/translations.json коммитится.
+/data/translations/
+# Датасеты для бенчмарка — большие, качаются отдельно (см. data/README.md)
+/data/benchmarks/
 /fixtures/*.jpg
 /fixtures/*.jpeg
 /fixtures/*.png

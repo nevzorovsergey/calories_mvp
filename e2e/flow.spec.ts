@@ -83,19 +83,21 @@ test.describe("Правка состава", () => {
     await waitForHydration(page);
 
     // Ингредиент без справочника помечен «≈» и предлагает привязку (FR-CAT-2).
-    await expect(page.getByText("масло для жарки")).toBeVisible();
+    await expect(page.getByText(meal.unmatchedName)).toBeVisible();
     await expect(page.getByText(/нет в справочнике/)).toBeVisible();
 
     // Правка веса одной позиции
     await fillReact(page.getByLabel("Вес: бекон жареный"), "80");
 
     // Удаление другой
-    await clickReact(page.getByLabel("Удалить: масло для жарки"));
-    await expect(page.getByText("масло для жарки")).toBeHidden();
+    await clickReact(page.getByLabel(`Удалить: ${meal.unmatchedName}`));
+    await expect(page.getByText(meal.unmatchedName)).toBeHidden();
 
-    // Добавление из справочника (FR-EDIT-4)
+    // Добавление из справочника (FR-EDIT-4). Ищем полным именем: на справочнике
+    // из 8000 позиций короткое «яйцо» — это фаззи-совпадение, которое конкурирует
+    // с импортированными яйцами и не гарантированно попадает в первые 20 строк.
     await clickReact(page.getByRole("button", { name: "Добавить ингредиент" }));
-    await fillReact(page.getByPlaceholder("Найти в справочнике"), "яйцо");
+    await fillReact(page.getByPlaceholder("Найти в справочнике"), "яйцо жареное");
     await clickReact(
       page
         .getByRole("list", { name: "Результаты поиска" })
@@ -125,7 +127,7 @@ test.describe("Правка состава", () => {
     const db = admin();
     const { data: items } = await db
       .from("meal_items")
-      .select("name_ru, weight_g, origin, original_weight_g")
+      .select("name_ru, weight_g, origin, original_weight_g, ingredient_id")
       .eq("meal_id", meal.mealId)
       .order("position");
 
@@ -133,7 +135,11 @@ test.describe("Правка состава", () => {
     expect(bacon?.origin).toBe("model_edited");
     expect(Number(bacon?.original_weight_g)).toBe(55);
     expect(Number(bacon?.weight_g)).toBe(80);
-    expect(items!.some((i) => i.origin === "user_added")).toBe(true);
+    // Проверяем не только видимое имя, но и привязку: на большом справочнике
+    // одноимённая импортированная позиция дала бы зелёный тест при неверном id.
+    const added = items!.find((i) => i.origin === "user_added");
+    expect(added).toBeDefined();
+    expect(added?.ingredient_id).toBe(catalogIds[0]);
 
     const { data: removed } = await db
       .from("meal_removed_items")
@@ -220,9 +226,9 @@ test.describe("Правка состава", () => {
     await page.goto(`/meal/${meal.mealId}/edit`);
     await waitForHydration(page);
 
-    await clickReact(page.getByRole("button", { name: "Подробнее: масло для жарки" }));
+    await clickReact(page.getByRole("button", { name: `Подробнее: ${meal.unmatchedName}` }));
     await clickReact(page.getByRole("button", { name: "Привязать к справочнику" }));
-    await fillReact(page.getByPlaceholder("Найти в справочнике"), "хлеб");
+    await fillReact(page.getByPlaceholder("Найти в справочнике"), "хлеб тостовый");
     await clickReact(
       page
         .getByRole("list", { name: "Результаты поиска" })
@@ -234,13 +240,20 @@ test.describe("Правка состава", () => {
     await expect(async () => {
       const { data } = await admin()
         .from("ingredient_aliases")
-        .select("alias, source")
-        .eq("alias", "масло для жарки")
+        .select("alias, source, ingredient_id")
+        .eq("alias", meal.unmatchedName)
         .maybeSingle();
       expect(data?.source).toBe("user_mapping");
+      expect(data?.ingredient_id).toBe(catalogIds[2]);
     }).toPass({ timeout: 10_000 });
 
-    await admin().from("ingredient_aliases").delete().eq("alias", "масло для жарки");
+    // Фильтр по источнику — чтобы уборка теста ни при каких обстоятельствах не
+    // сносила алиас, записанный импортом справочника.
+    await admin()
+      .from("ingredient_aliases")
+      .delete()
+      .eq("alias", meal.unmatchedName)
+      .eq("source", "user_mapping");
   });
 });
 

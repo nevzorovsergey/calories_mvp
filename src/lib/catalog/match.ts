@@ -62,10 +62,18 @@ export async function matchIngredient(
 
   // Русское название — второй заход: модель могла дать неканоничный английский
   // термин, но узнаваемое русское (и наоборот).
-  const ruCandidates =
-    candidates.length > 0
-      ? candidates
-      : await searchCandidates(supabase, ingredient.name_ru);
+  //
+  // Условие именно «нет ничего годного», а не «пусто»: на справочнике из 8000
+  // позиций английский поиск почти всегда возвращает хоть какой-то слабый
+  // триграммный хвост, и проверка на пустоту сделала бы русскую ветку мёртвой
+  // ровно тогда, когда она начинает быть нужной.
+  const bestEn = candidates
+    .filter((c) => c.match_score >= FUZZY_THRESHOLD)
+    .sort((a, b) => b.match_score - a.match_score)[0];
+
+  const ruCandidates = bestEn
+    ? candidates
+    : [...candidates, ...(await searchCandidates(supabase, ingredient.name_ru))];
 
   const exactRu = ruCandidates.find((c) => c.match_status === "exact");
   if (exactRu) {
@@ -106,7 +114,7 @@ async function searchCandidates(
   if (!normalized) return [];
   const { data, error } = await supabase.rpc("search_ingredients", {
     q: normalized,
-    max_results: 10,
+    max_results: 20,
   });
   if (error) {
     // Маппинг — не критичный путь: если справочник недоступен, ингредиент
