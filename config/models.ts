@@ -67,7 +67,7 @@ export const MODELS_CONFIG = {
    * согласованную масштабную цепочку. При этом вдвое дешевле Claude Sonnet 5
    * и втрое — по стоимости одного распознавания.
    */
-  defaultModelId: "openai/gpt-5.1",
+  defaultModelId: "google/gemini-3-flash-preview",
 
   models: [
     {

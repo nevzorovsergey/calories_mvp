@@ -1,0 +1,1364 @@
+{
+ "_comment": "Базовая выборка из January Food Benchmark (data/benchmarks/, качается отдельно — см. data/README.md). 20 фото, отобранных вручную под первый прогон собственных моделей: разброс по видам еды, у каждого кадра проверено, что название соответствует фотографии, состав разложен по ингредиентам и КБЖУ сходится. Проверки, пройденные каждой позицией: сумма ингредиентов равна totals по всем четырём числам (допуск 2% по калориям, 5% по макросам); atwater_kcal (4·Б + 4·У + 9·Ж) отличается от заявленных калорий не более чем на 15%; num_ingredients совпадает с длиной списка. Разметка авторов датасета — сама по себе оценка LLM, а не лабораторный анализ: она годится как ориентир по составу и порядку величин, но не как эталон массы.",
+ "source": {
+  "dataset": "January Food Benchmark (JFB) v1",
+  "paper": "https://arxiv.org/abs/2508.09966",
+  "code": "https://github.com/January-ai/food-scan-benchmarks",
+  "csv": "data/benchmarks/food-scan-benchmark-dataset/food_scan_bench_v1.csv",
+  "selected_from": 1000
+ },
+ "excluded_examples": [
+  {
+   "image_id": "fsb_00823",
+   "reason": "в meal_name вместо названия — отказ модели-разметчика («I'm unable to provide…»)"
+  },
+  {
+   "image_id": "fsb_00079",
+   "reason": "meal_name «Banana,1,whole,105» — в поле названия протекла строка данных"
+  },
+  {
+   "image_id": "fsb_00913",
+   "reason": "в составе брусника, чёрная и красная смородина по стакану, которых на фото нет; калорийность завышена"
+  },
+  {
+   "image_id": "fsb_00849",
+   "reason": "назван Lentil Soup, на фото густое блюдо из чечевицы с фаршем, а не суп"
+  },
+  {
+   "image_id": "fsb_00995",
+   "reason": "прошутто в составе на фото отсутствует, 1 oz теста на целую пиццу"
+  },
+  {
+   "image_id": "fsb_00860",
+   "reason": "фото закрытой плитки Lindt; порция 0.6 плитки взята произвольно"
+  },
+  {
+   "image_id": "fsb_00700",
+   "reason": "12 ингредиентов в непрозрачном зелёном пюре — состав по фото не проверяем"
+  }
+ ],
+ "items": [
+  {
+   "image_id": "fsb_00437",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00437.jpg",
+   "category": "суп",
+   "title_ru": "Куриный суп-тортилья",
+   "meal_name": "Chicken Tortilla Soup",
+   "note": "Видны кукуруза, чёрная фасоль, полоски тортильи, курица — состав читается прямо с фото.",
+   "totals": {
+    "kcal": 400.3,
+    "protein": 21.9,
+    "carbs": 31.3,
+    "fat": 21.8
+   },
+   "atwater_kcal": 409.0,
+   "ingredients": [
+    {
+     "name": "chicken",
+     "quantity": 0.4,
+     "unit": "cup",
+     "kcal": 118.8,
+     "protein": 12.9,
+     "carbs": 0.0,
+     "fat": 7.1
+    },
+    {
+     "name": "black beans",
+     "quantity": 0.3,
+     "unit": "cup",
+     "kcal": 68.1,
+     "protein": 4.6,
+     "carbs": 12.2,
+     "fat": 0.3
+    },
+    {
+     "name": "corn",
+     "quantity": 0.3,
+     "unit": "ear large (7-3/4\" to 9\" long)",
+     "kcal": 34.0,
+     "protein": 1.2,
+     "carbs": 7.4,
+     "fat": 0.5
+    },
+    {
+     "name": "tomato",
+     "quantity": 0.2,
+     "unit": "cup, chopped or sliced",
+     "kcal": 6.5,
+     "protein": 0.3,
+     "carbs": 1.4,
+     "fat": 0.1
+    },
+    {
+     "name": "tortilla strips",
+     "quantity": 0.4,
+     "unit": "cup",
+     "kcal": 60.4,
+     "protein": 0.9,
+     "carbs": 8.7,
+     "fat": 2.6
+    },
+    {
+     "name": "cream",
+     "quantity": 2,
+     "unit": "tbsp",
+     "kcal": 102.0,
+     "protein": 0.9,
+     "carbs": 0.8,
+     "fat": 10.8
+    },
+    {
+     "name": "chicken broth",
+     "quantity": 0.7,
+     "unit": "cup",
+     "kcal": 10.5,
+     "protein": 1.1,
+     "carbs": 0.8,
+     "fat": 0.4
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00098",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00098.jpg",
+   "category": "суп",
+   "title_ru": "Густое говяжье рагу",
+   "meal_name": "Beef Stew",
+   "note": "Куски картофеля, моркови и мяса различимы в бульоне; проверяет разбор однородной массы на компоненты.",
+   "totals": {
+    "kcal": 368.8,
+    "protein": 31.2,
+    "carbs": 21.7,
+    "fat": 17.4
+   },
+   "atwater_kcal": 368.2,
+   "ingredients": [
+    {
+     "name": "beef",
+     "quantity": 100,
+     "unit": "g",
+     "kcal": 259.0,
+     "protein": 26.1,
+     "carbs": 0.0,
+     "fat": 16.6
+    },
+    {
+     "name": "potatoes",
+     "quantity": 0.6,
+     "unit": "cup",
+     "kcal": 68.1,
+     "protein": 1.8,
+     "carbs": 15.5,
+     "fat": 0.1
+    },
+    {
+     "name": "carrots",
+     "quantity": 0.2,
+     "unit": "cup",
+     "kcal": 10.9,
+     "protein": 0.2,
+     "carbs": 2.6,
+     "fat": 0.1
+    },
+    {
+     "name": "tomatoes",
+     "quantity": 0.2,
+     "unit": "cup, chopped or sliced",
+     "kcal": 6.5,
+     "protein": 0.3,
+     "carbs": 1.4,
+     "fat": 0.1
+    },
+    {
+     "name": "onion",
+     "quantity": 0.1,
+     "unit": "cup",
+     "kcal": 9.2,
+     "protein": 0.3,
+     "carbs": 2.1,
+     "fat": 0.0
+    },
+    {
+     "name": "beef broth",
+     "quantity": 0.9,
+     "unit": "cup",
+     "kcal": 15.1,
+     "protein": 2.5,
+     "carbs": 0.1,
+     "fat": 0.5
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00685",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00685.jpg",
+   "category": "салат",
+   "title_ru": "Греческий салат",
+   "meal_name": "Greek Salad",
+   "note": "Яркий кадр, все компоненты по отдельности видны, заправка подана сбоку.",
+   "totals": {
+    "kcal": 296.6,
+    "protein": 8.8,
+    "carbs": 12.8,
+    "fat": 24.8
+   },
+   "atwater_kcal": 309.6,
+   "ingredients": [
+    {
+     "name": "romaine lettuce",
+     "quantity": 1,
+     "unit": "cups shredded",
+     "kcal": 8.0,
+     "protein": 0.6,
+     "carbs": 1.5,
+     "fat": 0.1
+    },
+    {
+     "name": "cucumber",
+     "quantity": 0.5,
+     "unit": "cup slices",
+     "kcal": 7.8,
+     "protein": 0.3,
+     "carbs": 1.9,
+     "fat": 0.1
+    },
+    {
+     "name": "cherry tomatoes",
+     "quantity": 4,
+     "unit": "cherry",
+     "kcal": 12.2,
+     "protein": 0.6,
+     "carbs": 2.6,
+     "fat": 0.1
+    },
+    {
+     "name": "feta cheese",
+     "quantity": 0.3,
+     "unit": "cup, crumbled",
+     "kcal": 118.8,
+     "protein": 6.4,
+     "carbs": 1.8,
+     "fat": 9.6
+    },
+    {
+     "name": "pepperoncini",
+     "quantity": 0.8,
+     "unit": "wt. oz",
+     "kcal": 4.8,
+     "protein": 0.2,
+     "carbs": 1.2,
+     "fat": 0.0
+    },
+    {
+     "name": "avocado",
+     "quantity": 0.2,
+     "unit": "cup, cubes",
+     "kcal": 48.0,
+     "protein": 0.6,
+     "carbs": 2.6,
+     "fat": 4.4
+    },
+    {
+     "name": "greek dressing",
+     "quantity": 2,
+     "unit": "tbsp",
+     "kcal": 97.0,
+     "protein": 0.1,
+     "carbs": 1.2,
+     "fat": 10.5
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00278",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00278.jpg",
+   "category": "салат",
+   "title_ru": "Салат капрезе",
+   "meal_name": "Caprese Salad",
+   "note": "Простой салат из 5 позиций, включая маслo и бальзамик — проверяет, замечает ли модель заправку.",
+   "totals": {
+    "kcal": 368.2,
+    "protein": 16.1,
+    "carbs": 11.6,
+    "fat": 28.9
+   },
+   "atwater_kcal": 370.9,
+   "ingredients": [
+    {
+     "name": "tomato",
+     "quantity": 3,
+     "unit": "wt. oz",
+     "kcal": 15.3,
+     "protein": 0.7,
+     "carbs": 3.3,
+     "fat": 0.2
+    },
+    {
+     "name": "mozzarella",
+     "quantity": 2.4000000000000004,
+     "unit": "slices",
+     "kcal": 204.0,
+     "protein": 15.1,
+     "carbs": 1.5,
+     "fat": 15.2
+    },
+    {
+     "name": "basil",
+     "quantity": 10,
+     "unit": "leaves",
+     "kcal": 1.2,
+     "protein": 0.2,
+     "carbs": 0.1,
+     "fat": 0.0
+    },
+    {
+     "name": "olive oil",
+     "quantity": 1,
+     "unit": "tablespoon",
+     "kcal": 119.3,
+     "protein": 0.0,
+     "carbs": 0.0,
+     "fat": 13.5
+    },
+    {
+     "name": "balsamic glaze",
+     "quantity": 0.7,
+     "unit": "tbsp",
+     "kcal": 28.4,
+     "protein": 0.1,
+     "carbs": 6.7,
+     "fat": 0.0
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00907",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00907.jpg",
+   "category": "салат",
+   "title_ru": "Салат из трёх видов фасоли",
+   "meal_name": "Mixed Bean Salad",
+   "note": "Нут, чёрная и пёстрая фасоль различимы визуально; высокие углеводы при низком жире.",
+   "totals": {
+    "kcal": 412.8,
+    "protein": 24.5,
+    "carbs": 73.4,
+    "fat": 3.6
+   },
+   "atwater_kcal": 424.0,
+   "ingredients": [
+    {
+     "name": "chickpeas",
+     "quantity": 0.6,
+     "unit": "cup",
+     "kcal": 161.4,
+     "protein": 8.7,
+     "carbs": 27.0,
+     "fat": 2.5
+    },
+    {
+     "name": "black beans",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 113.5,
+     "protein": 7.6,
+     "carbs": 20.4,
+     "fat": 0.5
+    },
+    {
+     "name": "pinto beans",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 122.3,
+     "protein": 7.7,
+     "carbs": 22.4,
+     "fat": 0.6
+    },
+    {
+     "name": "green peppers",
+     "quantity": 0.2,
+     "unit": "pepper",
+     "kcal": 6.4,
+     "protein": 0.2,
+     "carbs": 1.5,
+     "fat": 0.0
+    },
+    {
+     "name": "onion",
+     "quantity": 0.1,
+     "unit": "cup",
+     "kcal": 9.2,
+     "protein": 0.3,
+     "carbs": 2.1,
+     "fat": 0.0
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00757",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00757.jpg",
+   "category": "второе",
+   "title_ru": "Лосось на гриле со спаржей",
+   "meal_name": "Grilled Salmon with Asparagus",
+   "note": "Чистая тарелка из двух компонентов, хороший базовый случай для оценки массы.",
+   "totals": {
+    "kcal": 513.2,
+    "protein": 42.3,
+    "carbs": 3.7,
+    "fat": 36.1
+   },
+   "atwater_kcal": 508.9,
+   "ingredients": [
+    {
+     "name": "salmon",
+     "quantity": 0.8,
+     "unit": "fillet",
+     "kcal": 374.1,
+     "protein": 40.1,
+     "carbs": 0.0,
+     "fat": 22.4
+    },
+    {
+     "name": "asparagus",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 19.8,
+     "protein": 2.2,
+     "carbs": 3.7,
+     "fat": 0.2
+    },
+    {
+     "name": "olive oil",
+     "quantity": 1,
+     "unit": "tablespoon",
+     "kcal": 119.3,
+     "protein": 0.0,
+     "carbs": 0.0,
+     "fat": 13.5
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00843",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00843.jpg",
+   "category": "второе",
+   "title_ru": "Лазанья с салатом на гарнир",
+   "meal_name": "Lasagna with Side Salad",
+   "note": "Слоёное блюдо: начинка внутри не видна, состав приходится выводить из названия блюда.",
+   "totals": {
+    "kcal": 887.8,
+    "protein": 56.2,
+    "carbs": 50.8,
+    "fat": 51.6
+   },
+   "atwater_kcal": 892.4,
+   "ingredients": [
+    {
+     "name": "lasagna",
+     "quantity": 0.9,
+     "unit": "cup",
+     "kcal": 357.4,
+     "protein": 26.1,
+     "carbs": 20.6,
+     "fat": 19.3
+    },
+    {
+     "name": "ground beef",
+     "quantity": 0.2,
+     "unit": "portion ( yield from 1/2 lb raw meat )",
+     "kcal": 81.1,
+     "protein": 8.0,
+     "carbs": 0.0,
+     "fat": 5.2
+    },
+    {
+     "name": "tomato sauce",
+     "quantity": 0.35,
+     "unit": "cup",
+     "kcal": 20.6,
+     "protein": 1.0,
+     "carbs": 4.6,
+     "fat": 0.3
+    },
+    {
+     "name": "ricotta cheese",
+     "quantity": 0.3,
+     "unit": "cup",
+     "kcal": 102.7,
+     "protein": 8.5,
+     "carbs": 3.8,
+     "fat": 5.9
+    },
+    {
+     "name": "mozzarella cheese",
+     "quantity": 0.3,
+     "unit": "cup, shredded",
+     "kcal": 100.8,
+     "protein": 7.4,
+     "carbs": 0.7,
+     "fat": 7.5
+    },
+    {
+     "name": "pasta",
+     "quantity": 2,
+     "unit": "wt. oz",
+     "kcal": 89.6,
+     "protein": 3.3,
+     "carbs": 17.5,
+     "fat": 0.5
+    },
+    {
+     "name": "side salad",
+     "quantity": 0.6,
+     "unit": "cup with dressing",
+     "kcal": 51.1,
+     "protein": 1.3,
+     "carbs": 2.2,
+     "fat": 4.3
+    },
+    {
+     "name": "lettuce",
+     "quantity": 0.6,
+     "unit": "cups shredded",
+     "kcal": 4.8,
+     "protein": 0.3,
+     "carbs": 0.9,
+     "fat": 0.1
+    },
+    {
+     "name": "caesar dressing",
+     "quantity": 1,
+     "unit": "tbsp",
+     "kcal": 79.7,
+     "protein": 0.3,
+     "carbs": 0.5,
+     "fat": 8.5
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00996",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00996.jpg",
+   "category": "второе",
+   "title_ru": "Ризотто с грибами",
+   "meal_name": "Mushroom Risotto",
+   "note": "9 ингредиентов, из них большая часть (бульон, вино, масло, пармезан) неразличима — сложный случай.",
+   "totals": {
+    "kcal": 660.1,
+    "protein": 15.2,
+    "carbs": 61.2,
+    "fat": 34.4
+   },
+   "atwater_kcal": 615.2,
+   "ingredients": [
+    {
+     "name": "arborio rice",
+     "quantity": 0.8,
+     "unit": "cup",
+     "kcal": 193.4,
+     "protein": 3.5,
+     "carbs": 42.8,
+     "fat": 0.3
+    },
+    {
+     "name": "mushrooms",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 22.0,
+     "protein": 1.7,
+     "carbs": 4.1,
+     "fat": 0.4
+    },
+    {
+     "name": "parmesan cheese",
+     "quantity": 0.3,
+     "unit": "cup",
+     "kcal": 126.0,
+     "protein": 8.5,
+     "carbs": 4.2,
+     "fat": 8.4
+    },
+    {
+     "name": "olive oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "kcal": 119.3,
+     "protein": 0.0,
+     "carbs": 0.0,
+     "fat": 13.5
+    },
+    {
+     "name": "butter",
+     "quantity": 1,
+     "unit": "tbsp",
+     "kcal": 101.8,
+     "protein": 0.1,
+     "carbs": 0.0,
+     "fat": 11.5
+    },
+    {
+     "name": "onion",
+     "quantity": 0.2,
+     "unit": "cup",
+     "kcal": 18.5,
+     "protein": 0.6,
+     "carbs": 4.3,
+     "fat": 0.1
+    },
+    {
+     "name": "garlic",
+     "quantity": 1.7999999999999998,
+     "unit": "cloves",
+     "kcal": 8.0,
+     "protein": 0.3,
+     "carbs": 1.8,
+     "fat": 0.0
+    },
+    {
+     "name": "white wine",
+     "quantity": 0.3,
+     "unit": "cup",
+     "kcal": 57.9,
+     "protein": 0.0,
+     "carbs": 1.8,
+     "fat": 0.0
+    },
+    {
+     "name": "vegetable broth",
+     "quantity": 1,
+     "unit": "cup",
+     "kcal": 13.2,
+     "protein": 0.5,
+     "carbs": 2.2,
+     "fat": 0.2
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00012",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00012.jpg",
+   "category": "второе",
+   "title_ru": "Сет суши",
+   "meal_name": "Assorted Sushi Platter",
+   "note": "Штучная еда: 2 нигири с лососем, 4 с тунцом, гункан с икрой, ролл — проверяет счёт по штукам.",
+   "totals": {
+    "kcal": 784.4,
+    "protein": 66.2,
+    "carbs": 57.3,
+    "fat": 30.3
+   },
+   "atwater_kcal": 766.7,
+   "ingredients": [
+    {
+     "name": "salmon nigiri",
+     "quantity": 2,
+     "unit": "pieces",
+     "kcal": 179.6,
+     "protein": 12.7,
+     "carbs": 12.8,
+     "fat": 8.1
+    },
+    {
+     "name": "tuna nigiri",
+     "quantity": 4,
+     "unit": "piece",
+     "kcal": 235.0,
+     "protein": 30.1,
+     "carbs": 24.3,
+     "fat": 0.7
+    },
+    {
+     "name": "salmon roe",
+     "quantity": 1,
+     "unit": "oz",
+     "kcal": 40.5,
+     "protein": 6.3,
+     "carbs": 0.4,
+     "fat": 1.8
+    },
+    {
+     "name": "spicy salmon roll",
+     "quantity": 1,
+     "unit": "roll (6 pieces)",
+     "kcal": 329.3,
+     "protein": 17.1,
+     "carbs": 19.8,
+     "fat": 19.7
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00985",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00985.jpg",
+   "category": "овощи",
+   "title_ru": "Овощи, обжаренные в воке",
+   "meal_name": "Mixed Vegetable Stir-Fry",
+   "note": "Кабачок, морковь, баклажан, лук; маленькая порция — проверяет оценку веса вниз.",
+   "totals": {
+    "kcal": 96.1,
+    "protein": 1.1,
+    "carbs": 8.3,
+    "fat": 7.1
+   },
+   "atwater_kcal": 101.5,
+   "ingredients": [
+    {
+     "name": "zucchini",
+     "quantity": 0.3,
+     "unit": "small",
+     "kcal": 5.9,
+     "protein": 0.4,
+     "carbs": 1.0,
+     "fat": 0.1
+    },
+    {
+     "name": "carrot",
+     "quantity": 0.2,
+     "unit": "cup",
+     "kcal": 10.9,
+     "protein": 0.2,
+     "carbs": 2.6,
+     "fat": 0.1
+    },
+    {
+     "name": "eggplant",
+     "quantity": 0.3,
+     "unit": "cup (1\" cubes)",
+     "kcal": 10.4,
+     "protein": 0.2,
+     "carbs": 2.6,
+     "fat": 0.1
+    },
+    {
+     "name": "onion",
+     "quantity": 0.1,
+     "unit": "cup",
+     "kcal": 9.2,
+     "protein": 0.3,
+     "carbs": 2.1,
+     "fat": 0.0
+    },
+    {
+     "name": "olive oil",
+     "quantity": 0.5,
+     "unit": "tbsp",
+     "kcal": 59.7,
+     "protein": 0.0,
+     "carbs": 0.0,
+     "fat": 6.8
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00069",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00069.jpg",
+   "category": "гарнир",
+   "title_ru": "Печёный картофель с маслом и сметаной",
+   "meal_name": "Loaded Baked Potato",
+   "note": "Один крахмалистый продукт плюс две жирные добавки, дающие 2/3 калорий.",
+   "totals": {
+    "kcal": 334.0,
+    "protein": 5.3,
+    "carbs": 38.3,
+    "fat": 18.7
+   },
+   "atwater_kcal": 342.7,
+   "ingredients": [
+    {
+     "name": "baked potato",
+     "quantity": 1,
+     "unit": "potato medium",
+     "kcal": 160.9,
+     "protein": 4.3,
+     "carbs": 36.6,
+     "fat": 0.2
+    },
+    {
+     "name": "butter",
+     "quantity": 1,
+     "unit": "tbsp",
+     "kcal": 101.8,
+     "protein": 0.1,
+     "carbs": 0.0,
+     "fat": 11.5
+    },
+    {
+     "name": "sour cream",
+     "quantity": 3,
+     "unit": "tbsp",
+     "kcal": 71.3,
+     "protein": 0.9,
+     "carbs": 1.7,
+     "fat": 7.0
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00004",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00004.jpg",
+   "category": "фрукты",
+   "title_ru": "Яблоко с паприкой и приправой Tajín",
+   "meal_name": "Apple",
+   "note": "Единичный фрукт со специями: почти вся калорийность в одном ингредиенте.",
+   "totals": {
+    "kcal": 108.1,
+    "protein": 1.1,
+    "carbs": 27.8,
+    "fat": 0.8
+   },
+   "atwater_kcal": 122.8,
+   "ingredients": [
+    {
+     "name": "apple",
+     "quantity": 1,
+     "unit": "medium (3\" dia)",
+     "kcal": 94.6,
+     "protein": 0.5,
+     "carbs": 25.1,
+     "fat": 0.3
+    },
+    {
+     "name": "paprika",
+     "quantity": 1,
+     "unit": "tsp",
+     "kcal": 6.5,
+     "protein": 0.3,
+     "carbs": 1.2,
+     "fat": 0.3
+    },
+    {
+     "name": "tajin",
+     "quantity": 1,
+     "unit": "tsp",
+     "kcal": 7.0,
+     "protein": 0.3,
+     "carbs": 1.5,
+     "fat": 0.2
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00915",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00915.jpg",
+   "category": "фрукты",
+   "title_ru": "Фруктовая тарелка",
+   "meal_name": "Mixed Fruit Plate",
+   "note": "7 видов фруктов, все различимы; проверяет полноту перечисления.",
+   "totals": {
+    "kcal": 205.5,
+    "protein": 2.4,
+    "carbs": 53.0,
+    "fat": 1.0
+   },
+   "atwater_kcal": 230.6,
+   "ingredients": [
+    {
+     "name": "strawberries",
+     "quantity": 5,
+     "unit": "medium (1-1/4\" dia)",
+     "kcal": 19.2,
+     "protein": 0.4,
+     "carbs": 4.6,
+     "fat": 0.2
+    },
+    {
+     "name": "blueberries",
+     "quantity": 0.25,
+     "unit": "cup",
+     "kcal": 21.1,
+     "protein": 0.3,
+     "carbs": 5.4,
+     "fat": 0.1
+    },
+    {
+     "name": "blackberries",
+     "quantity": 0.2,
+     "unit": "cup",
+     "kcal": 12.4,
+     "protein": 0.4,
+     "carbs": 2.8,
+     "fat": 0.1
+    },
+    {
+     "name": "green grapes",
+     "quantity": 10,
+     "unit": "grapes",
+     "kcal": 33.8,
+     "protein": 0.4,
+     "carbs": 8.9,
+     "fat": 0.1
+    },
+    {
+     "name": "apple",
+     "quantity": 0.5,
+     "unit": "medium (3\" dia)",
+     "kcal": 47.3,
+     "protein": 0.2,
+     "carbs": 12.6,
+     "fat": 0.2
+    },
+    {
+     "name": "pear",
+     "quantity": 0.5,
+     "unit": "medium",
+     "kcal": 50.7,
+     "protein": 0.3,
+     "carbs": 13.6,
+     "fat": 0.1
+    },
+    {
+     "name": "kiwi",
+     "quantity": 0.5,
+     "unit": "fruit (2\" dia)",
+     "kcal": 21.0,
+     "protein": 0.4,
+     "carbs": 5.1,
+     "fat": 0.2
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00497",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00497.jpg",
+   "category": "сладости",
+   "title_ru": "Клубника в шоколаде и дольки яблок",
+   "meal_name": "Chocolate-Covered Strawberries and Apple Slices",
+   "note": "Кондитерка + фрукты: 4 квадратика шоколада дают 71% калорий при малом объёме.",
+   "totals": {
+    "kcal": 241.5,
+    "protein": 3.1,
+    "carbs": 37.1,
+    "fat": 9.9
+   },
+   "atwater_kcal": 249.9,
+   "ingredients": [
+    {
+     "name": "strawberries",
+     "quantity": 4,
+     "unit": "large (1-3/8\" dia)",
+     "kcal": 23.0,
+     "protein": 0.5,
+     "carbs": 5.5,
+     "fat": 0.2
+    },
+    {
+     "name": "apple",
+     "quantity": 0.5,
+     "unit": "medium (3\" dia)",
+     "kcal": 47.3,
+     "protein": 0.2,
+     "carbs": 12.6,
+     "fat": 0.2
+    },
+    {
+     "name": "chocolate",
+     "quantity": 4,
+     "unit": "square",
+     "kcal": 171.2,
+     "protein": 2.4,
+     "carbs": 19.0,
+     "fat": 9.5
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00491",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00491.jpg",
+   "category": "десерт",
+   "title_ru": "Шоколадный фондан",
+   "meal_name": "Chocolate Lava Cake",
+   "note": "Ресторанный десерт, состав скрыт внутри — тест на знание типовых рецептур.",
+   "totals": {
+    "kcal": 456.6,
+    "protein": 4.2,
+    "carbs": 68.8,
+    "fat": 20.4
+   },
+   "atwater_kcal": 475.6,
+   "ingredients": [
+    {
+     "name": "chocolate cake",
+     "quantity": 0.8,
+     "unit": "piece",
+     "kcal": 339.2,
+     "protein": 3.0,
+     "carbs": 46.1,
+     "fat": 17.5
+    },
+    {
+     "name": "powdered sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "kcal": 9.7,
+     "protein": 0.0,
+     "carbs": 2.5,
+     "fat": 0.0
+    },
+    {
+     "name": "vanilla ice cream",
+     "quantity": 0.2,
+     "unit": "cup",
+     "kcal": 54.6,
+     "protein": 0.9,
+     "carbs": 6.2,
+     "fat": 2.9
+    },
+    {
+     "name": "caramel sauce",
+     "quantity": 1.2,
+     "unit": "tbsp",
+     "kcal": 53.1,
+     "protein": 0.3,
+     "carbs": 14.0,
+     "fat": 0.0
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00257",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00257.jpg",
+   "category": "фастфуд",
+   "title_ru": "Чизбургер с картофельными дольками",
+   "meal_name": "Cheeseburger With Potato Wedges",
+   "note": "Надкушенный бургер, соус в отдельной ёмкости; проверяет учёт соуса.",
+   "totals": {
+    "kcal": 770.4,
+    "protein": 33.0,
+    "carbs": 58.3,
+    "fat": 45.1
+   },
+   "atwater_kcal": 771.1,
+   "ingredients": [
+    {
+     "name": "beef patty",
+     "quantity": 1,
+     "unit": "patty ( yield from 1/4 lb raw meat )",
+     "kcal": 192.6,
+     "protein": 20.4,
+     "carbs": 0.0,
+     "fat": 11.6
+    },
+    {
+     "name": "burger bun",
+     "quantity": 1,
+     "unit": "roll 1 serving",
+     "kcal": 122.3,
+     "protein": 4.3,
+     "carbs": 22.1,
+     "fat": 1.7
+    },
+    {
+     "name": "cheese",
+     "quantity": 1,
+     "unit": "cubic inch",
+     "kcal": 68.7,
+     "protein": 3.9,
+     "carbs": 0.5,
+     "fat": 5.7
+    },
+    {
+     "name": "potato wedges",
+     "quantity": 0.6,
+     "unit": "cup",
+     "kcal": 106.7,
+     "protein": 1.2,
+     "carbs": 14.2,
+     "fat": 5.0
+    },
+    {
+     "name": "mayonnaise",
+     "quantity": 2,
+     "unit": "tbsp",
+     "kcal": 187.7,
+     "protein": 0.3,
+     "carbs": 0.2,
+     "fat": 20.7
+    },
+    {
+     "name": "onion cooked",
+     "quantity": 1,
+     "unit": "cup",
+     "kcal": 92.4,
+     "protein": 2.9,
+     "carbs": 21.3,
+     "fat": 0.4
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00000",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00000.jpg",
+   "category": "завтрак",
+   "title_ru": "Завтрак-платтер",
+   "meal_name": "Breakfast Platter",
+   "note": "Композитный поднос: яичница, бекон, картофель, фрукты, закрытая баночка йогурта.",
+   "totals": {
+    "kcal": 408.5,
+    "protein": 30.1,
+    "carbs": 33.5,
+    "fat": 17.3
+   },
+   "atwater_kcal": 410.1,
+   "ingredients": [
+    {
+     "name": "scrambled eggs",
+     "quantity": 0.3,
+     "unit": "cup",
+     "kcal": 98.3,
+     "protein": 6.6,
+     "carbs": 1.1,
+     "fat": 7.2
+    },
+    {
+     "name": "bacon",
+     "quantity": 1,
+     "unit": "slices",
+     "kcal": 53.8,
+     "protein": 3.9,
+     "carbs": 0.2,
+     "fat": 4.0
+    },
+    {
+     "name": "roasted potatoes",
+     "quantity": 0.6,
+     "unit": "cup",
+     "kcal": 107.8,
+     "protein": 1.6,
+     "carbs": 13.9,
+     "fat": 5.2
+    },
+    {
+     "name": "fruit salad",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 48.3,
+     "protein": 0.7,
+     "carbs": 12.2,
+     "fat": 0.2
+    },
+    {
+     "name": "greek yogurt",
+     "quantity": 1,
+     "unit": "container",
+     "kcal": 100.3,
+     "protein": 17.3,
+     "carbs": 6.1,
+     "fat": 0.7
+    }
+   ],
+   "reference_warning": "Эталон неполон: в кадре есть булочка с пакетиком джема, которых нет в раскладке, а бекон посчитан как 1 ломтик при четырёх видимых. Все пять моделей дали 877–1254 ккал против 408.5 в эталоне — расхождение здесь на стороне разметки, а не моделей. Найдено прогоном scripts/bench-jfb.ts от 2026-07-28; до замены фото метрики по нему не показательны."
+  },
+  {
+   "image_id": "fsb_00833",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00833.jpg",
+   "category": "азиатское",
+   "title_ru": "Японский бэнто",
+   "meal_name": "Japanese Bento Box",
+   "note": "9 ингредиентов в секциях коробки — самый сложный кадр набора.",
+   "totals": {
+    "kcal": 1028.9,
+    "protein": 62.0,
+    "carbs": 72.1,
+    "fat": 53.1
+   },
+   "atwater_kcal": 1014.3,
+   "ingredients": [
+    {
+     "name": "sashimi",
+     "quantity": 3,
+     "unit": "oz",
+     "kcal": 105.0,
+     "protein": 16.0,
+     "carbs": 0.8,
+     "fat": 3.7
+    },
+    {
+     "name": "sushi roll",
+     "quantity": 3,
+     "unit": "wt. oz",
+     "kcal": 140.4,
+     "protein": 3.1,
+     "carbs": 15.3,
+     "fat": 7.6
+    },
+    {
+     "name": "rice",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 102.7,
+     "protein": 2.1,
+     "carbs": 22.3,
+     "fat": 0.2
+    },
+    {
+     "name": "grilled salmon",
+     "quantity": 0.4,
+     "unit": "fillet",
+     "kcal": 187.0,
+     "protein": 20.1,
+     "carbs": 0.0,
+     "fat": 11.2
+    },
+    {
+     "name": "tempura vegetables",
+     "quantity": 3,
+     "unit": "piece",
+     "kcal": 158.0,
+     "protein": 2.2,
+     "carbs": 12.7,
+     "fat": 11.5
+    },
+    {
+     "name": "croquette",
+     "quantity": 2,
+     "unit": "croquette",
+     "kcal": 201.5,
+     "protein": 9.1,
+     "carbs": 15.6,
+     "fat": 11.4
+    },
+    {
+     "name": "spinach salad",
+     "quantity": 0.1,
+     "unit": "cup",
+     "kcal": 13.4,
+     "protein": 0.7,
+     "carbs": 0.3,
+     "fat": 1.0
+    },
+    {
+     "name": "tamago",
+     "quantity": 1,
+     "unit": "wt. oz",
+     "kcal": 38.3,
+     "protein": 2.8,
+     "carbs": 1.5,
+     "fat": 2.2
+    },
+    {
+     "name": "beef roll",
+     "quantity": 2,
+     "unit": "oz",
+     "kcal": 82.6,
+     "protein": 5.9,
+     "carbs": 3.6,
+     "fat": 4.3
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00872",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00872.jpg",
+   "category": "напиток",
+   "title_ru": "Манговый смузи",
+   "meal_name": "Mango Smoothie",
+   "note": "Непрозрачный стакан: объём и состав выводятся только из вида и цвета.",
+   "totals": {
+    "kcal": 279.7,
+    "protein": 4.5,
+    "carbs": 68.4,
+    "fat": 1.5
+   },
+   "atwater_kcal": 305.1,
+   "ingredients": [
+    {
+     "name": "mango",
+     "quantity": 1,
+     "unit": "cup pieces",
+     "kcal": 99.0,
+     "protein": 1.4,
+     "carbs": 24.7,
+     "fat": 0.6
+    },
+    {
+     "name": "pineapple juice",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 66.2,
+     "protein": 0.5,
+     "carbs": 16.1,
+     "fat": 0.1
+    },
+    {
+     "name": "passion fruit",
+     "quantity": 0.5,
+     "unit": "cup",
+     "kcal": 114.5,
+     "protein": 2.6,
+     "carbs": 27.6,
+     "fat": 0.8
+    },
+    {
+     "name": "ice",
+     "quantity": 1,
+     "unit": "oz",
+     "kcal": 0.0,
+     "protein": 0.0,
+     "carbs": 0.0,
+     "fat": 0.0
+    }
+   ]
+  },
+  {
+   "image_id": "fsb_00929",
+   "file": "data/benchmarks/food-scan-benchmark-dataset/fsb_images/fsb_00929.jpg",
+   "category": "снек",
+   "title_ru": "Микс орехов",
+   "meal_name": "Mixed Nuts",
+   "note": "Горсть орехов на столе поштучно: жёсткий тест на оценку мелких порций.",
+   "totals": {
+    "kcal": 165.6,
+    "protein": 4.5,
+    "carbs": 6.3,
+    "fat": 14.8
+   },
+   "atwater_kcal": 176.4,
+   "ingredients": [
+    {
+     "name": "almonds",
+     "quantity": 5,
+     "unit": "almond",
+     "kcal": 38.6,
+     "protein": 1.4,
+     "carbs": 1.4,
+     "fat": 3.4
+    },
+    {
+     "name": "cashews",
+     "quantity": 5,
+     "unit": "cashew",
+     "kcal": 45.1,
+     "protein": 1.2,
+     "carbs": 2.6,
+     "fat": 3.6
+    },
+    {
+     "name": "hazelnuts",
+     "quantity": 10,
+     "unit": "g",
+     "kcal": 64.6,
+     "protein": 1.5,
+     "carbs": 1.8,
+     "fat": 6.2
+    },
+    {
+     "name": "pistachios",
+     "quantity": 1,
+     "unit": "kernel",
+     "kcal": 4.0,
+     "protein": 0.1,
+     "carbs": 0.2,
+     "fat": 0.3
+    },
+    {
+     "name": "walnuts",
+     "quantity": 1,
+     "unit": "walnut half",
+     "kcal": 13.3,
+     "protein": 0.3,
+     "carbs": 0.3,
+     "fat": 1.3
+    }
+   ]
+  }
+ ]
+}
