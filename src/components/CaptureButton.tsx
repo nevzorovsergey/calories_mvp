@@ -15,9 +15,7 @@ import {
   Popup,
   Preloader,
 } from "konsta/react";
-import { compressImage, type CompressedImage } from "@/lib/image";
-import { createClient } from "@/lib/supabase/client";
-import { getDefaultModel } from "@config/models";
+import { preparePhoto, type PreparedPhoto } from "@/lib/image";
 
 interface MealResponse {
   meal_id?: string;
@@ -26,42 +24,92 @@ interface MealResponse {
 }
 
 /**
- * Кладёт оригинал в Storage под `<uid>/originals/<uuid>` (политики бакета
- * `meals` разрешают запись в свою папку) и возвращает путь. Оригинал нужен для
- * будущих экспериментов, но не критичен (§5.2) — если не залился, распознавание
- * продолжаем без него.
+ * Сколько ждём хоть какого-то движения байтов, прежде чем признать отправку
+ * зависшей. Диагностика 2026-07-28 показала, что тело запроса умеет молча
+ * замирать на середине: preflight проходит, а дальше тишина. Без сторожа это
+ * выглядит как вечный спиннер — ровно та жалоба, с которой всё началось.
  */
-async function uploadOriginal(file: File): Promise<string | null> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+const STALL_MS = 20_000;
 
-  const path = `${user.id}/originals/${crypto.randomUUID()}`;
-  const { error } = await supabase.storage
-    .from("meals")
-    .upload(path, file, { contentType: file.type || "image/jpeg" });
-  if (error) {
-    console.error("original upload failed", error);
-    return null;
-  }
-  return path;
+/** Потолок на всю отправку целиком, включая ответ сервера. */
+const CEILING_MS = 120_000;
+
+interface UploadOutcome {
+  status: number;
+  text: string;
+}
+
+/**
+ * Отправка через XMLHttpRequest, а не fetch: fetch не отдаёт прогресс
+ * отправки, а на медленном мобильном канале разница между «идёт, 40%» и
+ * «встало» — это и есть вся полезная информация.
+ */
+function sendPhoto(
+  form: FormData,
+  onProgress: (percent: number) => void,
+  register: (xhr: XMLHttpRequest) => void,
+): Promise<UploadOutcome> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    register(xhr);
+
+    let stall: ReturnType<typeof setTimeout> | undefined;
+    const arm = () => {
+      clearTimeout(stall);
+      stall = setTimeout(() => {
+        xhr.abort();
+        reject(new Error("связь пропала на середине отправки"));
+      }, STALL_MS);
+    };
+    const disarm = () => clearTimeout(stall);
+
+    xhr.upload.addEventListener("progress", (event) => {
+      arm();
+      if (event.lengthComputable) {
+        onProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    });
+    // Тело ушло целиком: дальше сервер кладёт кадры в Storage и заводит приём
+    // пищи, событий прогресса больше не будет — сторож простоя тут только
+    // помешает, за эту фазу отвечает общий потолок.
+    xhr.upload.addEventListener("load", () => {
+      disarm();
+      onProgress(100);
+    });
+
+    xhr.addEventListener("load", () => {
+      disarm();
+      resolve({ status: xhr.status, text: xhr.responseText });
+    });
+    xhr.addEventListener("error", () => {
+      disarm();
+      reject(new Error("сеть недоступна"));
+    });
+    xhr.addEventListener("abort", disarm);
+    xhr.addEventListener("timeout", () => {
+      disarm();
+      reject(new Error(`сервер не ответил за ${Math.round(CEILING_MS / 1000)} с`));
+    });
+
+    xhr.timeout = CEILING_MS;
+    xhr.open("POST", "/api/meals");
+    arm();
+    xhr.send(form);
+  });
 }
 
 /**
  * Ошибки платформы (413 на большом теле, 504 на долгом ответе) приходят
- * HTML-страницей, а не JSON. Без этой обёртки `response.json()` падал, и Safari
- * показывал пользователю «The string did not match the expected pattern».
+ * HTML-страницей, а не JSON. Без этой обёртки разбор падал, и Safari показывал
+ * пользователю «The string did not match the expected pattern».
  */
-async function readJson(response: Response): Promise<MealResponse> {
-  const text = await response.text();
+function readJson({ status, text }: UploadOutcome): MealResponse {
   try {
     return JSON.parse(text) as MealResponse;
   } catch {
-    if (response.status === 413) throw new Error("фото слишком большое для сервера");
-    if (response.status === 504) throw new Error("сервер не ответил вовремя (504)");
-    throw new Error(`сервер вернул ${response.status} без JSON`);
+    if (status === 413) throw new Error("фото слишком большое для сервера");
+    if (status === 504) throw new Error("сервер не ответил вовремя (504)");
+    throw new Error(`сервер вернул ${status} без JSON`);
   }
 }
 
@@ -78,19 +126,22 @@ async function readJson(response: Response): Promise<MealResponse> {
  * положить в кадр банковскую карту — именно карту, а не монету: её размер
  * стандартизирован ISO и одинаков во всём мире, тогда как монету модель должна
  * сначала опознать по стране и номиналу (§7.5.3).
+ *
+ * Пользователь ждёт только отправку фотографии. Распознавание идёт на сервере
+ * и переживает закрытие экрана (§5.1), поэтому здесь нет и не должно быть
+ * ожидания модели — только загрузка с честными процентами.
  */
 export default function CaptureButton({ mealDate }: { mealDate: string }) {
   const router = useRouter();
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
+  const requestRef = useRef<XMLHttpRequest | null>(null);
   const [sourcePicker, setSourcePicker] = useState(false);
-  const [original, setOriginal] = useState<File | null>(null);
-  const [compressed, setCompressed] = useState<CompressedImage | null>(null);
+  const [photo, setPhoto] = useState<PreparedPhoto | null>(null);
   const [hint, setHint] = useState("");
   const [phase, setPhase] = useState<"idle" | "preview" | "sending">("idle");
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
-  const model = getDefaultModel();
 
   async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -98,9 +149,8 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
     if (!file) return;
     setError(null);
     try {
-      const result = await compressImage(file);
-      setOriginal(file);
-      setCompressed(result);
+      const result = await preparePhoto(file);
+      setPhoto(result);
       setPhase("preview");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -118,49 +168,50 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
   }
 
   function reset() {
-    if (compressed) URL.revokeObjectURL(compressed.previewUrl);
-    setOriginal(null);
-    setCompressed(null);
+    requestRef.current?.abort();
+    requestRef.current = null;
+    if (photo) URL.revokeObjectURL(photo.previewUrl);
+    setPhoto(null);
     setHint("");
+    setProgress(0);
     setPhase("idle");
   }
 
-  async function recognize() {
-    if (!compressed) return;
+  async function submit() {
+    if (!photo) return;
     setPhase("sending");
+    setProgress(0);
     setError(null);
 
     try {
-      // Оригинал уходит в Storage напрямую из браузера, а в API — только путь:
-      // снимок с телефона легко весит 5+ МБ, а тело запроса к функции Vercel
-      // ограничено 4,5 МБ, и превышение приходит HTML-страницей 413, до кода
-      // роута дело не доходит. В API остаётся только сжатый кадр (~150 КБ).
-      const originalPath = original ? await uploadOriginal(original) : null;
-
       const form = new FormData();
-      form.append("sent", compressed.blob, "sent.jpg");
-      if (originalPath) form.append("original_path", originalPath);
+      form.append("sent", photo.sent.blob, "sent.jpg");
+      if (photo.archive) {
+        form.append("archive", photo.archive.blob, "archive.jpg");
+      }
       form.append("meal_date", mealDate);
-      form.append("photo_width", String(compressed.width));
-      form.append("photo_height", String(compressed.height));
+      form.append("photo_width", String(photo.sent.width));
+      form.append("photo_height", String(photo.sent.height));
       if (hint.trim()) form.append("user_hint", hint.trim());
 
-      const response = await fetch("/api/meals", { method: "POST", body: form });
-      const data = await readJson(response);
+      const outcome = await sendPhoto(form, setProgress, (xhr) => {
+        requestRef.current = xhr;
+      });
+      requestRef.current = null;
+      const data = readJson(outcome);
 
-      if (!response.ok) {
-        throw new Error(data.error ?? `Ошибка сервера (${response.status})`);
-      }
-      if (data.status === "failed") {
-        // FR-LLM-1: показываем «Не получилось распознать» с понятными действиями.
-        router.push(`/meal/${data.meal_id}`);
-        return;
+      if (outcome.status < 200 || outcome.status >= 300) {
+        throw new Error(data.error ?? `Ошибка сервера (${outcome.status})`);
       }
 
+      // Фотография принята. Распознавание уже идёт на сервере — экран приёма
+      // пищи покажет его ход и не требует, чтобы страница оставалась открытой.
       reset();
-      router.push(`/meal/${data.meal_id}/edit`);
+      router.push(`/meal/${data.meal_id}`);
     } catch (err) {
+      requestRef.current = null;
       setPhase("preview");
+      setProgress(0);
       setError(
         err instanceof Error
           ? `Не удалось отправить фото: ${err.message}`
@@ -220,9 +271,9 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
         <div className="mx-auto flex h-full max-w-screen-sm flex-col overflow-y-auto p-4">
           <h2 className="mb-3 text-section font-semibold">Проверьте кадр</h2>
 
-          {compressed && (
+          {photo && (
             <img
-              src={compressed.previewUrl}
+              src={photo.previewUrl}
               alt="Предпросмотр снимка"
               className="mb-3 w-full rounded-2xl object-cover"
             />
@@ -258,20 +309,32 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
           {phase === "sending" ? (
             <div className="flex flex-col items-center gap-2 py-4 text-center">
               <Preloader />
-              {/* FR-CAP-5: прозрачность важна для эксперимента — показываем,
-                  какая модель вызывается и сколько это обычно занимает. */}
-              <p className="text-body">Распознаём моделью «{model.label}»</p>
-              <p className="text-caption text-ink-secondary">
-                Обычно занимает 10–40 секунд. Не закрывайте экран.
-              </p>
+              {/* FR-CAP-5: показываем ровно тот шаг, который идёт сейчас.
+                  Раньше здесь висело «Распознаём моделью …» с самого начала —
+                  и когда вставала отправка, надпись уводила в сторону модели,
+                  которую ещё даже не вызывали. */}
+              {progress < 100 ? (
+                <>
+                  <p className="text-body" role="status">
+                    Отправляем фото… {progress}%
+                  </p>
+                  <p className="text-caption text-ink-secondary">
+                    Не закрывайте экран, пока фото не уйдёт.
+                  </p>
+                </>
+              ) : (
+                <p className="text-body" role="status">
+                  Сохраняем…
+                </p>
+              )}
             </div>
           ) : (
             <div className="flex gap-2">
               <Button outline onClick={reset} className="tap-target">
                 Отмена
               </Button>
-              <Button onClick={recognize} className="tap-target">
-                Распознать
+              <Button onClick={submit} className="tap-target">
+                Отправить
               </Button>
             </div>
           )}

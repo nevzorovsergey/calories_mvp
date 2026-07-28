@@ -62,8 +62,10 @@ export async function deleteTestUser(userId: string): Promise<void> {
   const paths = (meals ?? [])
     .flatMap((m) => [m.photo_sent_path, m.photo_original_path])
     .filter((p): p is string => !!p);
-  // Оригиналы клиент заливает до создания приёма пищи, поэтому в тестах с
-  // подменённым маршрутом они не попадают ни в одну строку meals.
+  // Наследие прежней схемы: оригинал заливался из браузера напрямую в Storage
+  // до создания приёма пищи и в тестах с подменённым маршрутом не попадал ни в
+  // одну строку meals. Сейчас архивный кадр кладёт сервер рядом с `sent`, но
+  // уборка старых папок пусть остаётся — она дешёвая.
   const { data: originals } = await db.storage.from("meals").list(`${userId}/originals`);
   paths.push(...(originals ?? []).map((o) => `${userId}/originals/${o.name}`));
   if (paths.length > 0) await db.storage.from("meals").remove(paths);
@@ -110,6 +112,40 @@ export async function seedCatalog(): Promise<number[]> {
     );
   }
   return ids;
+}
+
+/**
+ * Приём пищи, который сервер уже принял, но ещё не распознал (§5.1).
+ *
+ * `ageMs` сдвигает `created_at` в прошлое: именно по нему экран решает, идёт
+ * обработка или зависла, так что состаренная строка — единственный способ
+ * проверить ветку «не завершилось», не выжидая три минуты в тесте.
+ */
+export async function seedProcessingMeal(
+  userId: string,
+  opts: { ageMs?: number } = {},
+): Promise<{ mealId: string }> {
+  const db = admin();
+  const mealId = randomUUID();
+  const bytes = readFileSync(join(process.cwd(), "fixtures", "sent-dish-4.jpg"));
+  const sentPath = `${userId}/${mealId}/sent.jpg`;
+  await db.storage.from("meals").upload(sentPath, bytes, { contentType: "image/jpeg" });
+
+  const createdAt = new Date(Date.now() - (opts.ageMs ?? 0)).toISOString();
+  await db.from("meals").insert({
+    id: mealId,
+    user_id: userId,
+    meal_date: new Date().toISOString().slice(0, 10),
+    photo_sent_path: sentPath,
+    photo_sha256: createHash("sha256").update(bytes).digest("hex"),
+    photo_width: 1024,
+    photo_height: 768,
+    status: "processing",
+    created_at: createdAt,
+    eaten_at: createdAt,
+  });
+
+  return { mealId };
 }
 
 export interface SeededMeal {

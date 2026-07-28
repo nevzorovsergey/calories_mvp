@@ -13,12 +13,20 @@ import ModelRerun from "@/components/ModelRerun";
 import DeleteMealButton from "@/components/DeleteMealButton";
 import ModelProposal from "@/components/ModelProposal";
 import ComparisonTable from "@/components/ComparisonTable";
-import { getEnabledModels } from "@config/models";
+import RecognitionWatcher from "@/components/RecognitionWatcher";
+import { getDefaultModel, getEnabledModels } from "@config/models";
 
 /**
  * Детальный экран приёма пищи (§11.6) и сравнение моделей (§11.7).
  */
 export const dynamic = "force-dynamic";
+
+/**
+ * После этого срока `processing` считается зависшим и показывается как
+ * неудача с кнопкой «Повторить». Три минуты — это с большим запасом больше
+ * обычных 10–40 с на модель и заведомо меньше человеческого терпения.
+ */
+const STALE_AFTER_MS = 3 * 60 * 1000;
 
 export default async function MealPage({
   params,
@@ -35,7 +43,7 @@ export default async function MealPage({
   const { data: meal } = await supabase
     .from("meals")
     .select(
-      "id, meal_date, eaten_at, status, dish_name_ru, photo_sent_path, user_hint, primary_recognition_id",
+      "id, meal_date, eaten_at, created_at, status, dish_name_ru, photo_sent_path, user_hint, primary_recognition_id",
     )
     .eq("id", id)
     .single();
@@ -100,6 +108,57 @@ export default async function MealPage({
       promptVersion: m.promptVersion,
     }));
 
+  // Фотография принята, распознавание идёт на сервере и переживёт закрытие
+  // экрана (§5.1). Показываем ход и опрашиваем статус, пока не истечёт срок:
+  // `after()` не переживает передеплой, поэтому у ожидания обязан быть предел,
+  // иначе «Распознаём…» рискует остаться навсегда.
+  const stuckFor = Date.now() - new Date(meal.created_at).getTime();
+  const stalled = stuckFor >= STALE_AFTER_MS;
+
+  if (meal.status === "processing" && !stalled) {
+    const model = getDefaultModel();
+    return (
+      <div className="px-4 pt-4">
+        <header className="mb-3">
+          <BackLink href={dayHref} label={dayLabel} />
+        </header>
+
+        {photoUrl && (
+          <img
+            src={photoUrl}
+            alt="Фото блюда"
+            className="mb-4 w-full rounded-2xl object-cover"
+          />
+        )}
+
+        {/* aria-live, а не role="status" на самом заголовке: роль подменила бы
+            heading, и экран потерял бы точку входа в навигации по заголовкам. */}
+        <div className="rounded-2xl bg-card p-4" aria-live="polite">
+          <h1 className="mb-1 text-section font-semibold">Распознаём состав</h1>
+          {/* FR-CAP-5: какая модель работает — видно, это часть эксперимента. */}
+          <p className="mb-3 text-caption text-ink-secondary">
+            Модель «{model.label}» разбирает фотографию, обычно это 10–40 секунд.
+            Экран можно закрыть — результат появится в ленте дня сам.
+          </p>
+          <div className="flex flex-col gap-2">
+            <span className="skeleton h-4 w-2/3" aria-hidden />
+            <span className="skeleton h-4 w-1/2" aria-hidden />
+            <span className="skeleton h-4 w-3/5" aria-hidden />
+          </div>
+        </div>
+
+        <RecognitionWatcher
+          mealId={id}
+          giveUpAfterMs={Math.max(STALE_AFTER_MS - stuckFor, 0)}
+        />
+
+        <div className="mt-4">
+          <DeleteMealButton mealId={id} />
+        </div>
+      </div>
+    );
+  }
+
   if (meal.status === "failed" || okRecognitions.length === 0) {
     const lastError = (recognitions ?? []).at(-1)?.error_text;
     return (
@@ -112,10 +171,15 @@ export default async function MealPage({
           <img src={photoUrl} alt="Фото блюда" className="mb-4 w-full rounded-2xl" />
         )}
         <div className="rounded-2xl bg-card p-4">
-          <h1 className="mb-1 text-section font-semibold">Не получилось распознать</h1>
+          <h1 className="mb-1 text-section font-semibold">
+            {meal.status === "processing"
+              ? "Распознавание не завершилось"
+              : "Не получилось распознать"}
+          </h1>
           <p className="mb-3 text-caption text-ink-secondary">
-            Модель не ответила или вернула непонятный результат. Можно повторить
-            другой моделью или ввести состав руками — фотография сохранена.
+            {meal.status === "processing"
+              ? "Обработка прервалась и не дошла до конца. Фотография сохранена — можно повторить или ввести состав руками."
+              : "Модель не ответила или вернула непонятный результат. Можно повторить другой моделью или ввести состав руками — фотография сохранена."}
           </p>
           {lastError && (
             <p className="mb-3 text-micro text-ink-secondary">Причина: {lastError}</p>

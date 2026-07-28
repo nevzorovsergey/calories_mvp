@@ -29,13 +29,22 @@ test.describe("Живое распознавание", () => {
     await page.setInputFiles('input[data-source="camera"]', PHOTO);
     await expect(page.getByRole("heading", { name: "Проверьте кадр" })).toBeVisible();
     await fillReact(page.getByLabel(/Подсказка/), "завтрак: бекон, яичница и тост");
-    await clickReact(page.getByRole("button", { name: "Распознать" }));
+    await clickReact(page.getByRole("button", { name: "Отправить" }));
 
-    await expect(page.getByText(/Распознаём моделью/)).toBeVisible();
-    await page.waitForURL(/\/meal\/[0-9a-f-]+\/edit/, { timeout: 150_000 });
+    // Ждём только отправку — дальше экран приёма пищи сам дождётся модели.
+    await expect(page.getByText(/Отправляем фото|Сохраняем/)).toBeVisible();
+    await page.waitForURL(/\/meal\/[0-9a-f-]+$/, { timeout: 60_000 });
+
+    const mealId = page.url().match(/\/meal\/([0-9a-f-]+)$/)![1];
+
+    // Экран сам опрашивает статус и перерисовывается, когда фоновая обработка
+    // закончится (§5.1) — проверяем именно это, а не только запись в БД.
+    await expect(
+      page.getByRole("heading", { name: "Распознаём состав" }),
+    ).toBeHidden({ timeout: 150_000 });
+
+    await page.goto(`/meal/${mealId}/edit`);
     await waitForHydration(page);
-
-    const mealId = page.url().match(/\/meal\/([0-9a-f-]+)\/edit/)![1];
 
     // Модель должна была разобрать блюдо на несколько позиций с весами.
     const rows = page.getByRole("list", { name: "Ингредиенты" }).getByRole("listitem");

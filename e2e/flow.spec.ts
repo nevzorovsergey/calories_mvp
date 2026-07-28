@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { test, expect } from "./helpers/fixtures";
-import { admin, seedRecognisedMeal } from "./helpers/db";
+import { admin, seedProcessingMeal, seedRecognisedMeal } from "./helpers/db";
 import { clickReact, fillReact, waitForHydration } from "./helpers/actions";
 
 /**
@@ -14,8 +14,8 @@ import { clickReact, fillReact, waitForHydration } from "./helpers/actions";
 
 const PHOTO = join(process.cwd(), "fixtures", "sent-dish-4.jpg");
 
-test.describe("Съёмка и распознавание", () => {
-  test("предпросмотр, подсказка и переход на правку", async ({
+test.describe("Съёмка и отправка", () => {
+  test("предпросмотр, подсказка и переход на экран приёма пищи", async ({
     page,
     user,
     signIn,
@@ -27,13 +27,13 @@ test.describe("Съёмка и распознавание", () => {
     await page.route("**/api/meals", async (route) => {
       if (route.request().method() !== "POST") return route.fallback();
       await new Promise((r) => setTimeout(r, 300)); // чтобы увидеть прогресс
+      // Приём пищи заведён, распознавание пошло в фон (§5.1).
       await route.fulfill({
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
           meal_id: meal.mealId,
-          status: "ready",
-          recognition_id: meal.recognitionId,
+          status: "processing",
           model: { id: "openai/gpt-5.1", label: "GPT-5.1" },
         }),
       });
@@ -48,13 +48,46 @@ test.describe("Съёмка и распознавание", () => {
     await expect(page.getByText(/Положите рядом банковскую карту/)).toBeVisible();
 
     await fillReact(page.getByLabel(/Подсказка/), "завтрак, жарил на масле");
-    await clickReact(page.getByRole("button", { name: "Распознать" }));
+    await clickReact(page.getByRole("button", { name: "Отправить" }));
 
-    // FR-CAP-5: во время распознавания видно, какая модель вызывается.
-    await expect(page.getByText(/Распознаём моделью «GPT-5.1»/)).toBeVisible();
+    // Пользователь ждёт отправку фотографии, а не модель: надпись говорит про
+    // тот шаг, который идёт на самом деле.
+    await expect(page.getByText(/Отправляем фото|Сохраняем/)).toBeVisible();
 
-    await page.waitForURL(`**/meal/${meal.mealId}/edit`, { timeout: 30_000 });
-    await expect(page.getByLabel("Блюдо")).toHaveValue("Тост с беконом и яичницей");
+    // Сид отдаёт уже готовый приём пищи, поэтому экран сразу показывает состав.
+    await page.waitForURL(`**/meal/${meal.mealId}`, { timeout: 30_000 });
+    await expect(
+      page.getByRole("heading", { name: "Тост с беконом и яичницей" }),
+    ).toBeVisible();
+  });
+
+  test("пока идёт распознавание, экран показывает ход и не держит пользователя", async ({
+    page,
+    user,
+    signIn,
+  }) => {
+    const { mealId } = await seedProcessingMeal(user.id);
+    await signIn(user);
+    await page.goto(`/meal/${mealId}`);
+
+    await expect(page.getByRole("heading", { name: "Распознаём состав" })).toBeVisible();
+    await expect(page.getByText(/Экран можно закрыть/)).toBeVisible();
+  });
+
+  test("зависшее распознавание показывается как неудача, а не как вечный спиннер", async ({
+    page,
+    user,
+    signIn,
+  }) => {
+    // Старше порога в три минуты — значит `after()` не довёл дело до конца.
+    const { mealId } = await seedProcessingMeal(user.id, { ageMs: 5 * 60 * 1000 });
+    await signIn(user);
+    await page.goto(`/meal/${mealId}`);
+
+    await expect(
+      page.getByRole("heading", { name: "Распознавание не завершилось" }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Повторить" })).toBeVisible();
   });
 
   test("отмена на предпросмотре возвращает на «Сегодня»", async ({ page, user, signIn }) => {
@@ -94,7 +127,7 @@ test.describe("Съёмка и распознавание", () => {
     );
 
     // Кнопка должна дёргать именно галерейный инпут, а не камеру — иначе
-    // доработка ничего не меняет. Дальше путь общий: предпросмотр и «Распознать».
+    // доработка ничего не меняет. Дальше путь общий: предпросмотр и «Отправить».
     const chooser = page.waitForEvent("filechooser");
     await clickReact(sheet.getByRole("button", { name: "Выбрать из галереи" }));
     const fileChooser = await chooser;
