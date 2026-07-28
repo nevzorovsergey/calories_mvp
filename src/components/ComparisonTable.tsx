@@ -28,6 +28,12 @@ export interface ComparisonUserItem {
   ingredient_id: number | null;
 }
 
+/** Название ингредиента: не шире половины экрана, переносится по словам. */
+const INGREDIENT_CELL = "block max-w-[50vw] hyphens-auto break-words";
+
+/** Шапка колонки модели: фиксированная узкая ширина, перенос на 2+ строки. */
+const MODEL_HEAD_CELL = "block w-16 text-micro leading-tight break-words";
+
 function keyOf(item: { name_ru: string; ingredient_id: number | null }): string {
   return item.ingredient_id !== null
     ? `id:${item.ingredient_id}`
@@ -176,34 +182,41 @@ export default function ComparisonTable({
         Состав по моделям
       </h3>
       <div className="overflow-x-auto rounded-2xl bg-card">
-        <table className="w-full min-w-max text-caption">
+        {/*
+          Колонка ингредиента занимает не больше половины экрана и переносится
+          по словам, колонки моделей — фиксированной ширины (§13.10): иначе
+          длинное название съедает всю ширину и сравнения не видно.
+        */}
+        <table className="w-max min-w-full text-caption">
           <thead>
             <tr className="border-b border-separator">
-              <th className="sticky left-0 bg-card px-3 py-2 text-left font-normal text-ink-secondary">
-                Ингредиент
+              <th className="sticky left-0 z-10 bg-card px-3 py-2 text-left align-bottom font-normal text-ink-secondary">
+                <span className={INGREDIENT_CELL}>Ингредиент</span>
               </th>
               {recognitions.map((r) => (
-                <th key={r.id} className="px-3 py-2 text-right font-medium">
-                  {r.model_label}
+                <th key={r.id} className="px-2 py-2 text-right align-bottom font-medium">
+                  <span className={MODEL_HEAD_CELL}>{r.model_label}</span>
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-medium">Ваша версия</th>
+              <th className="px-2 py-2 text-right align-bottom font-medium">
+                <span className={MODEL_HEAD_CELL}>Ваша версия</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {buildIngredientRows(recognitions, userItems).map((row) => (
               <tr key={row.key} className="border-b border-separator last:border-0">
-                <th className="sticky left-0 bg-card px-3 py-2 text-left font-normal">
-                  {row.label}
+                <th className="sticky left-0 z-10 bg-card px-3 py-2 text-left font-normal">
+                  <span className={INGREDIENT_CELL}>{row.label}</span>
                 </th>
                 {recognitions.map((r) => (
-                  <td key={r.id} className="tnum px-3 py-2 text-right">
+                  <td key={r.id} className="tnum px-2 py-2 text-right whitespace-nowrap">
                     {row.byRecognition[r.id] !== undefined
                       ? `${formatNumber(row.byRecognition[r.id], 0)} г`
                       : "—"}
                   </td>
                 ))}
-                <td className="tnum px-3 py-2 text-right font-semibold">
+                <td className="tnum px-2 py-2 text-right font-semibold whitespace-nowrap">
                   {row.userWeight !== undefined
                     ? `${formatNumber(row.userWeight, 0)} г`
                     : "—"}
