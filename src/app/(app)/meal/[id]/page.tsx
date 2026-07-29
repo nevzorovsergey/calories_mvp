@@ -219,8 +219,7 @@ export default async function MealPage({
         {meal.dish_name_ru ?? "Без названия"}
       </h1>
       <p className="mb-4 text-caption text-ink-secondary">
-        {formatMealDate(meal.meal_date, today)}, {formatTime(meal.eaten_at)} ·{" "}
-        {formatNumber(totalWeight, 0)} г
+        {formatMealDate(meal.meal_date, today)}, {formatTime(meal.eaten_at)}
         {untouched && " · состав как предложила модель"}
       </p>
 
@@ -228,6 +227,7 @@ export default async function MealPage({
         totals={totals}
         totalWeightG={totalWeight}
         estimated={untouched}
+        showTotalWeight
       />
 
       <h2 className="mt-6 mb-2 text-caption text-ink-secondary uppercase">Состав</h2>

@@ -125,12 +125,20 @@ test.describe("Экраны открываются", () => {
       page.getByText("на 100 г: 541 ккал · Б 37 · Ж 42 · У 1,4"),
     ).toBeVisible();
 
-    // Итоговая панель переключается на 100 г блюда: 664 ккал на 190 г → 350.
+    // Общий вес приёма — крупно в итоговой панели рядом с калорийностью,
+    // а не мелкой серой строкой под заголовком.
     const panel = page.getByRole("group", { name: "Итог по нутриентам" });
+    await expect(panel.getByText("Вес", { exact: true })).toBeVisible();
+    await expect(panel).toContainText("190");
+    await expect(page.getByText(/\d{2}:\d{2} · 190 г/)).toHaveCount(0);
+
+    // Итоговая панель переключается на 100 г блюда: 664 ккал на 190 г → 350.
     await expect(panel).toContainText("664");
     await clickReact(panel.getByRole("button", { name: "100 г" }));
     await expect(panel).toContainText("Калорийность 100 г");
     await expect(panel).toContainText("350");
+    // В пересчёте на 100 г вес не показываем — он там равен 100 г по определению.
+    await expect(panel.getByText("Вес", { exact: true })).toBeHidden();
 
     // Возврат на день приёма пищи — кнопкой, а не системным жестом «назад».
     await clickReact(page.locator('a[href^="/today?date="]'));

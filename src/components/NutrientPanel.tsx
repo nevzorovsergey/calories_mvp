@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { NUTRIENTS, type NutrientGroup } from "@config/nutrients";
-import { formatNutrient } from "@/lib/format";
+import { formatNumber, formatNutrient } from "@/lib/format";
 
 /**
  * Итоговая нутриентная панель (FR-HOME-1, FR-EDIT-7).
@@ -31,16 +31,25 @@ export default function NutrientPanel({
   totalWeightG,
   /** true — итог целиком построен на оценке модели, показываем это цветом (§13.6). */
   estimated = false,
+  /**
+   * Показать общий вес крупно, рядом с калорийностью. На экране правки его не
+   * включаем: там прямо над панелью стоит редактируемое поле «Общий вес, г»,
+   * и то же число в двух местах только путает.
+   */
+  showTotalWeight = false,
 }: {
   totals: NutrientTotals;
   totalWeightG?: number;
   estimated?: boolean;
+  showTotalWeight?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [per100, setPer100] = useState(false);
 
   const canPer100 = typeof totalWeightG === "number" && totalWeightG > 0;
   const showPer100 = per100 && canPer100;
+  /** В режиме «100 г» вес показывать нечего: он там по определению равен 100 г. */
+  const showWeight = showTotalWeight && canPer100 && !showPer100;
   const factor = showPer100 ? 100 / (totalWeightG as number) : 1;
   const amountOf = (code: string) => (totals[code] ?? 0) * factor;
 
@@ -82,17 +91,40 @@ export default function NutrientPanel({
       )}
 
       <div className="flex items-baseline justify-between">
-        <span className="text-caption text-ink-secondary">
-          {showPer100 ? "Калорийность 100 г" : "Калорийность"}
-        </span>
-        <span
-          className={`tnum text-title font-semibold ${estimated ? "text-warning" : ""}`}
-        >
-          {estimated && <span aria-hidden>≈</span>}
-          {formatNutrient(kcal)}
-          <span className="ml-1 text-caption font-normal text-ink-secondary">
-            ккал
+        {showWeight ? (
+          <span>
+            <span
+              className={`tnum block text-title font-semibold ${estimated ? "text-warning" : ""}`}
+            >
+              {estimated && <span aria-hidden>≈</span>}
+              {formatNumber(totalWeightG as number, 0)}
+              <span className="ml-1 text-caption font-normal text-ink-secondary">
+                г
+              </span>
+            </span>
+            <span className="block text-caption text-ink-secondary">Вес</span>
           </span>
+        ) : (
+          <span className="text-caption text-ink-secondary">
+            {showPer100 ? "Калорийность 100 г" : "Калорийность"}
+          </span>
+        )}
+
+        <span className={showWeight ? "text-right" : ""}>
+          <span
+            className={`tnum block text-title font-semibold ${estimated ? "text-warning" : ""}`}
+          >
+            {estimated && <span aria-hidden>≈</span>}
+            {formatNutrient(kcal)}
+            <span className="ml-1 text-caption font-normal text-ink-secondary">
+              ккал
+            </span>
+          </span>
+          {showWeight && (
+            <span className="block text-caption text-ink-secondary">
+              Калорийность
+            </span>
+          )}
         </span>
       </div>
 
