@@ -33,7 +33,8 @@ export interface MealRow {
   eaten_at: string;
   status: string;
   dish_name_ru: string | null;
-  photo_sent_path: string;
+  /** null — приём пищи добавлен по справочнику, фотографии у него нет (0006). */
+  photo_sent_path: string | null;
   user_hint: string | null;
   primary_recognition_id: string | null;
 }
@@ -169,7 +170,9 @@ export async function getDayMeals(
     summaries.push({
       ...meal,
       kcal: totals.energy_kcal ?? 0,
-      thumbUrl: thumbs.get(meal.photo_sent_path) ?? null,
+      thumbUrl: meal.photo_sent_path
+        ? (thumbs.get(meal.photo_sent_path) ?? null)
+        : null,
       untouched: mealItems.every((i) => i.origin === "model_kept"),
     });
   }
@@ -180,10 +183,10 @@ export async function getDayMeals(
 
 export async function signThumbs(
   supabase: SupabaseClient,
-  paths: string[],
+  paths: (string | null)[],
 ): Promise<Map<string, string>> {
   const result = new Map<string, string>();
-  const unique = [...new Set(paths.filter(Boolean))];
+  const unique = [...new Set(paths.filter((p): p is string => !!p))];
   if (unique.length === 0) return result;
 
   const { data, error } = await supabase.storage
@@ -201,8 +204,11 @@ export async function signThumbs(
 
 export async function signPhoto(
   supabase: SupabaseClient,
-  path: string,
+  path: string | null,
 ): Promise<string | null> {
+  // У приёма пищи из справочника фотографии нет — запрашивать подпись пустого
+  // пути значит получить ошибку Storage там, где ответ известен заранее.
+  if (!path) return null;
   const { data } = await supabase.storage
     .from("meals")
     .createSignedUrl(path, 60 * 60);

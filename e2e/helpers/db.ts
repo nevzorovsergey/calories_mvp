@@ -115,6 +115,67 @@ export async function seedCatalog(): Promise<number[]> {
 }
 
 /**
+ * Готовое блюдо с порциями и раскладкой — как позиции FNDDS после импорта.
+ *
+ * Своё, а не настоящее из справочника: реальные 5432 блюда приезжают импортом,
+ * их состав и порции меняются со сменой версии дампа, и тест, завязанный на
+ * «Lasagna with meat», сломается от обновления данных, а не от поломки кода.
+ *
+ * Компоненты ссылаются на позиции из `seedCatalog`, поэтому она обязана
+ * отработать раньше — состав без привязки к справочнику проверял бы только
+ * ветку fallback.
+ */
+export async function seedCatalogDish(ingredientIds: number[]): Promise<number> {
+  const db = admin();
+
+  const { data: dish } = await db
+    .from("ingredients")
+    .upsert(
+      {
+        source: "manual",
+        source_id: "e2e-dish-lasagna",
+        name_en: "e2e test lasagna",
+        name_ru: "лазанья тестовая",
+        kind: "dish",
+        state: "cooked",
+      },
+      { onConflict: "source,source_id" },
+    )
+    .select("id")
+    .single();
+  if (!dish) throw new Error("не удалось завести тестовое блюдо");
+  const dishId = dish.id as number;
+
+  const { data: nutrients } = await db.from("nutrients").select("id, code");
+  const idByCode = new Map((nutrients ?? []).map((n) => [n.code as string, n.id as number]));
+  const per100g = { energy_kcal: 140, protein: 7.5, fat: 5, carbs: 16 } as const;
+  await db.from("ingredient_nutrients").upsert(
+    (Object.keys(per100g) as (keyof typeof per100g)[]).map((code) => ({
+      ingredient_id: dishId,
+      nutrient_id: idByCode.get(code)!,
+      amount_per_100g: per100g[code],
+    })),
+    { onConflict: "ingredient_id,nutrient_id" },
+  );
+
+  // Полная перезапись, а не upsert: у порций и компонентов нет естественного
+  // ключа, по которому повторный прогон отличил бы свою строку от прошлой.
+  await db.from("ingredient_portions").delete().eq("ingredient_id", dishId);
+  await db.from("ingredient_portions").insert([
+    { ingredient_id: dishId, seq: 1, label_en: "Quantity not specified", label_ru: "обычная порция", gram_weight: 250, is_default: true },
+    { ingredient_id: dishId, seq: 2, label_en: "1 piece", label_ru: "1 кусок", gram_weight: 206, is_default: false },
+  ]);
+
+  await db.from("ingredient_components").delete().eq("dish_id", dishId);
+  await db.from("ingredient_components").insert([
+    { dish_id: dishId, seq: 1, ingredient_id: ingredientIds[0] ?? null, name_en_fallback: "egg, fried", gram_weight: 60, share: 0.6 },
+    { dish_id: dishId, seq: 2, ingredient_id: ingredientIds[1] ?? null, name_en_fallback: "bacon, cooked", gram_weight: 40, share: 0.4 },
+  ]);
+
+  return dishId;
+}
+
+/**
  * Приём пищи, который сервер уже принял, но ещё не распознал (§5.1).
  *
  * `ageMs` сдвигает `created_at` в прошлое: именно по нему экран решает, идёт

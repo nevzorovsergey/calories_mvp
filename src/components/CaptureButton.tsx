@@ -259,6 +259,17 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
           <ActionsButton onClick={() => pickFrom(galleryRef)}>
             Выбрать из галереи
           </ActionsButton>
+          {/* Путь без фотографии живёт здесь же, а не отдельной кнопкой на
+              экране: выбор «как добавить еду» человек делает один раз и в одном
+              месте, а вторая плавающая кнопка спорила бы с первой за внимание. */}
+          <ActionsButton
+            onClick={() => {
+              setSourcePicker(false);
+              router.push(`/add?date=${mealDate}`);
+            }}
+          >
+            Найти в справочнике
+          </ActionsButton>
         </ActionsGroup>
         <ActionsGroup>
           <ActionsButton bold onClick={() => setSourcePicker(false)}>

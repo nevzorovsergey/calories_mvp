@@ -159,7 +159,13 @@ export default async function MealPage({
     );
   }
 
-  if (meal.status === "failed" || okRecognitions.length === 0) {
+  // Приём пищи из справочника распознавания не имел и иметь не может, поэтому
+  // «ни одного удачного распознавания» для него — норма, а не сбой. Без этой
+  // проверки он попадал в экран «Не получилось распознать» с предложением
+  // повторить моделью и обещанием, что «фотография сохранена».
+  const isManual = meal.status === "manual";
+
+  if (!isManual && (meal.status === "failed" || okRecognitions.length === 0)) {
     const lastError = (recognitions ?? []).at(-1)?.error_text;
     return (
       <div className="px-4 pt-4">
@@ -279,7 +285,9 @@ export default async function MealPage({
         >
           Редактировать
         </Link>
-        <ModelRerun mealId={id} models={availableModels} />
+        {/* Перепрогон гоняет модель по сохранённому снимку — у приёма пищи из
+            справочника его нет, и кнопка вела бы в заведомую ошибку. */}
+        {!isManual && <ModelRerun mealId={id} models={availableModels} />}
       </div>
 
       {primary && (

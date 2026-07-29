@@ -39,14 +39,17 @@ export default async function HistoryPage() {
     .order("eaten_at", { ascending: true })
     .limit(400);
 
+  // Приёмы пищи из справочника фотографии не имеют (0006), поэтому путь здесь
+  // и правда бывает пустым — в полоске превью за день их просто нет.
   const thumbs = await signThumbs(
     supabase,
-    (photos ?? []).map((p) => p.photo_sent_path as string),
+    (photos ?? []).map((p) => p.photo_sent_path as string | null),
   );
   const photosByDate = new Map<string, string[]>();
   for (const photo of photos ?? []) {
     const date = photo.meal_date as string;
-    const url = thumbs.get(photo.photo_sent_path as string);
+    const path = photo.photo_sent_path as string | null;
+    const url = path ? thumbs.get(path) : undefined;
     if (!url) continue;
     const list = photosByDate.get(date) ?? [];
     if (list.length < 8) list.push(url);

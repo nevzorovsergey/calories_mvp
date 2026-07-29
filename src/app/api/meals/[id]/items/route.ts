@@ -51,7 +51,7 @@ export async function PUT(
 
   const { data: meal, error: mealError } = await supabase
     .from("meals")
-    .select("id, primary_recognition_id")
+    .select("id, status, primary_recognition_id")
     .eq("id", mealId)
     .single();
   if (mealError || !meal) {
@@ -159,7 +159,14 @@ export async function PUT(
   if (payload.dish_name_ru !== undefined) {
     await supabase
       .from("meals")
-      .update({ dish_name_ru: payload.dish_name_ru, status: "ready" })
+      .update({
+        dish_name_ru: payload.dish_name_ru,
+        // 'manual' переживает сохранение состава: это метка происхождения приёма
+        // пищи (добавлен по справочнику, модель не участвовала), а не стадия
+        // обработки. Затерев её на 'ready', мы бы подмешали ручные приёмы пищи в
+        // выборки H1–H6, где они не значат ничего.
+        status: meal.status === "manual" ? "manual" : "ready",
+      })
       .eq("id", mealId);
   }
 
