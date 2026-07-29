@@ -7,8 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 /**
  * Поиск по справочнику с автодополнением (FR-EDIT-3, FR-EDIT-4).
  *
- * Ходит в RPC `search_ingredients` (миграция 0001): точное совпадение по
- * имени/алиасу, затем триграммы. Для `unmatched`-позиций это ещё и механизм
+ * Ходит в RPC `search_ingredients` (миграция 0007): точное совпадение по
+ * имени/алиасу, затем триграммы, с фильтром по `kind`. Для `unmatched`-позиций
+ * это ещё и механизм
  * самообучения справочника: выбранная пользователем привязка создаёт алиас
  * (FR-CAT-1) — этим занимается вызывающий компонент.
  */
@@ -18,6 +19,7 @@ export interface IngredientOption {
   name_ru: string;
   name_en: string;
   category: string | null;
+  kind: "ingredient" | "dish";
   match_status: string;
   match_score: number;
 }
@@ -26,11 +28,16 @@ export default function IngredientSearch({
   autoFocus = false,
   placeholder = "Найти в справочнике",
   initialQuery = "",
+  // Только сырьё по умолчанию: здесь чинят привязку распознанного ингредиента, и
+  // подсунуть вместо него готовое блюдо FNDDS значит записать в приём пищи не то,
+  // что человек ел. Экран добавления по справочнику передаёт оба вида.
+  kinds = ["ingredient"],
   onSelect,
 }: {
   autoFocus?: boolean;
   placeholder?: string;
   initialQuery?: string;
+  kinds?: ("ingredient" | "dish")[];
   onSelect: (option: IngredientOption) => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
@@ -38,6 +45,9 @@ export default function IngredientSearch({
   const [loading, setLoading] = useState(false);
   const supabase = useMemo(() => createClient(), []);
   const requestId = useRef(0);
+  // Массив-проп на каждом рендере новый, и в зависимостях эффекта он крутил бы
+  // запрос без конца. Сравниваем по содержимому.
+  const kindsKey = kinds.join(",");
 
   useEffect(() => {
     const term = query.trim();
@@ -52,6 +62,7 @@ export default function IngredientSearch({
       const { data, error } = await supabase.rpc("search_ingredients", {
         q: term,
         max_results: 20,
+        kinds: kindsKey.split(","),
       });
       // Ответ на устаревший запрос игнорируем: иначе быстрый набор текста
       // подменяет свежие результаты старыми.
@@ -66,7 +77,7 @@ export default function IngredientSearch({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [query, supabase]);
+  }, [query, supabase, kindsKey]);
 
   return (
     <div>

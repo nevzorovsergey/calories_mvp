@@ -45,6 +45,8 @@ next-env.d.ts
 # Рабочие каталоги раундов перевода — воспроизводимы из дампов.
 # Итоговый data/translations.json коммитится.
 /data/translations/
+# То же самое для подписей порций: коммитится только data/portion-labels.json.
+/data/portions/
 # Датасеты для бенчмарка — большие, качаются отдельно (см. data/README.md)
 /data/benchmarks/
 /fixtures/*.jpg

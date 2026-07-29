@@ -28,16 +28,70 @@ export interface UsdaSource {
   dataType: string;
   /** Сколько строк ожидаем после фильтра — растяжка на смену версии дампа. */
   expected: number;
+  /** Значение `ingredients.kind`: сырьё или готовое блюдо. */
+  kind: "ingredient" | "dish";
+  /**
+   * Какой колонкой `nutrient.csv` подписаны нутриенты в `food_nutrient.csv`.
+   *
+   * У SR и Foundation это `id` (1008 = энергия). В survey-дампе — `nutrient_nbr`,
+   * legacy-номера времён SR (208 = энергия, 301 = кальций). Резолв по `id` там
+   * не падает, а молча не находит НИ ОДНОГО нутриента: импорт отработает
+   * «успешно» и оставит 5432 блюда без единой калории.
+   */
+  nutrientKey: "id" | "nutrient_nbr";
+  /** Где лежат названия категорий: у survey это WWEIA, а не food_category. */
+  category: { file: string; idColumn: string; nameColumn: string };
 }
+
+const FOOD_CATEGORY = {
+  file: "food_category.csv",
+  idColumn: "id",
+  nameColumn: "description",
+};
 
 /**
  * Foundation первым: он свежее (лабораторные замеры 2019–2026 против
  * замороженного SR Legacy 2018), поэтому выигрывает и дедупликацию
  * пересекающихся позиций, и захват алиасов.
+ *
+ * Survey последним, и это важно для алиасов: родовое слово («курица», «пицца»,
+ * «суп») должно достаться сырью, а не готовому блюду — см. rankAliases в
+ * scripts/import-usda.ts.
  */
 export const USDA_SOURCES: UsdaSource[] = [
-  { dir: "foundation", source: "usda_foundation", dataType: "foundation_food", expected: 469 },
-  { dir: "sr_legacy", source: "usda_sr", dataType: "sr_legacy_food", expected: 7793 },
+  {
+    dir: "foundation",
+    source: "usda_foundation",
+    dataType: "foundation_food",
+    expected: 469,
+    kind: "ingredient",
+    nutrientKey: "id",
+    category: FOOD_CATEGORY,
+  },
+  {
+    dir: "sr_legacy",
+    source: "usda_sr",
+    dataType: "sr_legacy_food",
+    expected: 7793,
+    kind: "ingredient",
+    nutrientKey: "id",
+    category: FOOD_CATEGORY,
+  },
+  {
+    dir: "survey",
+    source: "usda_fndds",
+    dataType: "survey_fndds_food",
+    expected: 5432,
+    kind: "dish",
+    nutrientKey: "nutrient_nbr",
+    // food.food_category_id у survey-строк — это и есть номер категории WWEIA,
+    // отдельного джойна через survey_fndds_food.csv не требуется.
+    category: {
+      file: "wweia_food_category.csv",
+      idColumn: "wweia_food_category",
+      nameColumn: "wweia_food_category_description",
+    },
+  },
 ];
 
 /** Алиасы, которые держат на себе e2e-проверки — импорту их отдавать нельзя. */
@@ -100,12 +154,14 @@ export async function loadFoods(source: UsdaSource): Promise<FoodRow[]> {
   return foods;
 }
 
-/** id категории → английское название из food_category.csv (28 строк). */
-export async function loadCategories(dir: string): Promise<Map<string, string>> {
-  const path = join(DATA_DIR, dir, "food_category.csv");
+/** id категории → английское название (food_category.csv или WWEIA у survey). */
+export async function loadCategories(source: UsdaSource): Promise<Map<string, string>> {
+  const path = join(DATA_DIR, source.dir, source.category.file);
   if (!existsSync(path)) return new Map();
   const rows = await readCsv(path);
-  return new Map(rows.map((row) => [row.id, row.description]));
+  return new Map(
+    rows.map((row) => [row[source.category.idColumn], row[source.category.nameColumn]]),
+  );
 }
 
 /**
@@ -124,6 +180,19 @@ export function normalizeDescription(value: string): string {
 export interface SourceFoods {
   source: UsdaSource;
   foods: FoodRow[];
+}
+
+/**
+ * Ключ, по которому позиции считаются одной и той же.
+ *
+ * `kind` входит в ключ, потому что сырьё и блюдо с одинаковым описанием — разные
+ * записи справочника, а не дубли. Таких пересечений 111 («Brussels sprouts, raw»
+ * есть и в SR, и в FNDDS), и гасить одно другим нельзя: у SR-версии полный
+ * лабораторный профиль нутриентов, у FNDDS-версии — бытовые порции, и живут они
+ * в разных сценариях поиска.
+ */
+export function dedupKey(kind: UsdaSource["kind"], description: string): string {
+  return `${kind} ${normalizeDescription(description)}`;
 }
 
 export interface CanonicalFood {
@@ -154,7 +223,7 @@ export function pickCanonical(sources: SourceFoods[]): {
 
   for (const { source, foods } of sources) {
     for (const food of foods) {
-      const key = normalizeDescription(food.description);
+      const key = dedupKey(source.kind, food.description);
       all.set(key, [...(all.get(key) ?? []), { source, food }]);
     }
   }

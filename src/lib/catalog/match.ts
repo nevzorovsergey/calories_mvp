@@ -41,7 +41,7 @@ interface SearchRow {
 }
 
 /**
- * Один ингредиент. `search_ingredients` (миграция 0001) делает шаги 1–2 одним
+ * Один ингредиент. `search_ingredients` (миграция 0007) делает шаги 1–2 одним
  * запросом: точные совпадения приходят со score 1.0 и всегда впереди.
  */
 export async function matchIngredient(
@@ -115,6 +115,12 @@ async function searchCandidates(
   const { data, error } = await supabase.rpc("search_ingredients", {
     q: normalized,
     max_results: 20,
+    // Только сырьё, и это указано явно, хотя совпадает со значением по умолчанию
+    // (миграция 0007). Справочник с 0006 содержит ещё 5432 готовых блюда FNDDS,
+    // и они забирают точные совпадения себе: «chicken breast» без фильтра — это
+    // «Chicken breast, stewed, skin eaten», а не сырая грудка. Здесь считается
+    // КБЖУ распознанного ингредиента, на котором стоит H1.
+    kinds: ["ingredient"],
   });
   if (error) {
     // Маппинг — не критичный путь: если справочник недоступен, ингредиент

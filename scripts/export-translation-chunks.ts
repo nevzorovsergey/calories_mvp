@@ -23,9 +23,9 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from "node:path";
 import {
   USDA_SOURCES,
+  dedupKey,
   loadCategories,
   loadFoods,
-  normalizeDescription,
   pickCanonical,
 } from "./lib/usda";
 
@@ -40,6 +40,8 @@ interface ManifestItem {
 
 interface ManifestChunk {
   chunk: string;
+  /** 'ingredient' | 'dish' — какой промпт нужен агенту на этот чанк. */
+  kind: string;
   in: string;
   out: string;
   count: number;
@@ -112,14 +114,23 @@ async function main() {
   for (const source of USDA_SOURCES) {
     sources.push({ source, foods: await loadFoods(source) });
   }
-  const categories = await loadCategories(USDA_SOURCES[0].dir);
 
-  // Все fdc_id по нормализованному описанию — чтобы перевод канонической
-  // записи разошёлся и на её дубли.
+  // Категории у источников разные (food_category у сырья, WWEIA у блюд), а
+  // categoryId уникален только внутри своего источника — поэтому карта строится
+  // на весь набор сразу, с ключом «источник + id».
+  const categories = new Map<string, string>();
+  for (const source of USDA_SOURCES) {
+    for (const [id, name] of await loadCategories(source)) {
+      categories.set(`${source.source} ${id}`, name);
+    }
+  }
+
+  // Все fdc_id по ключу дедупликации — чтобы перевод канонической записи
+  // разошёлся и на её дубли.
   const idsByKey = new Map<string, string[]>();
-  for (const { foods } of sources) {
+  for (const { source, foods } of sources) {
     for (const food of foods) {
-      const key = normalizeDescription(food.description);
+      const key = dedupKey(source.kind, food.description);
       idsByKey.set(key, [...(idsByKey.get(key) ?? []), food.fdcId]);
     }
   }
@@ -141,36 +152,55 @@ async function main() {
   mkdirSync(join(roundDir, "in"), { recursive: true });
   mkdirSync(join(roundDir, "out"), { recursive: true });
 
+  // Чанк не смешивает сырьё и блюда: у них разные промпты («брокколи отварная»
+  // против «лазанья с мясом»), и правило про родовые синонимы для блюда звучит
+  // иначе — родовое слово уже принадлежит ингредиенту.
+  const byKind = new Map<string, typeof pending>();
+  for (const entry of pending) {
+    const kind = entry[1].source.kind;
+    byKind.set(kind, [...(byKind.get(kind) ?? []), entry]);
+  }
+
   const chunks: ManifestChunk[] = [];
-  const total = Math.ceil(pending.length / chunkSize);
-  for (let index = 0; index < total; index += 1) {
-    const slice = pending.slice(index * chunkSize, (index + 1) * chunkSize);
-    const name = `chunk-${String(index + 1).padStart(2, "0")}`;
-    const inPath = join("data", "translations", `round-${round}`, "in", `${name}.json`);
-    const outPath = join("data", "translations", `round-${round}`, "out", `${name}.json`);
+  let index = 0;
+  for (const [kind, group] of byKind) {
+    for (let offset = 0; offset < group.length; offset += chunkSize) {
+      const slice = group.slice(offset, offset + chunkSize);
+      index += 1;
+      const name = `chunk-${String(index).padStart(2, "0")}-${kind}`;
+      const inPath = join("data", "translations", `round-${round}`, "in", `${name}.json`);
+      const outPath = join("data", "translations", `round-${round}`, "out", `${name}.json`);
 
-    const items = slice.map(([, { food }]) => ({
-      fdc_id: food.fdcId,
-      description: food.description,
-      category: food.categoryId ? categories.get(food.categoryId) ?? null : null,
-    }));
-
-    writeFileSync(
-      join(process.cwd(), inPath),
-      JSON.stringify({ chunk: name, out: outPath, count: items.length, items }, null, 1),
-      "utf8",
-    );
-
-    chunks.push({
-      chunk: name,
-      in: inPath,
-      out: outPath,
-      count: items.length,
-      items: slice.map(([key, { food }]) => ({
+      const items = slice.map(([, { source, food }]) => ({
         fdc_id: food.fdcId,
-        fdc_ids: idsByKey.get(key) ?? [food.fdcId],
-      })),
-    });
+        description: food.description,
+        category: food.categoryId
+          ? categories.get(`${source.source} ${food.categoryId}`) ?? null
+          : null,
+      }));
+
+      writeFileSync(
+        join(process.cwd(), inPath),
+        JSON.stringify(
+          { chunk: name, kind, out: outPath, count: items.length, items },
+          null,
+          1,
+        ),
+        "utf8",
+      );
+
+      chunks.push({
+        chunk: name,
+        kind,
+        in: inPath,
+        out: outPath,
+        count: items.length,
+        items: slice.map(([key, { food }]) => ({
+          fdc_id: food.fdcId,
+          fdc_ids: idsByKey.get(key) ?? [food.fdcId],
+        })),
+      });
+    }
   }
 
   writeFileSync(
@@ -179,7 +209,10 @@ async function main() {
     "utf8",
   );
 
-  console.log(`Чанков: ${chunks.length} по ${chunkSize} → ${roundDir}`);
+  const perKind = [...byKind]
+    .map(([kind, group]) => `${kind}: ${group.length}`)
+    .join(", ");
+  console.log(`Чанков: ${chunks.length} по ${chunkSize} (${perKind}) → ${roundDir}`);
   console.log(
     `Дальше: раздайте in/chunk-*.json субагентам, затем\n` +
       `  npx tsx scripts/merge-translations.ts --round ${round}`,

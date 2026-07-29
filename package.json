@@ -12,6 +12,8 @@
     "usda:chunks": "tsx scripts/export-translation-chunks.ts",
     "usda:merge": "tsx scripts/merge-translations.ts",
     "usda:import": "tsx scripts/import-usda.ts",
+    "usda:portions": "tsx scripts/export-portion-labels.ts",
+    "usda:portions:import": "tsx scripts/import-portion-labels.ts",
     "bench": "tsx scripts/bench-models.ts",
     "test:flow": "tsx scripts/test-flow.ts",
     "db:migrate": "tsx scripts/apply-migrations.ts",

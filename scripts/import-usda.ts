@@ -2,6 +2,7 @@
  * Импорт справочника USDA FoodData Central (§8.1–8.2 PRD).
  *
  *   npx tsx scripts/import-usda.ts [--limit N] [--dry-run] [--source foundation]
+ *                                  [--chunk N]
  *
  * Ядро: SR Legacy + Foundation Foods (~8200 позиций). Public domain (CC0),
  * полные дампы для self-hosting, до 140 нутриентов.
@@ -31,12 +32,19 @@ import { config as loadEnv } from "dotenv";
 import { NUTRIENTS } from "../config/nutrients";
 import { createAdminClient } from "../src/lib/supabase/admin";
 import {
+  type ComponentRow,
+  loadComponentBridge,
+  loadComponents,
+  loadPortions,
+} from "./lib/fndds";
+import {
   DATA_DIR,
   E2E_RESERVED,
   type FoodRow,
   type UsdaSource,
   USDA_SOURCES,
   classifyState,
+  dedupKey,
   foodCsvPath,
   loadCategories,
   loadFoods,
@@ -47,7 +55,16 @@ import {
 
 loadEnv({ path: ".env.local" });
 
-const CHUNK = 500;
+/**
+ * Размер пачки записи. Меняется флагом `--chunk N`.
+ *
+ * 500 — то, на чём заливались SR и Foundation. На блюдах FNDDS запрос такого
+ * размера стабильно отваливается с «TypeError: fetch failed», хотя чтение той же
+ * тысячи строк в тот же момент проходит за полторы секунды: проект в Огайо,
+ * заливка идёт из России, и деградирует именно объём запроса, а не связь. Ретрай
+ * тут не помогает — повторяется тот же слишком большой запрос.
+ */
+let CHUNK = 500;
 
 interface Translation {
   name_ru: string;
@@ -61,6 +78,31 @@ interface AliasCandidate {
   source: string;
   nameEn: string;
   fdcId: string;
+}
+
+/**
+ * Повтор сетевого шага импорта.
+ *
+ * Проект в Огайо, заливка идёт из России, а полный прогон — это порядка 400 000
+ * строк за сотни запросов. На такой длине отдельные запросы отваливаются по
+ * сети, а не по данным («TypeError: fetch failed»), и падать из-за одного такого
+ * значит переливать всё заново. Ошибки данных не ретраятся: они воспроизведутся
+ * и на четвёртой попытке, поэтому после исчерпания задержек бросаем как раньше.
+ */
+async function withRetry<T>(
+  label: string,
+  run: () => PromiseLike<{ data: T; error: { message: string } | null }>,
+): Promise<T> {
+  const delays = [1_000, 3_000, 8_000];
+  for (let attempt = 0; ; attempt += 1) {
+    const { data, error } = await run();
+    if (!error) return data;
+    if (attempt >= delays.length) throw new Error(`${label}: ${error.message}`);
+    console.warn(
+      `  ⚠ ${label}: ${error.message} — повтор через ${delays[attempt] / 1000} с`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
+  }
 }
 
 function loadTranslations(): Map<string, Translation> {
@@ -125,8 +167,11 @@ function splitCsvLine(line: string): string[] {
  */
 function resolveNutrientIds(
   nutrientRows: Record<string, string>[],
+  nutrientKey: UsdaSource["nutrientKey"],
 ): Map<number, { code: string; priority: number }> {
   const byId = new Map<number, { code: string; priority: number }>();
+  /** Чем подписан нутриент в food_nutrient.csv этого дампа (см. UsdaSource). */
+  const linkId = (row: Record<string, string>) => Number(row[nutrientKey]);
 
   for (const def of NUTRIENTS) {
     let found = false;
@@ -137,8 +182,8 @@ function resolveNutrientIds(
           name.toLowerCase() === (row.name ?? "").toLowerCase() &&
           (row.unit_name ?? "").toUpperCase() === def.usdaUnit,
       );
-      if (match) {
-        byId.set(Number(match.id), { code: def.code, priority });
+      if (match && Number.isFinite(linkId(match))) {
+        byId.set(linkId(match), { code: def.code, priority });
         found = true;
       }
     });
@@ -146,11 +191,11 @@ function resolveNutrientIds(
     if (found) continue;
 
     const fallback = nutrientRows.find((row) => Number(row.id) === def.usdaFallbackId);
-    if (fallback) {
+    if (fallback && Number.isFinite(linkId(fallback))) {
       console.warn(
         `  ⚠ «${def.usdaNames[0]}» не нашёлся по имени, беру id ${def.usdaFallbackId} (${fallback.name})`,
       );
-      byId.set(def.usdaFallbackId, { code: def.code, priority: def.usdaNames.length });
+      byId.set(linkId(fallback), { code: def.code, priority: def.usdaNames.length });
     } else {
       console.warn(`  ⚠ нутриент ${def.code} отсутствует в дампе — колонка будет пустой`);
     }
@@ -180,11 +225,11 @@ async function readSource(source: UsdaSource, limit: number): Promise<SourceData
   console.log(`\n=== ${source.source} ===`);
   const [allFoods, categories, nutrientDefs] = await Promise.all([
     loadFoods(source),
-    loadCategories(source.dir),
+    loadCategories(source),
     readCsv(join(DATA_DIR, source.dir, "nutrient.csv")),
   ]);
 
-  const codeByUsdaId = resolveNutrientIds(nutrientDefs);
+  const codeByUsdaId = resolveNutrientIds(nutrientDefs, source.nutrientKey);
   const foods = limit === Infinity ? allFoods : allFoods.slice(0, limit);
   const fdcIds = new Set(foods.map((f) => f.fdcId));
   console.log(`  продуктов: ${foods.length}`);
@@ -260,8 +305,14 @@ function rankAliases(
   nameRuOwners: Map<string, number>,
 ): { rows: AliasCandidate[]; dropped: number; reserved: number; shadowed: number } {
   const commas = (value: string) => value.split(",").length - 1;
+  // Порядок источников — тот же, что в USDA_SOURCES: Foundation, SR, FNDDS.
+  // Блюда идут последними намеренно: родовое «курица» должно достаться сырью,
+  // а не позиции «Chicken breast, fried, coated, skin eaten, from pre-cooked».
+  const sourceRank = new Map(USDA_SOURCES.map((s, index) => [s.source, index]));
   const sorted = [...candidates].sort((a, b) => {
-    if (a.source !== b.source) return a.source === "usda_foundation" ? -1 : 1;
+    const bySource =
+      (sourceRank.get(a.source) ?? 99) - (sourceRank.get(b.source) ?? 99);
+    if (bySource !== 0) return bySource;
     const byCommas = commas(a.nameEn) - commas(b.nameEn);
     if (byCommas !== 0) return byCommas;
     const byLength = a.nameEn.length - b.nameEn.length;
@@ -305,6 +356,7 @@ async function writeSource(
   nutrientIdByCode: Map<string, number>,
   aliasCandidates: AliasCandidate[],
   nameRuOwners: Map<string, number>,
+  idByFdcId: Map<string, number>,
 ): Promise<void> {
   const { source, foods, categories, amounts } = data;
 
@@ -319,6 +371,7 @@ async function writeSource(
         name_en: food.description,
         name_ru: translation?.name_ru ?? food.description,
         category: food.categoryId ? categories.get(food.categoryId) ?? null : null,
+        kind: source.kind,
         state: classifyState(food.description),
         // Каждый прогон восстанавливает полную картину: гашение дублей идёт
         // последним шагом и опирается на актуальные дампы, а не на прошлый запуск.
@@ -326,25 +379,27 @@ async function writeSource(
       };
     });
 
-    const { data: inserted, error } = await supabase
-      .from("ingredients")
-      .upsert(ingredientRows, { onConflict: "source,source_id" })
-      .select("id, source_id");
-    if (error) throw new Error(`ingredients upsert: ${error.message}`);
+    const inserted = await withRetry("ingredients upsert", () =>
+      supabase
+        .from("ingredients")
+        .upsert(ingredientRows, { onConflict: "source,source_id" })
+        .select("id, source_id"),
+    );
 
     const idBySourceId = new Map(
       (inserted ?? []).map((row) => [row.source_id as string, row.id as number]),
     );
+    // fdc_id уникален на весь FoodData Central, поэтому карта общая на все
+    // источники: по ней потом резолвятся компоненты блюд и порции.
+    for (const [fdcId, id] of idBySourceId) idByFdcId.set(fdcId, id);
     const ingredientIds = [...idBySourceId.values()];
 
     // Нутриент, исчезнувший между версиями дампа, иначе сохранил бы старое
     // значение навсегда: upsert его не трогает.
     if (ingredientIds.length > 0) {
-      const { error: cleanupError } = await supabase
-        .from("ingredient_nutrients")
-        .delete()
-        .in("ingredient_id", ingredientIds);
-      if (cleanupError) throw new Error(`ingredient_nutrients cleanup: ${cleanupError.message}`);
+      await withRetry("ingredient_nutrients cleanup", () =>
+        supabase.from("ingredient_nutrients").delete().in("ingredient_id", ingredientIds),
+      );
     }
 
     const nutrientLinks: {
@@ -388,13 +443,186 @@ async function writeSource(
     }
 
     if (nutrientLinks.length > 0) {
-      const { error: linkError } = await supabase
-        .from("ingredient_nutrients")
-        .upsert(nutrientLinks, { onConflict: "ingredient_id,nutrient_id" });
-      if (linkError) throw new Error(`ingredient_nutrients: ${linkError.message}`);
+      await withRetry("ingredient_nutrients", () =>
+        supabase
+          .from("ingredient_nutrients")
+          .upsert(nutrientLinks, { onConflict: "ingredient_id,nutrient_id" }),
+      );
     }
 
     console.log(`  ${Math.min(offset + CHUNK, foods.length)}/${foods.length}`);
+  }
+}
+
+/**
+ * Резолвер компонента блюда: код из input_food → id позиции справочника.
+ *
+ * Три перехода, и каждый может не сработать:
+ *   код → fdc_id            — мост NDB/food_code (scripts/lib/fndds.ts);
+ *   fdc_id → канонический   — компонент может ссылаться на запись, которую
+ *                             дедупликация погасила; ведём на победителя, иначе
+ *                             состав блюда указывал бы на is_active = false;
+ *   канонический → id       — позиции может не быть в импорте (например, при
+ *                             --limit).
+ */
+function makeComponentResolver(
+  bridge: Map<string, string>,
+  idByFdcId: Map<string, number>,
+  canonicalFdcId: Map<string, string>,
+): (code: string) => number | null {
+  return (code) => {
+    const fdcId = bridge.get(code);
+    if (!fdcId) return null;
+    return idByFdcId.get(canonicalFdcId.get(fdcId) ?? fdcId) ?? null;
+  };
+}
+
+/**
+ * Порции и раскладка блюд. Отдельным проходом после записи всех источников:
+ * компонент блюда часто ссылается на позицию другого источника (мясо из SR
+ * внутри блюда FNDDS), и до того, как записаны все три дампа, его просто некуда
+ * привязывать.
+ */
+async function writeDishExtras(
+  supabase: SupabaseClient,
+  dishes: FoodRow[],
+  idByFdcId: Map<string, number>,
+  canonicalFdcId: Map<string, string>,
+): Promise<void> {
+  console.log("\n=== порции и раскладка ===");
+
+  const [portionsByFood, componentsByDish, bridge] = await Promise.all([
+    loadPortions(),
+    loadComponents(),
+    loadComponentBridge(),
+  ]);
+
+  // Компоненты блюд ссылаются в основном на сырьё из SR, а при частичном
+  // прогоне (`--source survey`) сырьё в этот раз не писалось и его id в памяти
+  // нет. Добираем недостающее из БД — иначе состав блюд оказался бы непривязан
+  // ровно там, где перезаливаются только блюда.
+  const needed = new Set<string>();
+  for (const components of componentsByDish.values()) {
+    for (const component of components) {
+      const fdcId = bridge.get(component.code);
+      if (fdcId && !idByFdcId.has(fdcId)) needed.add(fdcId);
+    }
+  }
+  if (needed.size > 0) {
+    const missing = [...needed];
+    for (let offset = 0; offset < missing.length; offset += CHUNK) {
+      const rows = await withRetry("подтягивание id компонентов", () =>
+        supabase
+          .from("ingredients")
+          .select("id, source_id")
+          .in("source_id", missing.slice(offset, offset + CHUNK)),
+      );
+      for (const row of rows ?? []) {
+        idByFdcId.set(row.source_id as string, row.id as number);
+      }
+    }
+    console.log(`  подтянуто из БД id компонентов: ${needed.size}`);
+  }
+
+  const resolve = makeComponentResolver(bridge, idByFdcId, canonicalFdcId);
+
+  const dishIds = dishes
+    .map((dish) => idByFdcId.get(dish.fdcId))
+    .filter((id): id is number => id !== undefined);
+
+  // Порция или компонент, исчезнувшие между версиями дампа, иначе остались бы
+  // в справочнике навсегда: вставка их не трогает (та же логика, что у
+  // ingredient_nutrients в writeSource).
+  for (let offset = 0; offset < dishIds.length; offset += CHUNK) {
+    const chunk = dishIds.slice(offset, offset + CHUNK);
+    await withRetry("очистка порций", () =>
+      supabase.from("ingredient_portions").delete().in("ingredient_id", chunk),
+    );
+    await withRetry("очистка раскладки", () =>
+      supabase.from("ingredient_components").delete().in("dish_id", chunk),
+    );
+  }
+
+  const portionRows: Record<string, unknown>[] = [];
+  const componentRows: Record<string, unknown>[] = [];
+  let withPortions = 0;
+  let withDefault = 0;
+  let fullyResolved = 0;
+  let unresolvedComponents = 0;
+  const withoutComponents: string[] = [];
+
+  for (const dish of dishes) {
+    const dishId = idByFdcId.get(dish.fdcId);
+    if (!dishId) continue;
+
+    const portions = portionsByFood.get(dish.fdcId) ?? [];
+    if (portions.length > 0) withPortions += 1;
+    if (portions.some((portion) => portion.isDefault)) withDefault += 1;
+    for (const portion of portions) {
+      portionRows.push({
+        ingredient_id: dishId,
+        seq: portion.seq,
+        label_en: portion.labelEn,
+        gram_weight: portion.gramWeight,
+        is_default: portion.isDefault,
+      });
+    }
+
+    const components: ComponentRow[] = componentsByDish.get(dish.fdcId) ?? [];
+    if (components.length === 0) {
+      withoutComponents.push(dish.description);
+      continue;
+    }
+    let resolvedAll = true;
+    for (const component of components) {
+      const ingredientId = resolve(component.code);
+      if (ingredientId === null) {
+        resolvedAll = false;
+        unresolvedComponents += 1;
+      }
+      componentRows.push({
+        dish_id: dishId,
+        seq: component.seq,
+        ingredient_id: ingredientId,
+        // Название из дампа держим всегда, а не только для непривязанных: по
+        // нему видно, что именно USDA считала этим компонентом, даже если
+        // привязка потом уедет на другую позицию справочника.
+        name_en_fallback: component.descriptionEn || null,
+        gram_weight: component.gramWeight,
+        share: component.share,
+        retention_code: component.retentionCode,
+      });
+    }
+    if (resolvedAll) fullyResolved += 1;
+  }
+
+  for (let offset = 0; offset < portionRows.length; offset += CHUNK) {
+    const chunk = portionRows.slice(offset, offset + CHUNK);
+    await withRetry("ingredient_portions", () =>
+      supabase.from("ingredient_portions").insert(chunk),
+    );
+  }
+  for (let offset = 0; offset < componentRows.length; offset += CHUNK) {
+    const chunk = componentRows.slice(offset, offset + CHUNK);
+    await withRetry("ingredient_components", () =>
+      supabase.from("ingredient_components").insert(chunk),
+    );
+  }
+
+  const total = dishIds.length;
+  console.log(
+    `  порций: ${portionRows.length} у ${withPortions}/${total} блюд ` +
+      `(с порцией по умолчанию: ${withDefault})`,
+  );
+  console.log(
+    `  компонентов: ${componentRows.length}, блюд с полностью привязанным ` +
+      `составом: ${fullyResolved}/${total}, непривязанных компонентов: ${unresolvedComponents}`,
+  );
+  if (withoutComponents.length > 0) {
+    console.warn(
+      `  ⚠ без раскладки осталось ${withoutComponents.length} блюд: ` +
+        `${withoutComponents.slice(0, 3).join("; ")}`,
+    );
   }
 }
 
@@ -405,6 +633,15 @@ async function main() {
   const limit = limitArg >= 0 ? Number(args[limitArg + 1]) : Infinity;
   const sourceArg = args.indexOf("--source");
   const onlySource = sourceArg >= 0 ? args[sourceArg + 1] : null;
+  const chunkArg = args.indexOf("--chunk");
+  if (chunkArg >= 0) {
+    const value = Number(args[chunkArg + 1]);
+    if (!Number.isInteger(value) || value < 1) {
+      throw new Error(`--chunk ${args[chunkArg + 1]}: ожидается целое число ≥ 1`);
+    }
+    CHUNK = value;
+    console.log(`Размер пачки записи: ${CHUNK}`);
+  }
 
   const sourcesToRead = onlySource
     ? USDA_SOURCES.filter((s) => s.dir === onlySource)
@@ -429,8 +666,20 @@ async function main() {
       `(${[...losers].map(([src, ids]) => `${src}: ${ids.length}`).join(", ") || "нет"})`,
   );
 
+  // Компонент блюда может ссылаться на позицию, которую дедупликация погасила.
+  // Ведём такую ссылку на победителя, иначе состав указывал бы на is_active =
+  // false и в интерфейсе выглядел бы как пропавший ингредиент.
+  const canonicalFdcId = new Map<string, string>();
+  for (const { source, foods } of sources) {
+    for (const food of foods) {
+      const winner = winners.get(dedupKey(source.kind, food.description));
+      if (winner) canonicalFdcId.set(food.fdcId, winner.food.fdcId);
+    }
+  }
+
   if (dryRun) {
     reportAliasCollisions(sources, translations);
+    await reportDishExtras(sources);
     console.log("\n--dry-run: в БД ничего не пишу");
     return;
   }
@@ -458,6 +707,7 @@ async function main() {
 
   const aliasCandidates: AliasCandidate[] = [];
   const nameRuOwners = new Map<string, number>();
+  const idByFdcId = new Map<string, number>();
 
   for (const data of sources) {
     console.log(`\n=== запись ${data.source.source} ===`);
@@ -468,6 +718,7 @@ async function main() {
       nutrientIdByCode,
       aliasCandidates,
       nameRuOwners,
+      idByFdcId,
     );
   }
 
@@ -486,10 +737,11 @@ async function main() {
     }));
     // ignoreDuplicates защищает ручной маппинг пользователя (source =
     // 'user_mapping'): он всегда старше импорта.
-    const { error } = await supabase
-      .from("ingredient_aliases")
-      .upsert(chunk, { onConflict: "alias,lang", ignoreDuplicates: true });
-    if (error) throw new Error(`ingredient_aliases: ${error.message}`);
+    await withRetry("ingredient_aliases", () =>
+      supabase
+        .from("ingredient_aliases")
+        .upsert(chunk, { onConflict: "alias,lang", ignoreDuplicates: true }),
+    );
   }
   console.log(
     `\nАлиасов: ${aliasRows.length} записано, ${dropped} отброшено как коллизии, ` +
@@ -499,21 +751,81 @@ async function main() {
   for (const [sourceName, fdcIds] of losers) {
     for (let offset = 0; offset < fdcIds.length; offset += CHUNK) {
       const chunk = fdcIds.slice(offset, offset + CHUNK);
-      const { error } = await supabase
-        .from("ingredients")
-        .update({ is_active: false })
-        .eq("source", sourceName)
-        .in("source_id", chunk);
-      if (error) throw new Error(`деактивация дублей: ${error.message}`);
+      await withRetry("деактивация дублей", () =>
+        supabase
+          .from("ingredients")
+          .update({ is_active: false })
+          .eq("source", sourceName)
+          .in("source_id", chunk),
+      );
     }
     console.log(`✔ погашено дублей ${sourceName}: ${fdcIds.length}`);
+  }
+
+  // Порции и раскладка — только у блюд, и только после того, как записаны все
+  // источники: компонент блюда обычно ссылается на сырьё из SR.
+  const dishes = sources
+    .filter((data) => data.source.kind === "dish")
+    .flatMap((data) => data.foods);
+  if (dishes.length > 0) {
+    await writeDishExtras(supabase, dishes, idByFdcId, canonicalFdcId);
   }
 
   const { count } = await supabase
     .from("ingredients")
     .select("id", { count: "exact", head: true })
     .eq("is_active", true);
-  console.log(`\nГотово. Активных позиций в справочнике: ${count}`);
+  const { count: dishCount } = await supabase
+    .from("ingredients")
+    .select("id", { count: "exact", head: true })
+    .eq("is_active", true)
+    .eq("kind", "dish");
+  console.log(
+    `\nГотово. Активных позиций в справочнике: ${count} (из них блюд: ${dishCount})`,
+  );
+}
+
+/** Что получится с порциями и раскладкой — считаем без похода в БД. */
+async function reportDishExtras(sources: SourceData[]): Promise<void> {
+  const dishes = sources
+    .filter((data) => data.source.kind === "dish")
+    .flatMap((data) => data.foods);
+  if (dishes.length === 0) return;
+
+  const [portionsByFood, componentsByDish, bridge] = await Promise.all([
+    loadPortions(),
+    loadComponents(),
+    loadComponentBridge(),
+  ]);
+
+  // Без записи в БД id позиций неизвестны, поэтому привязку проверяем на уровне
+  // fdc_id: мост либо знает код компонента, либо нет.
+  let withPortions = 0;
+  let withDefault = 0;
+  let components = 0;
+  let unresolved = 0;
+  let fullyResolved = 0;
+
+  for (const dish of dishes) {
+    const portions = portionsByFood.get(dish.fdcId) ?? [];
+    if (portions.length > 0) withPortions += 1;
+    if (portions.some((portion) => portion.isDefault)) withDefault += 1;
+
+    const list = componentsByDish.get(dish.fdcId) ?? [];
+    components += list.length;
+    const bad = list.filter((component) => !bridge.has(component.code)).length;
+    unresolved += bad;
+    if (list.length > 0 && bad === 0) fullyResolved += 1;
+  }
+
+  console.log(
+    `\nБлюд: ${dishes.length}, с порциями: ${withPortions} ` +
+      `(с порцией по умолчанию: ${withDefault})`,
+  );
+  console.log(
+    `Компонентов: ${components}, не резолвятся: ${unresolved}, ` +
+      `блюд с полностью привязанным составом: ${fullyResolved}`,
+  );
 }
 
 /** Что стало бы с алиасами при записи — считаем без похода в БД. */
