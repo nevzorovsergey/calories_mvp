@@ -49,6 +49,11 @@ next-env.d.ts
 /data/portions/
 # Датасеты для бенчмарка — большие, качаются отдельно (см. data/README.md)
 /data/benchmarks/
+# Дамп рецептов Povarenok — 260 МБ, качается отдельно (см. data/README.md).
+# Коммитятся только производные словари: povarenok-measures.json и
+# povarenok-ingredients.json.
+/data/povarenok/
+__pycache__/
 /fixtures/*.jpg
 /fixtures/*.jpeg
 /fixtures/*.png

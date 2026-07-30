@@ -53,6 +53,20 @@ export function formatTime(isoTimestamp: string): string {
   }).format(new Date(isoTimestamp));
 }
 
+/**
+ * Сколько суток от одной локальной даты до другой: «12-е» минус «10-е» = 2.
+ * Обе даты раскладываем в UTC-полночь: у ISO-даты часового пояса нет, а
+ * разность объектов Date, собранных в локальной зоне, на переходе летнего
+ * времени даёт 23 или 25 часов вместо ровных суток.
+ */
+export function isoDateDiffDays(from: string, to: string): number {
+  const utc = (iso: string) => {
+    const [year, month, day] = iso.split("-").map(Number);
+    return Date.UTC(year, month - 1, day);
+  };
+  return Math.round((utc(to) - utc(from)) / 86_400_000);
+}
+
 export function shiftIsoDate(isoDate: string, days: number): string {
   const [year, month, day] = isoDate.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));

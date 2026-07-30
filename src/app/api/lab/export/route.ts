@@ -32,7 +32,15 @@ export async function GET(request: Request) {
 
   const format = new URL(request.url).searchParams.get("format") ?? "json";
 
-  const [meals, recognitions, recognitionItems, mealItems, removed, evidence] =
+  const [
+    meals,
+    recognitions,
+    recognitionItems,
+    mealItems,
+    removed,
+    evidence,
+    dishCandidates,
+  ] =
     await Promise.all([
       supabase.from("meals").select("*"),
       supabase.from("recognitions").select("*"),
@@ -40,6 +48,16 @@ export async function GET(request: Request) {
       supabase.from("meal_items").select("*"),
       supabase.from("meal_removed_items").select("*"),
       supabase.from("weight_evidence").select("*"),
+      // H7 и H8 (тикеты спеки .scratch/russian-dish-catalog): что предложила
+      // модель тремя вариантами и во что это сматчилось. Что ВЫБРАЛ человек —
+      // в meals (selected_dish_id, selected_candidate_position,
+      // selected_portion_size), они приезжают сюда через select("*").
+      //
+      // Уровень происхождения веса порции (ingredients.portion_source_level)
+      // здесь не выгружается: справочник — не пользовательские данные, он
+      // одинаков для всех и джойнится при анализе по selected_dish_id.
+      // Без него H8 посчитается по смеси уровней и измерит не то.
+      supabase.from("recognition_dish_candidates").select("*"),
     ]);
 
   const dataset = {
@@ -50,6 +68,7 @@ export async function GET(request: Request) {
     meal_items: mealItems.data ?? [],
     meal_removed_items: removed.data ?? [],
     weight_evidence: evidence.data ?? [],
+    recognition_dish_candidates: dishCandidates.data ?? [],
   };
 
   const stamp = new Date().toISOString().slice(0, 10);

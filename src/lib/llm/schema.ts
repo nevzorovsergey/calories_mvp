@@ -117,6 +117,52 @@ export const imageQualitySchema = z.object({
   blur: z.enum(["none", "slight", "heavy"]),
 });
 
+export const PORTION_SIZES = ["small", "medium", "large"] as const;
+
+/**
+ * `confidence` принимается терпимо, и это осознанно.
+ *
+ * Границы `minimum`/`maximum` вырезаются из JSON Schema перед отправкой (их не
+ * принимает часть вендоров, см. UNSUPPORTED_KEYWORDS), поэтому модель узнаёт про
+ * диапазон только из текста описания — и часть моделей его игнорирует. На
+ * прогоне bench-dish Inkling вернул 95 вместо 0.95, и весь ответ упал по
+ * `Too big`, хотя названия блюд в нём были верные.
+ *
+ * Ронять распознавание из-за косметического поля нельзя: `confidence` влияет
+ * только на порядок вариантов, который и так задан позицией в массиве. Проценты
+ * приводим к долям, остальное зажимаем в диапазон.
+ */
+const confidenceSchema = z
+  .number()
+  .transform((value) => (value > 1 ? value / 100 : value))
+  .transform((value) => Math.min(Math.max(value, 0), 1));
+
+export const dishCandidateSchema = z.object({
+  name_ru: z.string(),
+  confidence: confidenceSchema,
+  why: z.string(),
+});
+
+/**
+ * Ответ v3-dish. Единица распознавания — блюдо, а не ингредиент: состав и
+ * типовой вес приходят из справочника, модель только называет блюдо и
+ * оценивает размер порции относительно типичной.
+ *
+ * `scale_references` сохранён из v1/v2 намеренно: на нём стоит H4, и его
+ * пропажа сломала бы сравнение по оси, которую v3 не проверяет.
+ */
+export const dishGuessSchema = z.object({
+  dish_candidates: z.array(dishCandidateSchema),
+  portion_size: z.enum(PORTION_SIZES),
+  portion_reasoning: z.string(),
+  scale_references: z.array(scaleReferenceSchema),
+  container: containerSchema,
+  image_quality: imageQualitySchema,
+});
+
+export type DishGuess = z.infer<typeof dishGuessSchema>;
+export type DishCandidate = z.infer<typeof dishCandidateSchema>;
+
 export const dishAnalysisSchema = z.object({
   dish_name_ru: z.string(),
   dish_name_en: z.string(),
@@ -295,6 +341,40 @@ const scaleChainJsonSchema: JsonSchema = {
   },
 };
 
+// Общие для всех версий промпта: и разбор на ингредиенты, и угадывание блюда
+// одинаково описывают посуду и качество кадра.
+const containerJsonSchema: JsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["type", "estimated_size_cm", "confidence"],
+  properties: {
+    type: { type: "string", enum: CONTAINER_TYPES },
+    estimated_size_cm: {
+      type: "number",
+      description: "Диаметр или наибольший размер, см",
+    },
+    confidence: {
+      type: "number",
+      description: "Уверенность в оценке посуды, число от 0 до 1",
+    },
+  },
+};
+
+const imageQualityJsonSchema: JsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["angle", "lighting", "occlusion", "blur"],
+  properties: {
+    angle: {
+      type: "string",
+      enum: ["top_down", "45_degrees", "side", "unknown"],
+    },
+    lighting: { type: "string", enum: ["good", "dim", "harsh", "mixed"] },
+    occlusion: { type: "string", enum: ["none", "partial", "heavy"] },
+    blur: { type: "string", enum: ["none", "slight", "heavy"] },
+  },
+};
+
 /**
  * Ключевые слова JSON Schema, которые поддерживают не все вендоры: Anthropic,
  * например, отвечает `400 For 'number' type, properties maximum, minimum are
@@ -316,7 +396,72 @@ function stripUnsupportedKeywords(node: unknown): unknown {
   return result;
 }
 
+const dishCandidatesJsonSchema: JsonSchema = {
+  type: "array",
+  description:
+    "Ровно три варианта названия блюда, от самого вероятного к наименее вероятному. Три РАЗНЫЕ гипотезы, а не одно блюдо с уточнениями.",
+  items: {
+    type: "object",
+    additionalProperties: false,
+    required: ["name_ru", "confidence", "why"],
+    properties: {
+      name_ru: {
+        type: "string",
+        description:
+          "Название по-русски, как его скажет человек дома. Строчными, без кавычек, не длиннее 60 символов",
+      },
+      confidence: {
+        type: "number",
+        description: "Уверенность в этом варианте, число от 0 до 1",
+      },
+      why: {
+        type: "string",
+        description:
+          "Короткая зацепка из кадра, по которой сделан вывод. Одна фраза, показывается пользователю",
+      },
+    },
+  },
+};
+
+function buildDishGuessSchema(): JsonSchema {
+  return {
+    name: "dish_guess",
+    strict: true,
+    schema: stripUnsupportedKeywords({
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "dish_candidates",
+        "portion_size",
+        "portion_reasoning",
+        "scale_references",
+        "container",
+        "image_quality",
+      ],
+      properties: {
+        dish_candidates: dishCandidatesJsonSchema,
+        portion_size: {
+          type: "string",
+          enum: PORTION_SIZES,
+          description:
+            "Размер порции ОТНОСИТЕЛЬНО типичной порции этого блюда: small — заметно меньше обычной, medium — обычная, large — заметно больше",
+        },
+        portion_reasoning: {
+          type: "string",
+          description:
+            "На чём основана оценка размера: посуда, её заполненность. Коротко, по-русски",
+        },
+        scale_references: scaleReferencesJsonSchema,
+        container: containerJsonSchema,
+        image_quality: imageQualityJsonSchema,
+      },
+    }) as JsonSchema,
+  };
+}
+
 export function buildResponseSchema(promptVersion: PromptVersion): JsonSchema {
+  if (promptVersion === "v3-dish") return buildDishGuessSchema();
+
   const withScaleChain = promptVersion === "v2-scale";
 
   const required = [
@@ -351,36 +496,8 @@ export function buildResponseSchema(promptVersion: PromptVersion): JsonSchema {
     ingredients: ingredientsJsonSchema,
     scale_references: scaleReferencesJsonSchema,
     ...(withScaleChain ? { scale_chain: scaleChainJsonSchema } : {}),
-    container: {
-      type: "object",
-      additionalProperties: false,
-      required: ["type", "estimated_size_cm", "confidence"],
-      properties: {
-        type: { type: "string", enum: CONTAINER_TYPES },
-        estimated_size_cm: {
-          type: "number",
-          description: "Диаметр или наибольший размер, см",
-        },
-        confidence: {
-          type: "number",
-          description: "Уверенность в оценке посуды, число от 0 до 1",
-        },
-      },
-    },
-    image_quality: {
-      type: "object",
-      additionalProperties: false,
-      required: ["angle", "lighting", "occlusion", "blur"],
-      properties: {
-        angle: {
-          type: "string",
-          enum: ["top_down", "45_degrees", "side", "unknown"],
-        },
-        lighting: { type: "string", enum: ["good", "dim", "harsh", "mixed"] },
-        occlusion: { type: "string", enum: ["none", "partial", "heavy"] },
-        blur: { type: "string", enum: ["none", "slight", "heavy"] },
-      },
-    },
+    container: containerJsonSchema,
+    image_quality: imageQualityJsonSchema,
     assumptions: {
       type: "array",
       items: { type: "string" },

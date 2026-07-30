@@ -2,8 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ModelConfig } from "@config/models";
 import { buildReferenceHint } from "@config/reference-objects";
 import { recognizeDish, computeCost } from "@/lib/llm/polza";
+import type { DishGuess } from "@/lib/llm/schema";
 import { runScaleChecks, type KnownReference } from "@/lib/llm/scale-check";
 import { matchIngredients } from "@/lib/catalog/match";
+import { matchDishCandidates, type DishMatch } from "@/lib/catalog/match-dish";
 import {
   loadCatalogNutrition,
   resolveItemNutrition,
@@ -37,6 +39,11 @@ export interface RunRecognitionResult {
   errorText: string | null;
   /** Позиции, разобранные из ответа: нужны вызывающему для первичных meal_items. */
   items: RecognizedItem[];
+  /**
+   * Три гипотезы о блюде (v3-dish). У v1/v2 всегда пусто: там модель отвечает
+   * составом, а не названием, и выбирать пользователю нечего.
+   */
+  dishCandidates: DishMatch[];
 }
 
 export interface RecognizedItem {
@@ -108,6 +115,10 @@ export async function runRecognition(
     ...cost,
   };
 
+  if (result.status === "ok" && result.guess) {
+    return persistDishGuess(supabase, baseRow, result.guess);
+  }
+
   if (result.status === "failed" || !result.analysis) {
     const { data, error } = await supabase
       .from("recognitions")
@@ -120,6 +131,7 @@ export async function runRecognition(
       status: "failed",
       errorText: result.errorText,
       items: [],
+      dishCandidates: [],
     };
   }
 
@@ -231,5 +243,77 @@ export async function runRecognition(
     status: "ok",
     errorText: null,
     items,
+    dishCandidates: [],
+  };
+}
+
+/**
+ * Ветка v3-dish: сохранить три гипотезы модели и их привязку к справочнику.
+ *
+ * `recognition_items` здесь не пишутся, и это не упущение: модель не предлагала
+ * ингредиентов. Состав появится только после выбора пользователя — из
+ * справочника, а не из ответа модели, — и ляжет сразу в `meal_items` с
+ * origin = 'catalog_dish'.
+ *
+ * `dish_name_ru` заполняется первым кандидатом: на это поле уже завязаны
+ * история и экран приёма пищи, и оставлять его пустым до выбора значило бы
+ * показывать «без названия» там, где название есть.
+ */
+async function persistDishGuess(
+  supabase: SupabaseClient,
+  baseRow: Record<string, unknown>,
+  guess: DishGuess,
+): Promise<RunRecognitionResult> {
+  const candidates = await matchDishCandidates(supabase, guess.dish_candidates);
+
+  const { data: recognition, error } = await supabase
+    .from("recognitions")
+    .insert({
+      ...baseRow,
+      status: "ok",
+      error_text: null,
+      parsed: guess as never,
+      dish_name_ru: guess.dish_candidates[0]?.name_ru ?? null,
+      overall_confidence: guess.dish_candidates[0]?.confidence ?? null,
+      scale_refs_count: guess.scale_references.length,
+      has_scale_ref: guess.scale_references.length > 0,
+      image_angle: guess.image_quality.angle,
+      portion_size: guess.portion_size,
+      portion_reasoning: guess.portion_reasoning,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(`Не удалось записать recognitions: ${error.message}`);
+  }
+
+  const { error: candidatesError } = await supabase
+    .from("recognition_dish_candidates")
+    .insert(
+      candidates.map((c) => ({
+        recognition_id: recognition.id,
+        position: c.position,
+        name_ru: c.name_ru,
+        confidence: c.confidence,
+        why: c.why,
+        ingredient_id: c.ingredient_id,
+        match_score: c.match_score,
+        match_source: c.match_source,
+      })),
+    );
+
+  if (candidatesError) {
+    throw new Error(
+      `Не удалось записать recognition_dish_candidates: ${candidatesError.message}`,
+    );
+  }
+
+  return {
+    recognitionId: recognition.id,
+    status: "ok",
+    errorText: null,
+    items: [],
+    dishCandidates: candidates,
   };
 }

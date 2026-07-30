@@ -1,0 +1,95 @@
+{
+ "thinkingmachines/inkling": [
+  {
+   "dish": "sent-dish-1.jpg",
+   "schemaStrict": true,
+   "latencyMs": 18090,
+   "costRub": 1.15657587,
+   "ok": false,
+   "error": "Ответ не соответствует схеме: dish_candidates: Invalid input: expected array, received undefined; portion_size: Invalid option: expected one of \"small\"|\"medium\"|\"large\"; portion_reasoning: Invalid input: expected string, received undefined; container: Invalid input: expected object, received undefined; image_quality: Invalid input: expected object, received undefined",
+   "candidates": [],
+   "distinct": false,
+   "hitAt1": false,
+   "hitAt3": false,
+   "catalogMatched": 0,
+   "catalogNames": [],
+   "portionSize": null
+  },
+  {
+   "dish": "sent-dish-2.jpg",
+   "schemaStrict": true,
+   "latencyMs": 30583,
+   "costRub": 1.4789314,
+   "ok": false,
+   "error": "Ответ не соответствует схеме: dish_candidates: Invalid input: expected array, received undefined; portion_reasoning: Invalid input: expected string, received undefined; scale_references.0: Invalid input: expected object, received string; scale_references.1: Invalid input: expected object, received string; scale_references.2: Invalid input: expected object, received string",
+   "candidates": [],
+   "distinct": false,
+   "hitAt1": false,
+   "hitAt3": false,
+   "catalogMatched": 0,
+   "catalogNames": [],
+   "portionSize": null
+  },
+  {
+   "dish": "sent-dish-3.jpg",
+   "schemaStrict": true,
+   "latencyMs": 18804,
+   "costRub": 0.78274775,
+   "ok": true,
+   "error": null,
+   "candidates": [
+    "борщ",
+    "свекольник",
+    "суп-пюре из свёклы"
+   ],
+   "distinct": true,
+   "hitAt1": true,
+   "hitAt3": true,
+   "catalogMatched": 3,
+   "catalogNames": [
+    "Борщ",
+    "Свекольник",
+    "Суп-пюре из свеклы"
+   ],
+   "portionSize": "medium"
+  },
+  {
+   "dish": "sent-dish-4.jpg",
+   "schemaStrict": true,
+   "latencyMs": 14838,
+   "costRub": 0.74863312,
+   "ok": true,
+   "error": null,
+   "candidates": [
+    "яичница с беконом и тостом",
+    "английский завтрак",
+    "глазунья с беконом на гренках"
+   ],
+   "distinct": true,
+   "hitAt1": true,
+   "hitAt3": true,
+   "catalogMatched": 3,
+   "catalogNames": [
+    "Яичница с беконом и тыквой",
+    "Завтрак по-английски",
+    "Тыква с беконом на гриле"
+   ],
+   "portionSize": "medium"
+  },
+  {
+   "dish": "sent-dish-5.jpg",
+   "schemaStrict": true,
+   "latencyMs": 31609,
+   "costRub": 0.68357329,
+   "ok": false,
+   "error": "Ответ не соответствует схеме: dish_candidates: Invalid input: expected array, received undefined; portion_reasoning: Invalid input: expected string, received undefined; container: Invalid input: expected object, received undefined; image_quality: Invalid input: expected object, received undefined",
+   "candidates": [],
+   "distinct": false,
+   "hitAt1": false,
+   "hitAt3": false,
+   "catalogMatched": 0,
+   "catalogNames": [],
+   "portionSize": null
+  }
+ ]
+}

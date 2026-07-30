@@ -25,7 +25,7 @@
  * Сверка id с живым каталогом: npx tsx scripts/sync-models-catalog.ts
  */
 
-export type PromptVersion = "v1-plain" | "v2-scale";
+export type PromptVersion = "v1-plain" | "v2-scale" | "v3-dish";
 
 export interface VendorPricing {
   currency: "USD";
@@ -147,6 +147,46 @@ export const MODELS_CONFIG = {
         source: "pricepertoken.com/google-gemini-3-flash-preview",
         checkedAt: "2026-07-26",
       },
+    },
+    {
+      // A/B-пара по другой оси, чем H6: не «как считать вес», а «что вообще
+      // спрашивать у модели». v3-dish просит три названия блюда вместо разбора
+      // на ингредиенты, состав и вес приходят из справочника (H7, H8).
+      //
+      // Модель выбрана прогоном scripts/bench-dish.ts от 2026-07-30 по
+      // одиннадцати кандидатам: ноль сбоев, схема принята на всех пяти фото,
+      // три различимых варианта везде, нужное название первым вариантом везде,
+      // 7 секунд и 1.50 ₽ за пять фотографий — лучшее сочетание из всех.
+      id: "google/gemini-3-flash-preview",
+      label: "Gemini 3 Flash (по названию блюда)",
+      vendor: "google",
+      enabled: true,
+      imageDetail: "high",
+      maxTokens: 4000,
+      temperature: 0.2,
+      promptVersion: "v3-dish",
+      vendorPricing: {
+        currency: "USD",
+        promptPerMillion: 0.25,
+        completionPerMillion: 1.5,
+        cachedPromptPerMillion: 0.25,
+        source: "pricepertoken.com/google-gemini-3-flash-preview",
+        checkedAt: "2026-07-26",
+      },
+    },
+    {
+      // Самая дешёвая из надёжных на том же прогоне: 0.47 ₽ за пять фото при
+      // нуле сбоев и верном названии первым вариантом. Вторая точка v3-dish —
+      // чтобы H7 не оказалась замером одной модели.
+      id: "qwen/qwen3-vl-235b-a22b-instruct",
+      label: "Qwen3-VL 235B (по названию блюда)",
+      vendor: "alibaba",
+      enabled: true,
+      imageDetail: "high",
+      maxTokens: 4000,
+      temperature: 0.2,
+      promptVersion: "v3-dish",
+      vendorPricing: null,
     },
     {
       // Стабильный (не preview) вариант Google на случай, если id выше отключат.
