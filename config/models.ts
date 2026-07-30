@@ -25,7 +25,7 @@
  * Сверка id с живым каталогом: npx tsx scripts/sync-models-catalog.ts
  */
 
-export type PromptVersion = "v1-plain" | "v2-scale";
+export type PromptVersion = "v1-plain" | "v2-scale" | "v3-dish";
 
 export interface VendorPricing {
   currency: "USD";

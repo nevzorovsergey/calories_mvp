@@ -1,5 +1,11 @@
 import type { ModelConfig, VendorPricing } from "@config/models";
-import { buildResponseSchema, dishAnalysisSchema, type DishAnalysis } from "./schema";
+import {
+  buildResponseSchema,
+  dishAnalysisSchema,
+  dishGuessSchema,
+  type DishAnalysis,
+  type DishGuess,
+} from "./schema";
 import { buildSystemPrompt, buildUserText } from "./prompt";
 
 /**
@@ -97,8 +103,14 @@ export interface RecognizeParams {
 
 export interface RecognizeResult {
   status: "ok" | "failed";
-  /** Разобранный ответ по схеме §7.3; null при ошибке. */
+  /** Разобранный ответ по схеме §7.3; null при ошибке и всегда null у v3-dish. */
   analysis: DishAnalysis | null;
+  /**
+   * Ответ v3-dish: три названия блюда и размер порции. Отдельным полем, а не
+   * union с `analysis`, чтобы вызывающие v1/v2 не пришлось переписывать ради
+   * сужения типа — у них `guess` просто всегда null.
+   */
+  guess: DishGuess | null;
   /** Полный ответ API как есть — пишем в recognitions.raw_response. */
   raw: unknown;
   usage: PolzaUsage | null;
@@ -138,7 +150,9 @@ function buildRequestBody(
           mode === "json_object"
             ? // При фолбэке схему приходится описывать текстом: сервер её не
               // валидирует, поэтому валидируем ответ zod'ом у себя.
-              `${system}\n\nВерни строго один JSON-объект по схеме dish_analysis без markdown-обёртки.`
+              `${system}\n\nВерни строго один JSON-объект по схеме ${
+                model.promptVersion === "v3-dish" ? "dish_guess" : "dish_analysis"
+              } без markdown-обёртки.`
             : system,
       },
       {
@@ -265,7 +279,9 @@ export async function recognizeDish(
       break;
     }
 
-    const validated = dishAnalysisSchema.safeParse(parsedJson);
+    const isDishGuess = params.model.promptVersion === "v3-dish";
+    const schema = isDishGuess ? dishGuessSchema : dishAnalysisSchema;
+    const validated = schema.safeParse(parsedJson);
     if (!validated.success) {
       lastError = `Ответ не соответствует схеме: ${validated.error.issues
         .slice(0, 5)
@@ -276,7 +292,8 @@ export async function recognizeDish(
 
     return {
       status: "ok",
-      analysis: validated.data,
+      analysis: isDishGuess ? null : (validated.data as DishAnalysis),
+      guess: isDishGuess ? (validated.data as DishGuess) : null,
       raw: json,
       usage,
       latencyMs: Date.now() - startedAt,
@@ -289,6 +306,7 @@ export async function recognizeDish(
   return {
     status: "failed",
     analysis: null,
+    guess: null,
     raw: lastRaw,
     usage: lastUsage,
     latencyMs: Date.now() - startedAt,

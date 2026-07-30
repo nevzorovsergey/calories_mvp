@@ -1,0 +1,4458 @@
+{
+ "100 г": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Абрикос": {
+  "ingredient_id": 4805,
+  "confidence": "exact"
+ },
+ "Абрикосовое варенье": {
+  "ingredient_id": 3753,
+  "confidence": "exact"
+ },
+ "Авокадо": {
+  "ingredient_id": 4813,
+  "confidence": "exact"
+ },
+ "Агар-агар": {
+  "ingredient_id": 3198,
+  "confidence": "exact"
+ },
+ "Аджика": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Адинамода": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Айва": {
+  "ingredient_id": 1271,
+  "confidence": "exact"
+ },
+ "Айран": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Алкоголь": {
+  "ingredient_id": 7923,
+  "confidence": "close"
+ },
+ "Алоэ": {
+  "ingredient_id": 7239,
+  "confidence": "close"
+ },
+ "Алыча": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Аммоний пищевой": {
+  "ingredient_id": 8148,
+  "confidence": "close"
+ },
+ "Ананас": {
+  "ingredient_id": 415,
+  "confidence": "exact"
+ },
+ "Ангостура": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Анис": {
+  "ingredient_id": 4424,
+  "confidence": "exact"
+ },
+ "Анчоусы": {
+  "ingredient_id": 562,
+  "confidence": "close"
+ },
+ "Апельсин": {
+  "ingredient_id": 2205,
+  "confidence": "exact"
+ },
+ "Арахис": {
+  "ingredient_id": 451,
+  "confidence": "exact"
+ },
+ "Арбуз": {
+  "ingredient_id": 873,
+  "confidence": "exact"
+ },
+ "Ароматизатор": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Артишок": {
+  "ingredient_id": 2313,
+  "confidence": "exact"
+ },
+ "Асафетида": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Аспирин": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ассорти мясное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ассорти овощное": {
+  "ingredient_id": 3172,
+  "confidence": "close"
+ },
+ "Ассорти орехово-фруктовое": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ассорти фруктовое": {
+  "ingredient_id": 6135,
+  "confidence": "close"
+ },
+ "Ассорти ягодное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ацидофилин": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Багет": {
+  "ingredient_id": 8019,
+  "confidence": "close"
+ },
+ "Бадьян": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Базилик": {
+  "ingredient_id": 5340,
+  "confidence": "exact"
+ },
+ "Баклажан": {
+  "ingredient_id": 503,
+  "confidence": "exact"
+ },
+ "Балык": {
+  "ingredient_id": 8257,
+  "confidence": "close"
+ },
+ "Бальзам": {
+  "ingredient_id": 5349,
+  "confidence": "close"
+ },
+ "Бальзамик": {
+  "ingredient_id": 5349,
+  "confidence": "exact"
+ },
+ "Бамия": {
+  "ingredient_id": 2368,
+  "confidence": "exact"
+ },
+ "Банан": {
+  "ingredient_id": 7052,
+  "confidence": "exact"
+ },
+ "Бананы": {
+  "ingredient_id": 7052,
+  "confidence": "exact"
+ },
+ "Барабулька": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Баранина": {
+  "ingredient_id": 5733,
+  "confidence": "close"
+ },
+ "Баранка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Барбарис": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Барсук": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бастурма": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Батат": {
+  "ingredient_id": 1590,
+  "confidence": "exact"
+ },
+ "Батон": {
+  "ingredient_id": 605,
+  "confidence": "close"
+ },
+ "Батончик шоколадный": {
+  "ingredient_id": 2697,
+  "confidence": "close"
+ },
+ "Бедро куриное": {
+  "ingredient_id": 539,
+  "confidence": "exact"
+ },
+ "Безе": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бекмес": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бекон": {
+  "ingredient_id": 1385,
+  "confidence": "exact"
+ },
+ "Белок яичный": {
+  "ingredient_id": 5291,
+  "confidence": "exact"
+ },
+ "Белорыбица": {
+  "ingredient_id": 1141,
+  "confidence": "close"
+ },
+ "Белый хлеб": {
+  "ingredient_id": 605,
+  "confidence": "exact"
+ },
+ "Бергамот": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бешамель": {
+  "ingredient_id": 7633,
+  "confidence": "close"
+ },
+ "Биодобавка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бисквит": {
+  "ingredient_id": 5815,
+  "confidence": "close"
+ },
+ "Блин": {
+  "ingredient_id": 8117,
+  "confidence": "exact"
+ },
+ "Бобы": {
+  "ingredient_id": 8313,
+  "confidence": "close"
+ },
+ "Бобы тонка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Болгарский перец": {
+  "ingredient_id": 381,
+  "confidence": "close"
+ },
+ "Ботва": {
+  "ingredient_id": 563,
+  "confidence": "close"
+ },
+ "Боярышник": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Бренди": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Брокколетти": {
+  "ingredient_id": 290,
+  "confidence": "close"
+ },
+ "Брокколи": {
+  "ingredient_id": 290,
+  "confidence": "exact"
+ },
+ "Брусника": {
+  "ingredient_id": 2913,
+  "confidence": "exact"
+ },
+ "Брынза": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Брюква": {
+  "ingredient_id": 1562,
+  "confidence": "exact"
+ },
+ "Бублик": {
+  "ingredient_id": 8007,
+  "confidence": "close"
+ },
+ "Буженина": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Булгур": {
+  "ingredient_id": 514,
+  "confidence": "exact"
+ },
+ "Булка": {
+  "ingredient_id": 8139,
+  "confidence": "close"
+ },
+ "Булочка": {
+  "ingredient_id": 5904,
+  "confidence": "close"
+ },
+ "Бульон": {
+  "ingredient_id": 7644,
+  "confidence": "close"
+ },
+ "Валериана": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ванилин": {
+  "ingredient_id": 6579,
+  "confidence": "close"
+ },
+ "Ваниль": {
+  "ingredient_id": 6579,
+  "confidence": "close"
+ },
+ "Ванильная эссенция": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ванильныи сахар": {
+  "ingredient_id": 269,
+  "confidence": "close"
+ },
+ "Ванильный сахар": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ванильный сахар или ванилин": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ванильный стручок": {
+  "ingredient_id": 6579,
+  "confidence": "close"
+ },
+ "Варенье": {
+  "ingredient_id": 2749,
+  "confidence": "exact"
+ },
+ "Варёная колбаса": {
+  "ingredient_id": 7695,
+  "confidence": "exact"
+ },
+ "Васаби": {
+  "ingredient_id": 4939,
+  "confidence": "exact"
+ },
+ "Вафельные трубочки": {
+  "ingredient_id": 5844,
+  "confidence": "close"
+ },
+ "Вафли": {
+  "ingredient_id": 8147,
+  "confidence": "close"
+ },
+ "Вермишель": {
+  "ingredient_id": 2992,
+  "confidence": "close"
+ },
+ "Вермут": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ветчина": {
+  "ingredient_id": 980,
+  "confidence": "close"
+ },
+ "Вешенки": {
+  "ingredient_id": 1688,
+  "confidence": "exact"
+ },
+ "Взбитые сливки": {
+  "ingredient_id": 3968,
+  "confidence": "close"
+ },
+ "Вино белое полусладкое": {
+  "ingredient_id": 7945,
+  "confidence": "close"
+ },
+ "Вино белое полусухое": {
+  "ingredient_id": 7945,
+  "confidence": "close"
+ },
+ "Вино белое сладкое": {
+  "ingredient_id": 6284,
+  "confidence": "close"
+ },
+ "Вино белое сухое": {
+  "ingredient_id": 7945,
+  "confidence": "exact"
+ },
+ "Вино десертное": {
+  "ingredient_id": 6284,
+  "confidence": "close"
+ },
+ "Вино игристое сухое": {
+  "ingredient_id": 7945,
+  "confidence": "close"
+ },
+ "Вино красное полусладкое": {
+  "ingredient_id": 6298,
+  "confidence": "close"
+ },
+ "Вино красное полусухое": {
+  "ingredient_id": 6298,
+  "confidence": "close"
+ },
+ "Вино красное сладкое": {
+  "ingredient_id": 6284,
+  "confidence": "close"
+ },
+ "Вино красное сухое": {
+  "ingredient_id": 6298,
+  "confidence": "exact"
+ },
+ "Вино крепленое": {
+  "ingredient_id": 8220,
+  "confidence": "close"
+ },
+ "Вино рисовое": {
+  "ingredient_id": 6293,
+  "confidence": "close"
+ },
+ "Вино розовое полусухое": {
+  "ingredient_id": 5016,
+  "confidence": "close"
+ },
+ "Вино розовое сухое": {
+  "ingredient_id": 5016,
+  "confidence": "close"
+ },
+ "Виноград": {
+  "ingredient_id": 7791,
+  "confidence": "exact"
+ },
+ "Виски": {
+  "ingredient_id": 7927,
+  "confidence": "exact"
+ },
+ "Вишня": {
+  "ingredient_id": 7062,
+  "confidence": "exact"
+ },
+ "Вода": {
+  "ingredient_id": 7266,
+  "confidence": "close"
+ },
+ "Вода газированная": {
+  "ingredient_id": 7950,
+  "confidence": "exact"
+ },
+ "Вода минеральная": {
+  "ingredient_id": 6291,
+  "confidence": "close"
+ },
+ "Вода розовая": {
+  "ingredient_id": 7266,
+  "confidence": "close"
+ },
+ "Вода цветочная апельсиновая": {
+  "ingredient_id": 7266,
+  "confidence": "close"
+ },
+ "Водка": {
+  "ingredient_id": 7926,
+  "confidence": "exact"
+ },
+ "Водоросли": {
+  "ingredient_id": 1565,
+  "confidence": "close"
+ },
+ "Вымя": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Галета": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Гарам масала": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Гвоздика": {
+  "ingredient_id": 4429,
+  "confidence": "exact"
+ },
+ "Глазурь": {
+  "ingredient_id": 2776,
+  "confidence": "close"
+ },
+ "Глутамат натрия": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Глюкоза": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Глютен": {
+  "ingredient_id": 1255,
+  "confidence": "exact"
+ },
+ "Говядина": {
+  "ingredient_id": 2591,
+  "confidence": "close"
+ },
+ "Говядина отварная": {
+  "ingredient_id": 2550,
+  "confidence": "close"
+ },
+ "Голень куриная": {
+  "ingredient_id": 538,
+  "confidence": "exact"
+ },
+ "Голубика": {
+  "ingredient_id": 428,
+  "confidence": "exact"
+ },
+ "Горбуша": {
+  "ingredient_id": 8246,
+  "confidence": "exact"
+ },
+ "Горбуша в масле": {
+  "ingredient_id": 8283,
+  "confidence": "close"
+ },
+ "Горох": {
+  "ingredient_id": 6866,
+  "confidence": "close"
+ },
+ "Горошек зеленый": {
+  "ingredient_id": 3527,
+  "confidence": "exact"
+ },
+ "Горчица": {
+  "ingredient_id": 183,
+  "confidence": "close"
+ },
+ "Готовая начинка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Готовое блюдо": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Гранат": {
+  "ingredient_id": 2242,
+  "confidence": "exact"
+ },
+ "Гранола": {
+  "ingredient_id": 4754,
+  "confidence": "exact"
+ },
+ "Гребешок": {
+  "ingredient_id": 7328,
+  "confidence": "exact"
+ },
+ "Грейпфрут": {
+  "ingredient_id": 589,
+  "confidence": "exact"
+ },
+ "Гренки": {
+  "ingredient_id": 5859,
+  "confidence": "exact"
+ },
+ "Грецкие орехи": {
+  "ingredient_id": 411,
+  "confidence": "exact"
+ },
+ "Грецкий орех": {
+  "ingredient_id": 3295,
+  "confidence": "exact"
+ },
+ "Гриб морской": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Гриб чайный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Грибы": {
+  "ingredient_id": 370,
+  "confidence": "close"
+ },
+ "Грибы консервированные": {
+  "ingredient_id": 2362,
+  "confidence": "exact"
+ },
+ "Грибы маринованные": {
+  "ingredient_id": 2362,
+  "confidence": "close"
+ },
+ "Грибы свежие": {
+  "ingredient_id": 2363,
+  "confidence": "close"
+ },
+ "Грудинка": {
+  "ingredient_id": 920,
+  "confidence": "close"
+ },
+ "Грудка": {
+  "ingredient_id": 474,
+  "confidence": "close"
+ },
+ "Грудка индюшки": {
+  "ingredient_id": 7623,
+  "confidence": "close"
+ },
+ "Грудка куриная": {
+  "ingredient_id": 541,
+  "confidence": "close"
+ },
+ "Грудка утиная": {
+  "ingredient_id": 4618,
+  "confidence": "close"
+ },
+ "Груша": {
+  "ingredient_id": 2226,
+  "confidence": "exact"
+ },
+ "Гуми": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Гусь": {
+  "ingredient_id": 7578,
+  "confidence": "exact"
+ },
+ "Дайкон": {
+  "ingredient_id": 1559,
+  "confidence": "exact"
+ },
+ "Детское питание": {
+  "ingredient_id": 840,
+  "confidence": "close"
+ },
+ "Джем": {
+  "ingredient_id": 2749,
+  "confidence": "exact"
+ },
+ "Джем абрикосовый": {
+  "ingredient_id": 3753,
+  "confidence": "exact"
+ },
+ "Джем апельсиновый": {
+  "ingredient_id": 1927,
+  "confidence": "close"
+ },
+ "Джусай": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Дичь": {
+  "ingredient_id": 8409,
+  "confidence": "close"
+ },
+ "Для жарки": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Для панировки": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Дорадо": {
+  "ingredient_id": 5067,
+  "confidence": "close"
+ },
+ "Драже": {
+  "ingredient_id": 3764,
+  "confidence": "close"
+ },
+ "Дрожжи": {
+  "ingredient_id": 8150,
+  "confidence": "close"
+ },
+ "Дрожжи свежие": {
+  "ingredient_id": 8150,
+  "confidence": "exact"
+ },
+ "Дрожжи сухие": {
+  "ingredient_id": 8151,
+  "confidence": "exact"
+ },
+ "Душица": {
+  "ingredient_id": 4436,
+  "confidence": "exact"
+ },
+ "Дыня": {
+  "ingredient_id": 510,
+  "confidence": "close"
+ },
+ "Ежевика": {
+  "ingredient_id": 553,
+  "confidence": "exact"
+ },
+ "Ерш": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Желатин": {
+  "ingredient_id": 2707,
+  "confidence": "exact"
+ },
+ "Желатин быстрорастворимый": {
+  "ingredient_id": 2707,
+  "confidence": "close"
+ },
+ "Желе": {
+  "ingredient_id": 2750,
+  "confidence": "close"
+ },
+ "Желирующая смесь": {
+  "ingredient_id": 1883,
+  "confidence": "close"
+ },
+ "Желтки яичные": {
+  "ingredient_id": 5292,
+  "confidence": "exact"
+ },
+ "Желток отварной": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Желток яичный": {
+  "ingredient_id": 5292,
+  "confidence": "exact"
+ },
+ "Желудки куриные": {
+  "ingredient_id": 4564,
+  "confidence": "exact"
+ },
+ "Желудок": {
+  "ingredient_id": 4193,
+  "confidence": "close"
+ },
+ "Желудок индюшачий": {
+  "ingredient_id": 4193,
+  "confidence": "exact"
+ },
+ "Желудь": {
+  "ingredient_id": 3673,
+  "confidence": "close"
+ },
+ "Жидкий дым": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Жимолость": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Жир": {
+  "ingredient_id": 6672,
+  "confidence": "close"
+ },
+ "Жмых овощной": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Жмых фруктовый": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Заварной крем": {
+  "ingredient_id": 2703,
+  "confidence": "close"
+ },
+ "Загуститель для сливок": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Зайчатина": {
+  "ingredient_id": 5630,
+  "confidence": "close"
+ },
+ "Закваска": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Заменитель сахара": {
+  "ingredient_id": 3365,
+  "confidence": "close"
+ },
+ "Заменитель сухого молока": {
+  "ingredient_id": 796,
+  "confidence": "close"
+ },
+ "Заправка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Зверобой": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Зелень": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Зелень укропа": {
+  "ingredient_id": 5341,
+  "confidence": "exact"
+ },
+ "Земляника": {
+  "ingredient_id": 426,
+  "confidence": "close"
+ },
+ "Зерно": {
+  "ingredient_id": 2813,
+  "confidence": "close"
+ },
+ "Зефир": {
+  "ingredient_id": 1103,
+  "confidence": "close"
+ },
+ "Зира": {
+  "ingredient_id": 4031,
+  "confidence": "exact"
+ },
+ "Зубатка": {
+  "ingredient_id": 8270,
+  "confidence": "close"
+ },
+ "Иваси": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Изюм": {
+  "ingredient_id": 592,
+  "confidence": "close"
+ },
+ "Изюм без косточек": {
+  "ingredient_id": 592,
+  "confidence": "exact"
+ },
+ "Икра красная": {
+  "ingredient_id": 7296,
+  "confidence": "close"
+ },
+ "Икра минтая": {
+  "ingredient_id": 8240,
+  "confidence": "close"
+ },
+ "Икра овощная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Икра рыбная": {
+  "ingredient_id": 8240,
+  "confidence": "exact"
+ },
+ "Икра черная": {
+  "ingredient_id": 7296,
+  "confidence": "close"
+ },
+ "Имбирь": {
+  "ingredient_id": 2339,
+  "confidence": "close"
+ },
+ "Индейка": {
+  "ingredient_id": 4189,
+  "confidence": "close"
+ },
+ "Инжир": {
+  "ingredient_id": 6129,
+  "confidence": "exact"
+ },
+ "Ирга": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ириски": {
+  "ingredient_id": 2779,
+  "confidence": "close"
+ },
+ "Йогурт": {
+  "ingredient_id": 384,
+  "confidence": "close"
+ },
+ "Йод": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Йошта": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кабачок": {
+  "ingredient_id": 3595,
+  "confidence": "close"
+ },
+ "Какао": {
+  "ingredient_id": 2701,
+  "confidence": "exact"
+ },
+ "Какао сгущенное": {
+  "ingredient_id": 602,
+  "confidence": "close"
+ },
+ "Какао тертое": {
+  "ingredient_id": 2701,
+  "confidence": "close"
+ },
+ "Какао-бобы": {
+  "ingredient_id": 1882,
+  "confidence": "close"
+ },
+ "Какао-масло": {
+  "ingredient_id": 4529,
+  "confidence": "exact"
+ },
+ "Какао-напиток": {
+  "ingredient_id": 4994,
+  "confidence": "close"
+ },
+ "Какао-порошок": {
+  "ingredient_id": 2701,
+  "confidence": "exact"
+ },
+ "Кактус": {
+  "ingredient_id": 1679,
+  "confidence": "close"
+ },
+ "Калина": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Калинджи": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кальвадос": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кальмар": {
+  "ingredient_id": 7331,
+  "confidence": "exact"
+ },
+ "Кальмар очищенный": {
+  "ingredient_id": 5090,
+  "confidence": "close"
+ },
+ "Камбала": {
+  "ingredient_id": 7304,
+  "confidence": "exact"
+ },
+ "Кампари": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Каннеллони": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Каперсы": {
+  "ingredient_id": 5346,
+  "confidence": "exact"
+ },
+ "Капуста белокочанная": {
+  "ingredient_id": 424,
+  "confidence": "exact"
+ },
+ "Капуста брюссельская": {
+  "ingredient_id": 501,
+  "confidence": "exact"
+ },
+ "Капуста квашеная": {
+  "ingredient_id": 2387,
+  "confidence": "exact"
+ },
+ "Капуста китайская": {
+  "ingredient_id": 3087,
+  "confidence": "exact"
+ },
+ "Капуста кольраби": {
+  "ingredient_id": 1532,
+  "confidence": "exact"
+ },
+ "Капуста краснокочанная": {
+  "ingredient_id": 425,
+  "confidence": "exact"
+ },
+ "Капуста кудрявая": {
+  "ingredient_id": 424,
+  "confidence": "close"
+ },
+ "Капуста морская": {
+  "ingredient_id": 1565,
+  "confidence": "exact"
+ },
+ "Капуста пекинская": {
+  "ingredient_id": 3087,
+  "confidence": "exact"
+ },
+ "Капуста савойская": {
+  "ingredient_id": 3496,
+  "confidence": "exact"
+ },
+ "Капуста цветная": {
+  "ingredient_id": 499,
+  "confidence": "exact"
+ },
+ "Капустные листья": {
+  "ingredient_id": 163,
+  "confidence": "close"
+ },
+ "Капучино": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Каракатица": {
+  "ingredient_id": 7323,
+  "confidence": "exact"
+ },
+ "Карамболь": {
+  "ingredient_id": 4823,
+  "confidence": "exact"
+ },
+ "Карамель": {
+  "ingredient_id": 1082,
+  "confidence": "close"
+ },
+ "Карась": {
+  "ingredient_id": 5060,
+  "confidence": "close"
+ },
+ "Карбонад": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кардамон": {
+  "ingredient_id": 4027,
+  "confidence": "exact"
+ },
+ "Каркаде": {
+  "ingredient_id": 5054,
+  "confidence": "close"
+ },
+ "Карп": {
+  "ingredient_id": 5060,
+  "confidence": "exact"
+ },
+ "Карри": {
+  "ingredient_id": 4032,
+  "confidence": "exact"
+ },
+ "Картофель": {
+  "ingredient_id": 420,
+  "confidence": "close"
+ },
+ "Картофель отварной": {
+  "ingredient_id": 3548,
+  "confidence": "exact"
+ },
+ "Картофель сырой": {
+  "ingredient_id": 3134,
+  "confidence": "exact"
+ },
+ "Картофеля": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Катык": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Каша": {
+  "ingredient_id": 3794,
+  "confidence": "close"
+ },
+ "Каштан": {
+  "ingredient_id": 3682,
+  "confidence": "close"
+ },
+ "Квас": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кедровый орех": {
+  "ingredient_id": 409,
+  "confidence": "exact"
+ },
+ "Кекс ванильный": {
+  "ingredient_id": 8082,
+  "confidence": "close"
+ },
+ "Кета": {
+  "ingredient_id": 6797,
+  "confidence": "exact"
+ },
+ "Кетчуп": {
+  "ingredient_id": 1664,
+  "confidence": "exact"
+ },
+ "Кетчуп или томатная паста": {
+  "ingredient_id": 1664,
+  "confidence": "close"
+ },
+ "Кефаль": {
+  "ingredient_id": 8231,
+  "confidence": "close"
+ },
+ "Кефир": {
+  "ingredient_id": 4012,
+  "confidence": "close"
+ },
+ "Киви": {
+  "ingredient_id": 185,
+  "confidence": "exact"
+ },
+ "Кижуч": {
+  "ingredient_id": 8244,
+  "confidence": "exact"
+ },
+ "Кизил": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Килька": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кинза": {
+  "ingredient_id": 3105,
+  "confidence": "exact"
+ },
+ "Киноа": {
+  "ingredient_id": 1982,
+  "confidence": "exact"
+ },
+ "Кисель": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кислота аскорбиновая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кислота лимонная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кишки": {
+  "ingredient_id": 1374,
+  "confidence": "exact"
+ },
+ "Клементин": {
+  "ingredient_id": 1303,
+  "confidence": "exact"
+ },
+ "Клетчатка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Клубника": {
+  "ingredient_id": 426,
+  "confidence": "exact"
+ },
+ "Клюква": {
+  "ingredient_id": 4830,
+  "confidence": "exact"
+ },
+ "Кляр": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кожа куриная": {
+  "ingredient_id": 4560,
+  "confidence": "exact"
+ },
+ "Кожа рыбная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кокос": {
+  "ingredient_id": 3277,
+  "confidence": "exact"
+ },
+ "Кокосовая стружка": {
+  "ingredient_id": 3278,
+  "confidence": "exact"
+ },
+ "Коктейль морской": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кола": {
+  "ingredient_id": 7960,
+  "confidence": "exact"
+ },
+ "Колбаса": {
+  "ingredient_id": 604,
+  "confidence": "close"
+ },
+ "Колбаса вареная": {
+  "ingredient_id": 7695,
+  "confidence": "exact"
+ },
+ "Колбаски": {
+  "ingredient_id": 6042,
+  "confidence": "close"
+ },
+ "Компот": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Конгрио": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кондитерское изделие": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Конкилье": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Консервированных томатов": {
+  "ingredient_id": 210,
+  "confidence": "close"
+ },
+ "Консервированый зеленый горошек": {
+  "ingredient_id": 3121,
+  "confidence": "exact"
+ },
+ "Консервы рыбные": {
+  "ingredient_id": 8243,
+  "confidence": "close"
+ },
+ "Конфеты": {
+  "ingredient_id": 2699,
+  "confidence": "close"
+ },
+ "Конфитюр": {
+  "ingredient_id": 3753,
+  "confidence": "close"
+ },
+ "Концентрат": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Коньяк": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кора дуба": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Корейка": {
+  "ingredient_id": 472,
+  "confidence": "exact"
+ },
+ "Коренья": {
+  "ingredient_id": 569,
+  "confidence": "close"
+ },
+ "Корж": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кориандр": {
+  "ingredient_id": 4030,
+  "confidence": "exact"
+ },
+ "Корица": {
+  "ingredient_id": 4428,
+  "confidence": "exact"
+ },
+ "Корнишоны": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Корюшка": {
+  "ingredient_id": 8254,
+  "confidence": "close"
+ },
+ "Кости": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Котлета": {
+  "ingredient_id": 4905,
+  "confidence": "close"
+ },
+ "Кофе натуральный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Кофе растворимый": {
+  "ingredient_id": 5001,
+  "confidence": "exact"
+ },
+ "Краб": {
+  "ingredient_id": 8272,
+  "confidence": "close"
+ },
+ "Крабовое мясо": {
+  "ingredient_id": 7311,
+  "confidence": "close"
+ },
+ "Крабовые палочки": {
+  "ingredient_id": 7311,
+  "confidence": "exact"
+ },
+ "Крапива": {
+  "ingredient_id": 2927,
+  "confidence": "close"
+ },
+ "Краситель пищевой": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Крахмал": {
+  "ingredient_id": 2806,
+  "confidence": "close"
+ },
+ "Крахмал картофельный": {
+  "ingredient_id": 2806,
+  "confidence": "close"
+ },
+ "Крахмал кукурузный": {
+  "ingredient_id": 2806,
+  "confidence": "exact"
+ },
+ "Креветки": {
+  "ingredient_id": 8287,
+  "confidence": "exact"
+ },
+ "Крекер": {
+  "ingredient_id": 8090,
+  "confidence": "exact"
+ },
+ "Крем": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Крем фреш": {
+  "ingredient_id": 6526,
+  "confidence": "close"
+ },
+ "Кресс-салат": {
+  "ingredient_id": 1515,
+  "confidence": "exact"
+ },
+ "Кролик": {
+  "ingredient_id": 5629,
+  "confidence": "exact"
+ },
+ "Крошка вафельная": {
+  "ingredient_id": 5858,
+  "confidence": "close"
+ },
+ "Крошка хлебная": {
+  "ingredient_id": 8036,
+  "confidence": "exact"
+ },
+ "Круассан": {
+  "ingredient_id": 8095,
+  "confidence": "close"
+ },
+ "Крупа гречневая": {
+  "ingredient_id": 3793,
+  "confidence": "exact"
+ },
+ "Крупа кукурузная": {
+  "ingredient_id": 4778,
+  "confidence": "close"
+ },
+ "Крупа манная": {
+  "ingredient_id": 2041,
+  "confidence": "exact"
+ },
+ "Крупа овсяная": {
+  "ingredient_id": 414,
+  "confidence": "close"
+ },
+ "Крупа перловая": {
+  "ingredient_id": 3392,
+  "confidence": "exact"
+ },
+ "Крупа пшеничная": {
+  "ingredient_id": 4775,
+  "confidence": "close"
+ },
+ "Крупа ячневая": {
+  "ingredient_id": 3392,
+  "confidence": "close"
+ },
+ "Крыжовник": {
+  "ingredient_id": 6138,
+  "confidence": "exact"
+ },
+ "Крылья куриные": {
+  "ingredient_id": 540,
+  "confidence": "exact"
+ },
+ "Кубик бульонный": {
+  "ingredient_id": 4671,
+  "confidence": "close"
+ },
+ "Кукуруза": {
+  "ingredient_id": 3106,
+  "confidence": "close"
+ },
+ "Кукурузные палочки": {
+  "ingredient_id": 3352,
+  "confidence": "close"
+ },
+ "Кумин": {
+  "ingredient_id": 4031,
+  "confidence": "exact"
+ },
+ "Кумкват": {
+  "ingredient_id": 1262,
+  "confidence": "exact"
+ },
+ "Кунжут": {
+  "ingredient_id": 3258,
+  "confidence": "exact"
+ },
+ "Кунжутные семечки": {
+  "ingredient_id": 3258,
+  "confidence": "exact"
+ },
+ "Курага": {
+  "ingredient_id": 7049,
+  "confidence": "exact"
+ },
+ "Куриные окорочка": {
+  "ingredient_id": 5486,
+  "confidence": "exact"
+ },
+ "Курица": {
+  "ingredient_id": 5508,
+  "confidence": "close"
+ },
+ "Курица копченая": {
+  "ingredient_id": 5503,
+  "confidence": "close"
+ },
+ "Куркума": {
+  "ingredient_id": 5339,
+  "confidence": "exact"
+ },
+ "Кус-кус": {
+  "ingredient_id": 2807,
+  "confidence": "exact"
+ },
+ "Кэроб": {
+  "ingredient_id": 6863,
+  "confidence": "exact"
+ },
+ "Лаванда": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лаваш": {
+  "ingredient_id": 8023,
+  "confidence": "exact"
+ },
+ "Лаваш тонкий": {
+  "ingredient_id": 8023,
+  "confidence": "close"
+ },
+ "Лазанья": {
+  "ingredient_id": 2063,
+  "confidence": "close"
+ },
+ "Лайм": {
+  "ingredient_id": 1263,
+  "confidence": "exact"
+ },
+ "Лангуст": {
+  "ingredient_id": 7319,
+  "confidence": "exact"
+ },
+ "Лапша": {
+  "ingredient_id": 2839,
+  "confidence": "close"
+ },
+ "Легкое": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Легкое говяжье": {
+  "ingredient_id": 1736,
+  "confidence": "exact"
+ },
+ "Лед": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лен": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лепестки": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лепешка": {
+  "ingredient_id": 8023,
+  "confidence": "close"
+ },
+ "Лечо": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ливер": {
+  "ingredient_id": 6749,
+  "confidence": "close"
+ },
+ "Ликер": {
+  "ingredient_id": 8205,
+  "confidence": "close"
+ },
+ "Лимон": {
+  "ingredient_id": 854,
+  "confidence": "exact"
+ },
+ "Лимонад": {
+  "ingredient_id": 7967,
+  "confidence": "close"
+ },
+ "Лимонная трава": {
+  "ingredient_id": 1681,
+  "confidence": "exact"
+ },
+ "Лимонник": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лимонный сок": {
+  "ingredient_id": 855,
+  "confidence": "exact"
+ },
+ "Липаза": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лист виноградный": {
+  "ingredient_id": 1683,
+  "confidence": "exact"
+ },
+ "Лист вишневый": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лист древесный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лист капустный": {
+  "ingredient_id": 424,
+  "confidence": "close"
+ },
+ "Лист лавровый": {
+  "ingredient_id": 4025,
+  "confidence": "exact"
+ },
+ "Лист малиновый": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лист смородиновый": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лист цветочный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Листья салата": {
+  "ingredient_id": 1539,
+  "confidence": "close"
+ },
+ "Личи": {
+  "ingredient_id": 2194,
+  "confidence": "exact"
+ },
+ "Лобстер": {
+  "ingredient_id": 7316,
+  "confidence": "exact"
+ },
+ "Лосось": {
+  "ingredient_id": 6799,
+  "confidence": "close"
+ },
+ "Лук": {
+  "ingredient_id": 3108,
+  "confidence": "exact"
+ },
+ "Лук белый": {
+  "ingredient_id": 320,
+  "confidence": "exact"
+ },
+ "Лук зеленый": {
+  "ingredient_id": 3113,
+  "confidence": "exact"
+ },
+ "Лук зелёный": {
+  "ingredient_id": 3113,
+  "confidence": "exact"
+ },
+ "Лук красный": {
+  "ingredient_id": 310,
+  "confidence": "exact"
+ },
+ "Лук репчастый": {
+  "ingredient_id": 311,
+  "confidence": "exact"
+ },
+ "Лук репчатый": {
+  "ingredient_id": 311,
+  "confidence": "exact"
+ },
+ "Лук репчатый красный": {
+  "ingredient_id": 310,
+  "confidence": "exact"
+ },
+ "Лук-порей": {
+  "ingredient_id": 556,
+  "confidence": "exact"
+ },
+ "Лук-шалот": {
+  "ingredient_id": 3607,
+  "confidence": "exact"
+ },
+ "Луковица": {
+  "ingredient_id": 311,
+  "confidence": "exact"
+ },
+ "Луковица большая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Любисток": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Лягушачьи лапки": {
+  "ingredient_id": 1256,
+  "confidence": "exact"
+ },
+ "Майонез": {
+  "ingredient_id": 4117,
+  "confidence": "exact"
+ },
+ "Майонез легкий": {
+  "ingredient_id": 6702,
+  "confidence": "exact"
+ },
+ "Майоран": {
+  "ingredient_id": 4036,
+  "confidence": "exact"
+ },
+ "Мак": {
+  "ingredient_id": 4438,
+  "confidence": "exact"
+ },
+ "Макаронные изделия": {
+  "ingredient_id": 2844,
+  "confidence": "close"
+ },
+ "Малина": {
+  "ingredient_id": 427,
+  "confidence": "exact"
+ },
+ "Манго": {
+  "ingredient_id": 3018,
+  "confidence": "exact"
+ },
+ "Мангостин": {
+  "ingredient_id": 2198,
+  "confidence": "close"
+ },
+ "Мандарин": {
+  "ingredient_id": 2213,
+  "confidence": "exact"
+ },
+ "Мандариновая цедра": {
+  "ingredient_id": 2211,
+  "confidence": "close"
+ },
+ "Манная крупа": {
+  "ingredient_id": 7024,
+  "confidence": "exact"
+ },
+ "Маракуйя": {
+  "ingredient_id": 2216,
+  "confidence": "exact"
+ },
+ "Маргарин": {
+  "ingredient_id": 4126,
+  "confidence": "close"
+ },
+ "Маринад": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мармелад": {
+  "ingredient_id": 1097,
+  "confidence": "exact"
+ },
+ "Мартини": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Марципан": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Маршмеллоу": {
+  "ingredient_id": 1103,
+  "confidence": "exact"
+ },
+ "Маскарпоне": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Маслин": {
+  "ingredient_id": 2203,
+  "confidence": "close"
+ },
+ "Маслины": {
+  "ingredient_id": 2202,
+  "confidence": "exact"
+ },
+ "Масло арахисовое": {
+  "ingredient_id": 339,
+  "confidence": "exact"
+ },
+ "Масло виноградной косточки": {
+  "ingredient_id": 4136,
+  "confidence": "exact"
+ },
+ "Масло горчичное": {
+  "ingredient_id": 5445,
+  "confidence": "exact"
+ },
+ "Масло грецкого ореха": {
+  "ingredient_id": 4138,
+  "confidence": "exact"
+ },
+ "Масло кедрового ореха": {
+  "ingredient_id": 4138,
+  "confidence": "close"
+ },
+ "Масло кокосовое": {
+  "ingredient_id": 200,
+  "confidence": "exact"
+ },
+ "Масло кукурузное": {
+  "ingredient_id": 296,
+  "confidence": "exact"
+ },
+ "Масло кунжутное": {
+  "ingredient_id": 4124,
+  "confidence": "exact"
+ },
+ "Масло льняное": {
+  "ingredient_id": 810,
+  "confidence": "exact"
+ },
+ "Масло миндальное": {
+  "ingredient_id": 4139,
+  "confidence": "exact"
+ },
+ "Масло мятное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Масло оливковое": {
+  "ingredient_id": 4521,
+  "confidence": "exact"
+ },
+ "Масло пальмовое": {
+  "ingredient_id": 4123,
+  "confidence": "exact"
+ },
+ "Масло подсолнечное": {
+  "ingredient_id": 340,
+  "confidence": "exact"
+ },
+ "Масло рапсовое": {
+  "ingredient_id": 295,
+  "confidence": "exact"
+ },
+ "Масло растительное": {
+  "ingredient_id": 340,
+  "confidence": "close"
+ },
+ "Масло сливочное": {
+  "ingredient_id": 6538,
+  "confidence": "close"
+ },
+ "Масло соевое": {
+  "ingredient_id": 297,
+  "confidence": "exact"
+ },
+ "Масло топленое": {
+  "ingredient_id": 4422,
+  "confidence": "exact"
+ },
+ "Масло тыквенное": {
+  "ingredient_id": 4531,
+  "confidence": "close"
+ },
+ "Масло хлопковое": {
+  "ingredient_id": 4132,
+  "confidence": "exact"
+ },
+ "Масло чесночное": {
+  "ingredient_id": 6518,
+  "confidence": "close"
+ },
+ "Масло шоколадное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Маслята": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мастика": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Матча": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Маца": {
+  "ingredient_id": 5848,
+  "confidence": "exact"
+ },
+ "Мацони": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Маш": {
+  "ingredient_id": 7364,
+  "confidence": "exact"
+ },
+ "Мед": {
+  "ingredient_id": 2748,
+  "confidence": "exact"
+ },
+ "Меланж": {
+  "ingredient_id": 164,
+  "confidence": "exact"
+ },
+ "Мелисса": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мидии": {
+  "ingredient_id": 7324,
+  "confidence": "exact"
+ },
+ "Миндаль": {
+  "ingredient_id": 410,
+  "confidence": "exact"
+ },
+ "Миндальная эссенция": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Минеола": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Минтай": {
+  "ingredient_id": 619,
+  "confidence": "exact"
+ },
+ "Мисо-паста": {
+  "ingredient_id": 5550,
+  "confidence": "exact"
+ },
+ "Можжевельник": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мозги говяжьи": {
+  "ingredient_id": 1730,
+  "confidence": "exact"
+ },
+ "Мойва": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Моллюски": {
+  "ingredient_id": 2911,
+  "confidence": "close"
+ },
+ "Молоки рыбные": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Молоко": {
+  "ingredient_id": 6549,
+  "confidence": "close"
+ },
+ "Молоко или вода": {
+  "ingredient_id": 6549,
+  "confidence": "close"
+ },
+ "Молоко кедровое": {
+  "ingredient_id": 3280,
+  "confidence": "close"
+ },
+ "Молоко кокосовое": {
+  "ingredient_id": 3281,
+  "confidence": "close"
+ },
+ "Молоко концентрированное": {
+  "ingredient_id": 5302,
+  "confidence": "exact"
+ },
+ "Молоко миндальное": {
+  "ingredient_id": 375,
+  "confidence": "close"
+ },
+ "Молоко сгущенное": {
+  "ingredient_id": 602,
+  "confidence": "exact"
+ },
+ "Молоко соевое": {
+  "ingredient_id": 5564,
+  "confidence": "close"
+ },
+ "Молоко сухое": {
+  "ingredient_id": 3984,
+  "confidence": "exact"
+ },
+ "Молоко топленое": {
+  "ingredient_id": 6549,
+  "confidence": "close"
+ },
+ "Молотая паприка": {
+  "ingredient_id": 4437,
+  "confidence": "exact"
+ },
+ "Молотый черный перец": {
+  "ingredient_id": 4039,
+  "confidence": "exact"
+ },
+ "Момордика": {
+  "ingredient_id": 1501,
+  "confidence": "exact"
+ },
+ "Морепродукты": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Морковь": {
+  "ingredient_id": 377,
+  "confidence": "exact"
+ },
+ "Морковь свежая": {
+  "ingredient_id": 3501,
+  "confidence": "exact"
+ },
+ "Мороженое": {
+  "ingredient_id": 683,
+  "confidence": "close"
+ },
+ "Морошка": {
+  "ingredient_id": 2910,
+  "confidence": "exact"
+ },
+ "Морская капуста": {
+  "ingredient_id": 1565,
+  "confidence": "exact"
+ },
+ "Морской язык": {
+  "ingredient_id": 7304,
+  "confidence": "exact"
+ },
+ "Моцарелла": {
+  "ingredient_id": 3953,
+  "confidence": "exact"
+ },
+ "Мука амарантовая": {
+  "ingredient_id": 432,
+  "confidence": "exact"
+ },
+ "Мука безглютеновая": {
+  "ingredient_id": 307,
+  "confidence": "close"
+ },
+ "Мука блинная": {
+  "ingredient_id": 304,
+  "confidence": "close"
+ },
+ "Мука гороховая": {
+  "ingredient_id": 7396,
+  "confidence": "close"
+ },
+ "Мука гречневая": {
+  "ingredient_id": 435,
+  "confidence": "exact"
+ },
+ "Мука каштановая": {
+  "ingredient_id": 452,
+  "confidence": "exact"
+ },
+ "Мука кокосовая": {
+  "ingredient_id": 457,
+  "confidence": "exact"
+ },
+ "Мука конопляная": {
+  "ingredient_id": 394,
+  "confidence": "close"
+ },
+ "Мука кукурузная": {
+  "ingredient_id": 3398,
+  "confidence": "close"
+ },
+ "Мука кунжутная": {
+  "ingredient_id": 3300,
+  "confidence": "close"
+ },
+ "Мука льняная": {
+  "ingredient_id": 394,
+  "confidence": "close"
+ },
+ "Мука миндальная": {
+  "ingredient_id": 388,
+  "confidence": "exact"
+ },
+ "Мука нутовая": {
+  "ingredient_id": 7396,
+  "confidence": "exact"
+ },
+ "Мука овсяная": {
+  "ingredient_id": 389,
+  "confidence": "exact"
+ },
+ "Мука полбяная": {
+  "ingredient_id": 356,
+  "confidence": "exact"
+ },
+ "Мука пшеничная": {
+  "ingredient_id": 304,
+  "confidence": "exact"
+ },
+ "Мука ржаная": {
+  "ingredient_id": 436,
+  "confidence": "exact"
+ },
+ "Мука рисовая": {
+  "ingredient_id": 307,
+  "confidence": "exact"
+ },
+ "Мука соевая": {
+  "ingredient_id": 316,
+  "confidence": "close"
+ },
+ "Мука специальная": {
+  "ingredient_id": 2004,
+  "confidence": "close"
+ },
+ "Мука цельнозерновая": {
+  "ingredient_id": 305,
+  "confidence": "close"
+ },
+ "Мука черемуховая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мука ячменная": {
+  "ingredient_id": 2847,
+  "confidence": "exact"
+ },
+ "Муки": {
+  "ingredient_id": 304,
+  "confidence": "exact"
+ },
+ "Мусс": {
+  "ingredient_id": 1885,
+  "confidence": "close"
+ },
+ "Мусс яблочный": {
+  "ingredient_id": 4804,
+  "confidence": "close"
+ },
+ "Мюсли": {
+  "ingredient_id": 2183,
+  "confidence": "close"
+ },
+ "Мясных копчёностей": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Мясо": {
+  "ingredient_id": 3918,
+  "confidence": "close"
+ },
+ "Мясо криля": {
+  "ingredient_id": 493,
+  "confidence": "close"
+ },
+ "Мясо соевое": {
+  "ingredient_id": 2176,
+  "confidence": "close"
+ },
+ "Мята": {
+  "ingredient_id": 6582,
+  "confidence": "close"
+ },
+ "Навага": {
+  "ingredient_id": 5058,
+  "confidence": "close"
+ },
+ "Налим": {
+  "ingredient_id": 5058,
+  "confidence": "exact"
+ },
+ "Напиток": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Напиток кисломолочный": {
+  "ingredient_id": 3982,
+  "confidence": "close"
+ },
+ "Напиток молочный": {
+  "ingredient_id": 7282,
+  "confidence": "close"
+ },
+ "Напиток овсяный": {
+  "ingredient_id": 376,
+  "confidence": "exact"
+ },
+ "Наршараб": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Начинка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Нектар": {
+  "ingredient_id": 893,
+  "confidence": "close"
+ },
+ "Нектарин": {
+  "ingredient_id": 187,
+  "confidence": "exact"
+ },
+ "Нога": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Нога баранья": {
+  "ingredient_id": 7419,
+  "confidence": "exact"
+ },
+ "Нори": {
+  "ingredient_id": 1566,
+  "confidence": "exact"
+ },
+ "Нуга": {
+  "ingredient_id": 2168,
+  "confidence": "close"
+ },
+ "Нут": {
+  "ingredient_id": 459,
+  "confidence": "exact"
+ },
+ "Нутелла": {
+  "ingredient_id": 1108,
+  "confidence": "exact"
+ },
+ "Облепиха": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Овес": {
+  "ingredient_id": 2813,
+  "confidence": "exact"
+ },
+ "Овощи": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Огурец": {
+  "ingredient_id": 423,
+  "confidence": "exact"
+ },
+ "Огурец маринованный": {
+  "ingredient_id": 170,
+  "confidence": "close"
+ },
+ "Огурец свежий": {
+  "ingredient_id": 423,
+  "confidence": "exact"
+ },
+ "Огурец соленый": {
+  "ingredient_id": 2487,
+  "confidence": "exact"
+ },
+ "Огурцы": {
+  "ingredient_id": 170,
+  "confidence": "close"
+ },
+ "Окара": {
+  "ingredient_id": 5560,
+  "confidence": "exact"
+ },
+ "Окорок": {
+  "ingredient_id": 1330,
+  "confidence": "exact"
+ },
+ "Окорочок куриный": {
+  "ingredient_id": 5486,
+  "confidence": "exact"
+ },
+ "Окунь": {
+  "ingredient_id": 6786,
+  "confidence": "exact"
+ },
+ "Окунь морской": {
+  "ingredient_id": 8233,
+  "confidence": "exact"
+ },
+ "Оладьи": {
+  "ingredient_id": 8117,
+  "confidence": "close"
+ },
+ "Оленина": {
+  "ingredient_id": 6963,
+  "confidence": "exact"
+ },
+ "Оливки зеленые": {
+  "ingredient_id": 2204,
+  "confidence": "exact"
+ },
+ "Оливки черные": {
+  "ingredient_id": 2204,
+  "confidence": "close"
+ },
+ "Оливковое масло": {
+  "ingredient_id": 4521,
+  "confidence": "exact"
+ },
+ "Ольховый дым": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Опара": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Опята": {
+  "ingredient_id": 373,
+  "confidence": "close"
+ },
+ "Орегано": {
+  "ingredient_id": 4436,
+  "confidence": "exact"
+ },
+ "Орех макадамия": {
+  "ingredient_id": 453,
+  "confidence": "exact"
+ },
+ "Орех мускатный": {
+  "ingredient_id": 4434,
+  "confidence": "exact"
+ },
+ "Орехи": {
+  "ingredient_id": 411,
+  "confidence": "close"
+ },
+ "Орехи бразильские": {
+  "ingredient_id": 448,
+  "confidence": "exact"
+ },
+ "Орехи грецкие": {
+  "ingredient_id": 411,
+  "confidence": "exact"
+ },
+ "Орехи кедровые": {
+  "ingredient_id": 409,
+  "confidence": "exact"
+ },
+ "Орехи кешью": {
+  "ingredient_id": 449,
+  "confidence": "exact"
+ },
+ "Орехи лесные": {
+  "ingredient_id": 450,
+  "confidence": "exact"
+ },
+ "Орехи пекан": {
+  "ingredient_id": 3290,
+  "confidence": "exact"
+ },
+ "Орехи толченые": {
+  "ingredient_id": 3693,
+  "confidence": "close"
+ },
+ "Орешки": {
+  "ingredient_id": 409,
+  "confidence": "close"
+ },
+ "Осьминог": {
+  "ingredient_id": 7326,
+  "confidence": "exact"
+ },
+ "Отвар": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Отварной картофель в мундире": {
+  "ingredient_id": 3546,
+  "confidence": "exact"
+ },
+ "Отруби": {
+  "ingredient_id": 2830,
+  "confidence": "close"
+ },
+ "Пажитник": {
+  "ingredient_id": 4432,
+  "confidence": "exact"
+ },
+ "Палтус": {
+  "ingredient_id": 7308,
+  "confidence": "exact"
+ },
+ "Пангасиус": {
+  "ingredient_id": 7308,
+  "confidence": "close"
+ },
+ "Панир": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Папайя": {
+  "ingredient_id": 3034,
+  "confidence": "exact"
+ },
+ "Папоротник": {
+  "ingredient_id": 2513,
+  "confidence": "close"
+ },
+ "Паприка": {
+  "ingredient_id": 4437,
+  "confidence": "exact"
+ },
+ "Паприка копченая": {
+  "ingredient_id": 4437,
+  "confidence": "close"
+ },
+ "Паприка молотая": {
+  "ingredient_id": 4437,
+  "confidence": "exact"
+ },
+ "Паприка сладкая": {
+  "ingredient_id": 4437,
+  "confidence": "exact"
+ },
+ "Пармезан": {
+  "ingredient_id": 3956,
+  "confidence": "exact"
+ },
+ "Паста": {
+  "ingredient_id": 506,
+  "confidence": "close"
+ },
+ "Паста арахисовая": {
+  "ingredient_id": 601,
+  "confidence": "exact"
+ },
+ "Паста карри": {
+  "ingredient_id": 4032,
+  "confidence": "close"
+ },
+ "Паста кунжутная": {
+  "ingredient_id": 3299,
+  "confidence": "exact"
+ },
+ "Паста ореховая": {
+  "ingredient_id": 3271,
+  "confidence": "close"
+ },
+ "Паста перечная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Паста сахарная": {
+  "ingredient_id": 2764,
+  "confidence": "close"
+ },
+ "Паста тахинная": {
+  "ingredient_id": 1712,
+  "confidence": "exact"
+ },
+ "Паста чесночно-имбирная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Паста шоколадная": {
+  "ingredient_id": 1108,
+  "confidence": "close"
+ },
+ "Пастернак": {
+  "ingredient_id": 569,
+  "confidence": "exact"
+ },
+ "Пастила": {
+  "ingredient_id": 648,
+  "confidence": "close"
+ },
+ "Патиссон": {
+  "ingredient_id": 2397,
+  "confidence": "exact"
+ },
+ "Патока": {
+  "ingredient_id": 1928,
+  "confidence": "close"
+ },
+ "Пахта": {
+  "ingredient_id": 383,
+  "confidence": "close"
+ },
+ "Паштет": {
+  "ingredient_id": 7704,
+  "confidence": "close"
+ },
+ "Пектин": {
+  "ingredient_id": 1929,
+  "confidence": "close"
+ },
+ "Пеленгас": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пельмени": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пенне": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Перепел": {
+  "ingredient_id": 3010,
+  "confidence": "close"
+ },
+ "Перепелиные яйца": {
+  "ingredient_id": 5299,
+  "confidence": "exact"
+ },
+ "Перец": {
+  "ingredient_id": 4039,
+  "confidence": "close"
+ },
+ "Перец белый": {
+  "ingredient_id": 4041,
+  "confidence": "exact"
+ },
+ "Перец болгарский": {
+  "ingredient_id": 381,
+  "confidence": "close"
+ },
+ "Перец болгарский красный": {
+  "ingredient_id": 381,
+  "confidence": "exact"
+ },
+ "Перец душистый": {
+  "ingredient_id": 4423,
+  "confidence": "exact"
+ },
+ "Перец зеленый": {
+  "ingredient_id": 379,
+  "confidence": "exact"
+ },
+ "Перец кайен": {
+  "ingredient_id": 4040,
+  "confidence": "exact"
+ },
+ "Перец красный жгучий": {
+  "ingredient_id": 4040,
+  "confidence": "close"
+ },
+ "Перец лимонный": {
+  "ingredient_id": 4039,
+  "confidence": "close"
+ },
+ "Перец пепперони": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Перец розовый": {
+  "ingredient_id": 4039,
+  "confidence": "close"
+ },
+ "Перец сладкий": {
+  "ingredient_id": 3216,
+  "confidence": "close"
+ },
+ "Перец сладкий желтый": {
+  "ingredient_id": 2491,
+  "confidence": "exact"
+ },
+ "Перец сладкий зеленый": {
+  "ingredient_id": 3535,
+  "confidence": "exact"
+ },
+ "Перец сладкий красный": {
+  "ingredient_id": 3216,
+  "confidence": "exact"
+ },
+ "Перец сычуаньский": {
+  "ingredient_id": 4040,
+  "confidence": "close"
+ },
+ "Перец черный": {
+  "ingredient_id": 4039,
+  "confidence": "exact"
+ },
+ "Перец черный молотый": {
+  "ingredient_id": 4039,
+  "confidence": "exact"
+ },
+ "Перец чили": {
+  "ingredient_id": 3214,
+  "confidence": "exact"
+ },
+ "Перец ямайский": {
+  "ingredient_id": 4423,
+  "confidence": "exact"
+ },
+ "Персик": {
+  "ingredient_id": 175,
+  "confidence": "exact"
+ },
+ "Персиковый йогурт": {
+  "ingredient_id": 6566,
+  "confidence": "close"
+ },
+ "Песто": {
+  "ingredient_id": 4687,
+  "confidence": "exact"
+ },
+ "Петрушка": {
+  "ingredient_id": 3524,
+  "confidence": "exact"
+ },
+ "Печень баранья": {
+  "ingredient_id": 5639,
+  "confidence": "exact"
+ },
+ "Печень говяжья": {
+  "ingredient_id": 2559,
+  "confidence": "exact"
+ },
+ "Печень гусиная": {
+  "ingredient_id": 5523,
+  "confidence": "exact"
+ },
+ "Печень индюшиная": {
+  "ingredient_id": 4594,
+  "confidence": "exact"
+ },
+ "Печень кролика": {
+  "ingredient_id": 2559,
+  "confidence": "close"
+ },
+ "Печень куриная": {
+  "ingredient_id": 4168,
+  "confidence": "exact"
+ },
+ "Печень минтая": {
+  "ingredient_id": 734,
+  "confidence": "close"
+ },
+ "Печень свиная": {
+  "ingredient_id": 970,
+  "confidence": "exact"
+ },
+ "Печень трески": {
+  "ingredient_id": 2918,
+  "confidence": "close"
+ },
+ "Печень утиная": {
+  "ingredient_id": 7575,
+  "confidence": "exact"
+ },
+ "Печенье": {
+  "ingredient_id": 8075,
+  "confidence": "close"
+ },
+ "Печенье юбилейное": {
+  "ingredient_id": 4975,
+  "confidence": "close"
+ },
+ "Пиво нефильтрованное": {
+  "ingredient_id": 1854,
+  "confidence": "close"
+ },
+ "Пиво светлое": {
+  "ingredient_id": 1854,
+  "confidence": "close"
+ },
+ "Пиво темное": {
+  "ingredient_id": 1854,
+  "confidence": "close"
+ },
+ "Пита": {
+  "ingredient_id": 8023,
+  "confidence": "exact"
+ },
+ "Питахайя": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пищевая добавка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Плавленый сырок": {
+  "ingredient_id": 4399,
+  "confidence": "close"
+ },
+ "Побеги": {
+  "ingredient_id": 2318,
+  "confidence": "close"
+ },
+ "Повидло": {
+  "ingredient_id": 2749,
+  "confidence": "close"
+ },
+ "Повидло  или любое варенье нежидкое": {
+  "ingredient_id": 2749,
+  "confidence": "close"
+ },
+ "Подсолнечное масло": {
+  "ingredient_id": 340,
+  "confidence": "exact"
+ },
+ "Подчеревина свиная": {
+  "ingredient_id": 1377,
+  "confidence": "close"
+ },
+ "Полба": {
+  "ingredient_id": 2853,
+  "confidence": "exact"
+ },
+ "Полента кукурузная": {
+  "ingredient_id": 2805,
+  "confidence": "close"
+ },
+ "Полента рисовая": {
+  "ingredient_id": 2822,
+  "confidence": "close"
+ },
+ "Полента чечевично-злаковая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Полуфабрикаты": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Помело": {
+  "ingredient_id": 862,
+  "confidence": "exact"
+ },
+ "Померанец": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Помидор": {
+  "ingredient_id": 3565,
+  "confidence": "exact"
+ },
+ "Помидор маринованный": {
+  "ingredient_id": 3565,
+  "confidence": "close"
+ },
+ "Помидор свежий": {
+  "ingredient_id": 3565,
+  "confidence": "exact"
+ },
+ "Помидор соленый": {
+  "ingredient_id": 3565,
+  "confidence": "close"
+ },
+ "Помидоры черри": {
+  "ingredient_id": 153,
+  "confidence": "exact"
+ },
+ "Попкорн": {
+  "ingredient_id": 1067,
+  "confidence": "close"
+ },
+ "Порошок горчичный": {
+  "ingredient_id": 4037,
+  "confidence": "exact"
+ },
+ "Порошок грибной": {
+  "ingredient_id": 4279,
+  "confidence": "close"
+ },
+ "Порошок луковый": {
+  "ingredient_id": 4435,
+  "confidence": "exact"
+ },
+ "Порошок пекарский": {
+  "ingredient_id": 5912,
+  "confidence": "exact"
+ },
+ "Порошок томатный": {
+  "ingredient_id": 3569,
+  "confidence": "exact"
+ },
+ "Порошок чесночный": {
+  "ingredient_id": 4433,
+  "confidence": "exact"
+ },
+ "Портулак": {
+  "ingredient_id": 2382,
+  "confidence": "exact"
+ },
+ "Посыпка кондитерская": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Потроха": {
+  "ingredient_id": 4165,
+  "confidence": "close"
+ },
+ "Почки": {
+  "ingredient_id": 2557,
+  "confidence": "close"
+ },
+ "Пралине": {
+  "ingredient_id": 1899,
+  "confidence": "exact"
+ },
+ "Пресервы": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Приправа": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Простокваша": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Профитроли": {
+  "ingredient_id": 8094,
+  "confidence": "close"
+ },
+ "Пряник": {
+  "ingredient_id": 5810,
+  "confidence": "close"
+ },
+ "Пряности": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Псиллиум": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пудинг": {
+  "ingredient_id": 2717,
+  "confidence": "close"
+ },
+ "Пудинг ванильный": {
+  "ingredient_id": 2717,
+  "confidence": "close"
+ },
+ "Пудинг карамельный": {
+  "ingredient_id": 1904,
+  "confidence": "close"
+ },
+ "Путассу": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пшеница": {
+  "ingredient_id": 2828,
+  "confidence": "close"
+ },
+ "Пшено": {
+  "ingredient_id": 2810,
+  "confidence": "exact"
+ },
+ "Пыльца цветочная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Пюре картофельное": {
+  "ingredient_id": 1663,
+  "confidence": "close"
+ },
+ "Пюре овощное": {
+  "ingredient_id": 6623,
+  "confidence": "close"
+ },
+ "Пюре томатное": {
+  "ingredient_id": 508,
+  "confidence": "exact"
+ },
+ "Пюре фруктовое": {
+  "ingredient_id": 2981,
+  "confidence": "close"
+ },
+ "Пюре ягодное": {
+  "ingredient_id": 4107,
+  "confidence": "close"
+ },
+ "Равиоли": {
+  "ingredient_id": 5221,
+  "confidence": "close"
+ },
+ "Разрыхлитель": {
+  "ingredient_id": 5913,
+  "confidence": "close"
+ },
+ "Разрыхлитель для теста": {
+  "ingredient_id": 5911,
+  "confidence": "close"
+ },
+ "Разрыхлитель теста": {
+  "ingredient_id": 5911,
+  "confidence": "close"
+ },
+ "Раки": {
+  "ingredient_id": 7314,
+  "confidence": "exact"
+ },
+ "Раковые шейки": {
+  "ingredient_id": 7315,
+  "confidence": "close"
+ },
+ "Ракушки": {
+  "ingredient_id": 2911,
+  "confidence": "close"
+ },
+ "Рамбутан": {
+  "ingredient_id": 1275,
+  "confidence": "close"
+ },
+ "Рапаны": {
+  "ingredient_id": 5091,
+  "confidence": "exact"
+ },
+ "Рассол": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Растительное масло": {
+  "ingredient_id": 340,
+  "confidence": "close"
+ },
+ "Рахат-лукум": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Ребра": {
+  "ingredient_id": 1407,
+  "confidence": "close"
+ },
+ "Ребра говяжьи": {
+  "ingredient_id": 5277,
+  "confidence": "exact"
+ },
+ "Ребра свиные": {
+  "ingredient_id": 961,
+  "confidence": "exact"
+ },
+ "Ревень": {
+  "ingredient_id": 866,
+  "confidence": "exact"
+ },
+ "Редис": {
+  "ingredient_id": 2384,
+  "confidence": "exact"
+ },
+ "Редька": {
+  "ingredient_id": 1559,
+  "confidence": "close"
+ },
+ "Редька дайкон": {
+  "ingredient_id": 1559,
+  "confidence": "exact"
+ },
+ "Репа": {
+  "ingredient_id": 584,
+  "confidence": "exact"
+ },
+ "Рикотта": {
+  "ingredient_id": 4356,
+  "confidence": "close"
+ },
+ "Рис": {
+  "ingredient_id": 442,
+  "confidence": "close"
+ },
+ "Рис воздушный": {
+  "ingredient_id": 7020,
+  "confidence": "exact"
+ },
+ "Рис дикий": {
+  "ingredient_id": 2834,
+  "confidence": "exact"
+ },
+ "Рис коричневый": {
+  "ingredient_id": 441,
+  "confidence": "close"
+ },
+ "Рисовая бумага": {
+  "ingredient_id": 2850,
+  "confidence": "close"
+ },
+ "Рожки": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Розмарин": {
+  "ingredient_id": 4441,
+  "confidence": "close"
+ },
+ "Ром": {
+  "ingredient_id": 7925,
+  "confidence": "exact"
+ },
+ "Романо": {
+  "ingredient_id": 406,
+  "confidence": "close"
+ },
+ "Ростки": {
+  "ingredient_id": 3065,
+  "confidence": "close"
+ },
+ "Рубец говяжий": {
+  "ingredient_id": 3707,
+  "confidence": "exact"
+ },
+ "Руккола": {
+  "ingredient_id": 2495,
+  "confidence": "exact"
+ },
+ "Рукола": {
+  "ingredient_id": 2495,
+  "confidence": "exact"
+ },
+ "Рулет": {
+  "ingredient_id": 6039,
+  "confidence": "close"
+ },
+ "Рулька": {
+  "ingredient_id": 2284,
+  "confidence": "close"
+ },
+ "Рыба": {
+  "ingredient_id": 8236,
+  "confidence": "close"
+ },
+ "Рябина красная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Рябина черноплодная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Рябчик": {
+  "ingredient_id": 5939,
+  "confidence": "close"
+ },
+ "Ряженка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Савойская капуста": {
+  "ingredient_id": 3496,
+  "confidence": "exact"
+ },
+ "Саго": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сайда": {
+  "ingredient_id": 8237,
+  "confidence": "exact"
+ },
+ "Сайра": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Саке": {
+  "ingredient_id": 831,
+  "confidence": "exact"
+ },
+ "Салака": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сало": {
+  "ingredient_id": 1395,
+  "confidence": "exact"
+ },
+ "Салями": {
+  "ingredient_id": 7690,
+  "confidence": "close"
+ },
+ "Сарделька": {
+  "ingredient_id": 6072,
+  "confidence": "close"
+ },
+ "Сах песок": {
+  "ingredient_id": 269,
+  "confidence": "exact"
+ },
+ "Сахар": {
+  "ingredient_id": 269,
+  "confidence": "exact"
+ },
+ "Сахар ванильный": {
+  "ingredient_id": 269,
+  "confidence": "close"
+ },
+ "Сахар гранулированный": {
+  "ingredient_id": 269,
+  "confidence": "exact"
+ },
+ "Сахар коричневый": {
+  "ingredient_id": 1941,
+  "confidence": "exact"
+ },
+ "Сахар кусковой": {
+  "ingredient_id": 2766,
+  "confidence": "close"
+ },
+ "Сахар тростниковый": {
+  "ingredient_id": 3782,
+  "confidence": "exact"
+ },
+ "Сахар-рафинад": {
+  "ingredient_id": 269,
+  "confidence": "close"
+ },
+ "Сахарная пудра": {
+  "ingredient_id": 2764,
+  "confidence": "exact"
+ },
+ "Сахарный песок": {
+  "ingredient_id": 269,
+  "confidence": "exact"
+ },
+ "Свежий огурец": {
+  "ingredient_id": 423,
+  "confidence": "exact"
+ },
+ "Свекла": {
+  "ingredient_id": 502,
+  "confidence": "exact"
+ },
+ "Свекла листовая": {
+  "ingredient_id": 3099,
+  "confidence": "exact"
+ },
+ "Свекла отварная": {
+  "ingredient_id": 2254,
+  "confidence": "exact"
+ },
+ "Свинина": {
+  "ingredient_id": 996,
+  "confidence": "close"
+ },
+ "Свити": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сгущенка": {
+  "ingredient_id": 602,
+  "confidence": "exact"
+ },
+ "Селедка соленая": {
+  "ingredient_id": 1257,
+  "confidence": "close"
+ },
+ "Сельдерей корневой": {
+  "ingredient_id": 3508,
+  "confidence": "exact"
+ },
+ "Сельдерей листовой": {
+  "ingredient_id": 422,
+  "confidence": "close"
+ },
+ "Сельдерей черешковый": {
+  "ingredient_id": 422,
+  "confidence": "exact"
+ },
+ "Сельдь": {
+  "ingredient_id": 8224,
+  "confidence": "exact"
+ },
+ "Семга": {
+  "ingredient_id": 488,
+  "confidence": "exact"
+ },
+ "Семена": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Семена горчицы": {
+  "ingredient_id": 4037,
+  "confidence": "close"
+ },
+ "Семена льна": {
+  "ingredient_id": 2522,
+  "confidence": "exact"
+ },
+ "Семена укропа": {
+  "ingredient_id": 4033,
+  "confidence": "exact"
+ },
+ "Семена чиа": {
+  "ingredient_id": 513,
+  "confidence": "exact"
+ },
+ "Семечки": {
+  "ingredient_id": 456,
+  "confidence": "exact"
+ },
+ "Семечки подсолнуха": {
+  "ingredient_id": 456,
+  "confidence": "exact"
+ },
+ "Семечки тыквенные": {
+  "ingredient_id": 455,
+  "confidence": "exact"
+ },
+ "Семолина": {
+  "ingredient_id": 2823,
+  "confidence": "exact"
+ },
+ "Сердечки куриные": {
+  "ingredient_id": 4566,
+  "confidence": "exact"
+ },
+ "Сердце": {
+  "ingredient_id": 1733,
+  "confidence": "close"
+ },
+ "Сетка жировая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сибас": {
+  "ingredient_id": 8250,
+  "confidence": "exact"
+ },
+ "Сидр": {
+  "ingredient_id": 7254,
+  "confidence": "close"
+ },
+ "Сироп": {
+  "ingredient_id": 1061,
+  "confidence": "close"
+ },
+ "Сироп абрикосовый": {
+  "ingredient_id": 3753,
+  "confidence": "close"
+ },
+ "Сироп алкогольный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сироп ананасовый": {
+  "ingredient_id": 2773,
+  "confidence": "close"
+ },
+ "Сироп ванильный": {
+  "ingredient_id": 3754,
+  "confidence": "close"
+ },
+ "Сироп глюкозы": {
+  "ingredient_id": 2767,
+  "confidence": "close"
+ },
+ "Сироп инвертный": {
+  "ingredient_id": 3754,
+  "confidence": "close"
+ },
+ "Сироп кленовый": {
+  "ingredient_id": 2769,
+  "confidence": "exact"
+ },
+ "Сироп клубничный": {
+  "ingredient_id": 1866,
+  "confidence": "close"
+ },
+ "Сироп клюквенный": {
+  "ingredient_id": 7069,
+  "confidence": "close"
+ },
+ "Сироп кокосовый": {
+  "ingredient_id": 2769,
+  "confidence": "close"
+ },
+ "Сироп кукурузный": {
+  "ingredient_id": 1945,
+  "confidence": "exact"
+ },
+ "Сироп лимонный": {
+  "ingredient_id": 3754,
+  "confidence": "close"
+ },
+ "Сироп миндальный": {
+  "ingredient_id": 1061,
+  "confidence": "close"
+ },
+ "Сироп мятный": {
+  "ingredient_id": 3754,
+  "confidence": "close"
+ },
+ "Сироп персиковый": {
+  "ingredient_id": 851,
+  "confidence": "close"
+ },
+ "Сироп сахарный": {
+  "ingredient_id": 1947,
+  "confidence": "close"
+ },
+ "Сироп смородиновый": {
+  "ingredient_id": 1061,
+  "confidence": "close"
+ },
+ "Сироп фруктовый": {
+  "ingredient_id": 1061,
+  "confidence": "exact"
+ },
+ "Сироп черничный": {
+  "ingredient_id": 1866,
+  "confidence": "close"
+ },
+ "Сироп шоколадный": {
+  "ingredient_id": 7225,
+  "confidence": "exact"
+ },
+ "Сироп ягодный": {
+  "ingredient_id": 1061,
+  "confidence": "close"
+ },
+ "Скумбрия": {
+  "ingredient_id": 8227,
+  "confidence": "exact"
+ },
+ "Сладкий перец": {
+  "ingredient_id": 3216,
+  "confidence": "close"
+ },
+ "Слива": {
+  "ingredient_id": 3057,
+  "confidence": "exact"
+ },
+ "Сливки": {
+  "ingredient_id": 3965,
+  "confidence": "close"
+ },
+ "Сливки или жирная сметана": {
+  "ingredient_id": 403,
+  "confidence": "close"
+ },
+ "Сливки кокосовые": {
+  "ingredient_id": 3688,
+  "confidence": "exact"
+ },
+ "Сливочное масло": {
+  "ingredient_id": 6538,
+  "confidence": "exact"
+ },
+ "Слоеное тесто": {
+  "ingredient_id": 5898,
+  "confidence": "exact"
+ },
+ "Смалец": {
+  "ingredient_id": 4509,
+  "confidence": "exact"
+ },
+ "Смесь молочная": {
+  "ingredient_id": 2899,
+  "confidence": "close"
+ },
+ "Смесь перцев": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Смесь порошковая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Смесь специй": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сметана": {
+  "ingredient_id": 4365,
+  "confidence": "exact"
+ },
+ "Сметанка": {
+  "ingredient_id": 4365,
+  "confidence": "exact"
+ },
+ "Смородина белая": {
+  "ingredient_id": 7072,
+  "confidence": "exact"
+ },
+ "Смородина красная": {
+  "ingredient_id": 7072,
+  "confidence": "exact"
+ },
+ "Смородина черная": {
+  "ingredient_id": 7071,
+  "confidence": "exact"
+ },
+ "Снеки": {
+  "ingredient_id": 1056,
+  "confidence": "close"
+ },
+ "Соба": {
+  "ingredient_id": 2014,
+  "confidence": "exact"
+ },
+ "Сода": {
+  "ingredient_id": 8148,
+  "confidence": "exact"
+ },
+ "Сода гашеная уксусом": {
+  "ingredient_id": 8148,
+  "confidence": "close"
+ },
+ "Соевые проростки": {
+  "ingredient_id": 2392,
+  "confidence": "exact"
+ },
+ "Соевый соус": {
+  "ingredient_id": 7385,
+  "confidence": "exact"
+ },
+ "Сок": {
+  "ingredient_id": 359,
+  "confidence": "close"
+ },
+ "Сок апельсиновый": {
+  "ingredient_id": 2206,
+  "confidence": "exact"
+ },
+ "Сок березовый": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сок гранатовый": {
+  "ingredient_id": 895,
+  "confidence": "exact"
+ },
+ "Сок лимонный": {
+  "ingredient_id": 855,
+  "confidence": "exact"
+ },
+ "Сок мандариновый": {
+  "ingredient_id": 3033,
+  "confidence": "exact"
+ },
+ "Сок морковный": {
+  "ingredient_id": 3599,
+  "confidence": "close"
+ },
+ "Сок свежевыжатый": {
+  "ingredient_id": 2206,
+  "confidence": "close"
+ },
+ "Сок томатный": {
+  "ingredient_id": 3566,
+  "confidence": "close"
+ },
+ "Сок яблочный": {
+  "ingredient_id": 7041,
+  "confidence": "exact"
+ },
+ "Сок ягодный": {
+  "ingredient_id": 7278,
+  "confidence": "close"
+ },
+ "Солод": {
+  "ingredient_id": 2848,
+  "confidence": "close"
+ },
+ "Соломка": {
+  "ingredient_id": 8037,
+  "confidence": "close"
+ },
+ "Соль": {
+  "ingredient_id": 6576,
+  "confidence": "exact"
+ },
+ "Соль нитритная": {
+  "ingredient_id": 6576,
+  "confidence": "close"
+ },
+ "Соль перец по вкусу": {
+  "ingredient_id": 6576,
+  "confidence": "close"
+ },
+ "Соль по вкусу": {
+  "ingredient_id": 6576,
+  "confidence": "exact"
+ },
+ "Сосиска": {
+  "ingredient_id": 6076,
+  "confidence": "close"
+ },
+ "Соус": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Соус майонезный": {
+  "ingredient_id": 4511,
+  "confidence": "close"
+ },
+ "Соус томатный": {
+  "ingredient_id": 3162,
+  "confidence": "exact"
+ },
+ "Соус устричный": {
+  "ingredient_id": 7637,
+  "confidence": "exact"
+ },
+ "Соус фруктовый": {
+  "ingredient_id": 1061,
+  "confidence": "close"
+ },
+ "Соус ягодный": {
+  "ingredient_id": 911,
+  "confidence": "close"
+ },
+ "Соус-маринад": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Соя": {
+  "ingredient_id": 7378,
+  "confidence": "exact"
+ },
+ "Спагетти": {
+  "ingredient_id": 610,
+  "confidence": "exact"
+ },
+ "Спагетти отвареные": {
+  "ingredient_id": 2042,
+  "confidence": "close"
+ },
+ "Спаржа": {
+  "ingredient_id": 1497,
+  "confidence": "exact"
+ },
+ "Спаржа соевая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Специи": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Спирт": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Спред": {
+  "ingredient_id": 6688,
+  "confidence": "close"
+ },
+ "Ставрида": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Стевия": {
+  "ingredient_id": 3787,
+  "confidence": "exact"
+ },
+ "Стрелки чесночные": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Стружка кокосовая": {
+  "ingredient_id": 3278,
+  "confidence": "exact"
+ },
+ "Стружка шоколадная": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Субпродукты": {
+  "ingredient_id": 4165,
+  "confidence": "close"
+ },
+ "Сумах": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сунели": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Суп пакетный": {
+  "ingredient_id": 4716,
+  "confidence": "close"
+ },
+ "Суповой набор": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сусло квасное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Сухари": {
+  "ingredient_id": 8036,
+  "confidence": "close"
+ },
+ "Сухари панировочные": {
+  "ingredient_id": 8036,
+  "confidence": "exact"
+ },
+ "Сухарики": {
+  "ingredient_id": 8089,
+  "confidence": "exact"
+ },
+ "Сухие дрожжи": {
+  "ingredient_id": 8151,
+  "confidence": "exact"
+ },
+ "Сухой завтрак": {
+  "ingredient_id": 6992,
+  "confidence": "close"
+ },
+ "Сухофрукты": {
+  "ingredient_id": 2229,
+  "confidence": "close"
+ },
+ "Сушки": {
+  "ingredient_id": 8089,
+  "confidence": "close"
+ },
+ "Сыворотка": {
+  "ingredient_id": 3993,
+  "confidence": "close"
+ },
+ "Сыр": {
+  "ingredient_id": 4349,
+  "confidence": "close"
+ },
+ "Сыр адыгейский": {
+  "ingredient_id": 6527,
+  "confidence": "close"
+ },
+ "Сыр голландский": {
+  "ingredient_id": 6527,
+  "confidence": "close"
+ },
+ "Сыр голубой": {
+  "ingredient_id": 5283,
+  "confidence": "exact"
+ },
+ "Сыр козий": {
+  "ingredient_id": 6543,
+  "confidence": "close"
+ },
+ "Сыр колбасный": {
+  "ingredient_id": 3964,
+  "confidence": "close"
+ },
+ "Сыр копченый": {
+  "ingredient_id": 6524,
+  "confidence": "close"
+ },
+ "Сыр мягкий": {
+  "ingredient_id": 5285,
+  "confidence": "close"
+ },
+ "Сыр плавленый": {
+  "ingredient_id": 4398,
+  "confidence": "close"
+ },
+ "Сыр полутвердый": {
+  "ingredient_id": 5284,
+  "confidence": "close"
+ },
+ "Сыр сливочный": {
+  "ingredient_id": 6526,
+  "confidence": "exact"
+ },
+ "Сыр сулугуни": {
+  "ingredient_id": 6528,
+  "confidence": "close"
+ },
+ "Сыр твердый": {
+  "ingredient_id": 4349,
+  "confidence": "close"
+ },
+ "Сыр творожный": {
+  "ingredient_id": 6526,
+  "confidence": "exact"
+ },
+ "Сыра моцарелла": {
+  "ingredient_id": 3953,
+  "confidence": "exact"
+ },
+ "Сырки плавленные": {
+  "ingredient_id": 482,
+  "confidence": "close"
+ },
+ "Сырок плавленный": {
+  "ingredient_id": 4399,
+  "confidence": "close"
+ },
+ "Сырок плавленый": {
+  "ingredient_id": 3963,
+  "confidence": "close"
+ },
+ "Сырок творожный": {
+  "ingredient_id": 401,
+  "confidence": "close"
+ },
+ "Сычужный фермент": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Табаско": {
+  "ingredient_id": 7636,
+  "confidence": "exact"
+ },
+ "Тандури масала": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тапиока": {
+  "ingredient_id": 2825,
+  "confidence": "exact"
+ },
+ "Тарталетка": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тартар": {
+  "ingredient_id": 4934,
+  "confidence": "exact"
+ },
+ "Тархун": {
+  "ingredient_id": 4045,
+  "confidence": "close"
+ },
+ "Творог": {
+  "ingredient_id": 401,
+  "confidence": "close"
+ },
+ "Творог домашний": {
+  "ingredient_id": 401,
+  "confidence": "close"
+ },
+ "Творог жирный": {
+  "ingredient_id": 401,
+  "confidence": "exact"
+ },
+ "Творог зерненый": {
+  "ingredient_id": 401,
+  "confidence": "exact"
+ },
+ "Творог мягкий": {
+  "ingredient_id": 401,
+  "confidence": "close"
+ },
+ "Творожная масса": {
+  "ingredient_id": 2186,
+  "confidence": "close"
+ },
+ "Текила": {
+  "ingredient_id": 1861,
+  "confidence": "close"
+ },
+ "Телятина": {
+  "ingredient_id": 8376,
+  "confidence": "close"
+ },
+ "Теплая вода или молоко": {
+  "ingredient_id": 8211,
+  "confidence": "close"
+ },
+ "Тесто блинное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тесто дрожжевое": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тесто заварное": {
+  "ingredient_id": 8094,
+  "confidence": "close"
+ },
+ "Тесто пельменное": {
+  "ingredient_id": 5899,
+  "confidence": "close"
+ },
+ "Тесто песочное": {
+  "ingredient_id": 5922,
+  "confidence": "close"
+ },
+ "Тесто пресное": {
+  "ingredient_id": 5899,
+  "confidence": "close"
+ },
+ "Тесто слоеное": {
+  "ingredient_id": 5898,
+  "confidence": "exact"
+ },
+ "Тесто слоеное бездрожжевое": {
+  "ingredient_id": 5898,
+  "confidence": "exact"
+ },
+ "Тесто слоеное дрожжевое": {
+  "ingredient_id": 5898,
+  "confidence": "close"
+ },
+ "Тесто фило": {
+  "ingredient_id": 5899,
+  "confidence": "exact"
+ },
+ "Тефтели": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тилапия": {
+  "ingredient_id": 8284,
+  "confidence": "exact"
+ },
+ "Тимьян": {
+  "ingredient_id": 6578,
+  "confidence": "close"
+ },
+ "Ткемали": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тмин": {
+  "ingredient_id": 4026,
+  "confidence": "exact"
+ },
+ "Толокно": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Томатная паста": {
+  "ingredient_id": 506,
+  "confidence": "exact"
+ },
+ "Томаты в собственном соку": {
+  "ingredient_id": 504,
+  "confidence": "exact"
+ },
+ "Томаты вяленые": {
+  "ingredient_id": 1675,
+  "confidence": "exact"
+ },
+ "Томаты пассерованные": {
+  "ingredient_id": 507,
+  "confidence": "close"
+ },
+ "Томаты протертые": {
+  "ingredient_id": 3158,
+  "confidence": "close"
+ },
+ "Томаты сушеные": {
+  "ingredient_id": 1675,
+  "confidence": "exact"
+ },
+ "Тоник": {
+  "ingredient_id": 4977,
+  "confidence": "exact"
+ },
+ "Топинамбур": {
+  "ingredient_id": 2344,
+  "confidence": "exact"
+ },
+ "Тосты": {
+  "ingredient_id": 8085,
+  "confidence": "close"
+ },
+ "Тофу": {
+  "ingredient_id": 5583,
+  "confidence": "close"
+ },
+ "Треска": {
+  "ingredient_id": 5063,
+  "confidence": "exact"
+ },
+ "Трюфель": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Тунец": {
+  "ingredient_id": 6817,
+  "confidence": "close"
+ },
+ "Тушенка": {
+  "ingredient_id": 7501,
+  "confidence": "close"
+ },
+ "Тыква": {
+  "ingredient_id": 1556,
+  "confidence": "exact"
+ },
+ "Угорь": {
+  "ingredient_id": 7301,
+  "confidence": "exact"
+ },
+ "Удон": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Укроп": {
+  "ingredient_id": 5341,
+  "confidence": "exact"
+ },
+ "Укроп свежий": {
+  "ingredient_id": 5341,
+  "confidence": "exact"
+ },
+ "Уксус": {
+  "ingredient_id": 5345,
+  "confidence": "exact"
+ },
+ "Уксус яблочный": {
+  "ingredient_id": 6577,
+  "confidence": "exact"
+ },
+ "Уксусная эссенция": {
+  "ingredient_id": 5345,
+  "confidence": "close"
+ },
+ "Улитки": {
+  "ingredient_id": 852,
+  "confidence": "exact"
+ },
+ "Улучшитель хлебопекарный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Унаби": {
+  "ingredient_id": 1259,
+  "confidence": "exact"
+ },
+ "Урбеч": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Урюк": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Устрицы": {
+  "ingredient_id": 5086,
+  "confidence": "exact"
+ },
+ "Утка": {
+  "ingredient_id": 5516,
+  "confidence": "exact"
+ },
+ "Уцхо-сунели": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Фарш": {
+  "ingredient_id": 4904,
+  "confidence": "close"
+ },
+ "Фарш индюшачий": {
+  "ingredient_id": 4613,
+  "confidence": "exact"
+ },
+ "Фарш куриный": {
+  "ingredient_id": 4224,
+  "confidence": "exact"
+ },
+ "Фарш мясной": {
+  "ingredient_id": 4904,
+  "confidence": "close"
+ },
+ "Фарш рыбный": {
+  "ingredient_id": 6810,
+  "confidence": "close"
+ },
+ "Фарш соевый": {
+  "ingredient_id": 7395,
+  "confidence": "close"
+ },
+ "Фасоль": {
+  "ingredient_id": 8310,
+  "confidence": "close"
+ },
+ "Фасоль консервированная": {
+  "ingredient_id": 6849,
+  "confidence": "close"
+ },
+ "Фасоль красная консервированная": {
+  "ingredient_id": 6849,
+  "confidence": "exact"
+ },
+ "Фасоль стручковая": {
+  "ingredient_id": 417,
+  "confidence": "exact"
+ },
+ "Фейхоа": {
+  "ingredient_id": 1284,
+  "confidence": "exact"
+ },
+ "Фенхель": {
+  "ingredient_id": 565,
+  "confidence": "exact"
+ },
+ "Фета": {
+  "ingredient_id": 6528,
+  "confidence": "exact"
+ },
+ "Фетаки": {
+  "ingredient_id": 6528,
+  "confidence": "close"
+ },
+ "Физалис": {
+  "ingredient_id": 6151,
+  "confidence": "exact"
+ },
+ "Филе": {
+  "ingredient_id": 474,
+  "confidence": "close"
+ },
+ "Филе индейки": {
+  "ingredient_id": 4206,
+  "confidence": "exact"
+ },
+ "Филе куриное": {
+  "ingredient_id": 474,
+  "confidence": "exact"
+ },
+ "Филе рыбное": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Филе трески": {
+  "ingredient_id": 491,
+  "confidence": "exact"
+ },
+ "Финик": {
+  "ingredient_id": 1299,
+  "confidence": "close"
+ },
+ "Фисташки": {
+  "ingredient_id": 454,
+  "confidence": "exact"
+ },
+ "Форель": {
+  "ingredient_id": 8261,
+  "confidence": "exact"
+ },
+ "Фосфат пищевой": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Фризе": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Фрикадельки": {
+  "ingredient_id": 4746,
+  "confidence": "close"
+ },
+ "Фритюр": {
+  "ingredient_id": 6705,
+  "confidence": "close"
+ },
+ "Фруктоза": {
+  "ingredient_id": 3004,
+  "confidence": "exact"
+ },
+ "Фрукты": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Фундук": {
+  "ingredient_id": 450,
+  "confidence": "exact"
+ },
+ "Фунчоза": {
+  "ingredient_id": 7366,
+  "confidence": "exact"
+ },
+ "Халва": {
+  "ingredient_id": 1104,
+  "confidence": "exact"
+ },
+ "Халва подсолнечная": {
+  "ingredient_id": 1104,
+  "confidence": "close"
+ },
+ "Хамон": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хамса": {
+  "ingredient_id": 7290,
+  "confidence": "exact"
+ },
+ "Хвост": {
+  "ingredient_id": 1399,
+  "confidence": "close"
+ },
+ "Хвоя": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хек": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Херес": {
+  "ingredient_id": 8220,
+  "confidence": "close"
+ },
+ "Хлеб": {
+  "ingredient_id": 178,
+  "confidence": "close"
+ },
+ "Хлеб ржаной": {
+  "ingredient_id": 5792,
+  "confidence": "exact"
+ },
+ "Хлебобулочные изделия": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хлебцы": {
+  "ingredient_id": 5847,
+  "confidence": "close"
+ },
+ "Хлопья гороховые": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хлопья гречневые": {
+  "ingredient_id": 7012,
+  "confidence": "close"
+ },
+ "Хлопья злаковые": {
+  "ingredient_id": 6082,
+  "confidence": "close"
+ },
+ "Хлопья картофельные": {
+  "ingredient_id": 3553,
+  "confidence": "exact"
+ },
+ "Хлопья кукурузные": {
+  "ingredient_id": 7756,
+  "confidence": "close"
+ },
+ "Хлопья овсяные": {
+  "ingredient_id": 413,
+  "confidence": "exact"
+ },
+ "Хлопья панировочные": {
+  "ingredient_id": 8036,
+  "confidence": "close"
+ },
+ "Хлопья пшенные": {
+  "ingredient_id": 7012,
+  "confidence": "close"
+ },
+ "Хлопья рисовые": {
+  "ingredient_id": 6091,
+  "confidence": "close"
+ },
+ "Хлопья шоколадные": {
+  "ingredient_id": 6081,
+  "confidence": "close"
+ },
+ "Хлопья ячменные": {
+  "ingredient_id": 413,
+  "confidence": "close"
+ },
+ "Хлорид кальция": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хмели-сунели": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хмель": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Хрен": {
+  "ingredient_id": 6580,
+  "confidence": "close"
+ },
+ "Хурма": {
+  "ingredient_id": 3049,
+  "confidence": "exact"
+ },
+ "Цветки": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Цедра": {
+  "ingredient_id": 857,
+  "confidence": "close"
+ },
+ "Цедра апельсина": {
+  "ingredient_id": 2211,
+  "confidence": "exact"
+ },
+ "Цедра грейпфрута": {
+  "ingredient_id": 589,
+  "confidence": "close"
+ },
+ "Цедра лайма": {
+  "ingredient_id": 857,
+  "confidence": "close"
+ },
+ "Цедра лимона": {
+  "ingredient_id": 857,
+  "confidence": "exact"
+ },
+ "Цедра мандарина": {
+  "ingredient_id": 2211,
+  "confidence": "close"
+ },
+ "Цесарка": {
+  "ingredient_id": 5524,
+  "confidence": "close"
+ },
+ "Цикорий": {
+  "ingredient_id": 3101,
+  "confidence": "close"
+ },
+ "Цукаты": {
+  "ingredient_id": 889,
+  "confidence": "exact"
+ },
+ "Цуккини": {
+  "ingredient_id": 494,
+  "confidence": "exact"
+ },
+ "Цыпленок": {
+  "ingredient_id": 4615,
+  "confidence": "close"
+ },
+ "Чабер": {
+  "ingredient_id": 4044,
+  "confidence": "exact"
+ },
+ "Чабрец": {
+  "ingredient_id": 4046,
+  "confidence": "close"
+ },
+ "Чай белый": {
+  "ingredient_id": 5019,
+  "confidence": "close"
+ },
+ "Чай в пакетиках": {
+  "ingredient_id": 5025,
+  "confidence": "close"
+ },
+ "Чай зеленый": {
+  "ingredient_id": 5025,
+  "confidence": "exact"
+ },
+ "Чай красный": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Чай черный": {
+  "ingredient_id": 6335,
+  "confidence": "close"
+ },
+ "Черемуха": {
+  "ingredient_id": 416,
+  "confidence": "close"
+ },
+ "Черемша": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Черешня": {
+  "ingredient_id": 4827,
+  "confidence": "exact"
+ },
+ "Черная смородина": {
+  "ingredient_id": 7071,
+  "confidence": "exact"
+ },
+ "Черника": {
+  "ingredient_id": 748,
+  "confidence": "close"
+ },
+ "Чернила каракатицы": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Чернослив": {
+  "ingredient_id": 590,
+  "confidence": "exact"
+ },
+ "Чеснок": {
+  "ingredient_id": 314,
+  "confidence": "exact"
+ },
+ "Чеснок -": {
+  "ingredient_id": 314,
+  "confidence": "exact"
+ },
+ "Чечевица": {
+  "ingredient_id": 460,
+  "confidence": "exact"
+ },
+ "Чипсы": {
+  "ingredient_id": 2790,
+  "confidence": "close"
+ },
+ "Чоризо": {
+  "ingredient_id": 6967,
+  "confidence": "exact"
+ },
+ "Шалфей": {
+  "ingredient_id": 4043,
+  "confidence": "close"
+ },
+ "Шампанское": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Шампиньоны": {
+  "ingredient_id": 2359,
+  "confidence": "exact"
+ },
+ "Шафран": {
+  "ingredient_id": 4042,
+  "confidence": "exact"
+ },
+ "Шейка куриная": {
+  "ingredient_id": 5490,
+  "confidence": "exact"
+ },
+ "Шейка свиная": {
+  "ingredient_id": 926,
+  "confidence": "close"
+ },
+ "Шелковица": {
+  "ingredient_id": 3021,
+  "confidence": "exact"
+ },
+ "Шелуха луковая": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Шиповник": {
+  "ingredient_id": 2106,
+  "confidence": "close"
+ },
+ "Шишки сосновые": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Шкура свиная": {
+  "ingredient_id": 4560,
+  "confidence": "close"
+ },
+ "Шнитт-лук": {
+  "ingredient_id": 3102,
+  "confidence": "exact"
+ },
+ "Шоколад белый": {
+  "ingredient_id": 679,
+  "confidence": "exact"
+ },
+ "Шоколад молочный": {
+  "ingredient_id": 695,
+  "confidence": "exact"
+ },
+ "Шоколад темный": {
+  "ingredient_id": 3380,
+  "confidence": "exact"
+ },
+ "Шпиг": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Шпинат": {
+  "ingredient_id": 1570,
+  "confidence": "exact"
+ },
+ "Шпроты": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Шрот": {
+  "ingredient_id": 3255,
+  "confidence": "close"
+ },
+ "Щавель": {
+  "ingredient_id": 3184,
+  "confidence": "exact"
+ },
+ "Щука": {
+  "ingredient_id": 6788,
+  "confidence": "exact"
+ },
+ "Эклеры": {
+  "ingredient_id": 5865,
+  "confidence": "close"
+ },
+ "Экстракт": {
+  "ingredient_id": 6579,
+  "confidence": "close"
+ },
+ "Эскалоп": {
+  "ingredient_id": 7988,
+  "confidence": "close"
+ },
+ "Эссенция": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Эстрагон": {
+  "ingredient_id": 4045,
+  "confidence": "close"
+ },
+ "Яблоко": {
+  "ingredient_id": 4796,
+  "confidence": "exact"
+ },
+ "Яблоко кисловатое": {
+  "ingredient_id": 7036,
+  "confidence": "close"
+ },
+ "Яблочный сок": {
+  "ingredient_id": 7041,
+  "confidence": "exact"
+ },
+ "Ягода": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Язык говяжий": {
+  "ingredient_id": 3304,
+  "confidence": "exact"
+ },
+ "Язык свиной": {
+  "ingredient_id": 1383,
+  "confidence": "exact"
+ },
+ "Яйца": {
+  "ingredient_id": 299,
+  "confidence": "exact"
+ },
+ "Яйца куриные": {
+  "ingredient_id": 4395,
+  "confidence": "exact"
+ },
+ "Яйца отварные": {
+  "ingredient_id": null,
+  "confidence": "none"
+ },
+ "Яйцо": {
+  "ingredient_id": 4395,
+  "confidence": "exact"
+ },
+ "Яйцо варёное": {
+  "ingredient_id": 6532,
+  "confidence": "exact"
+ },
+ "Яйцо куриное": {
+  "ingredient_id": 4395,
+  "confidence": "exact"
+ },
+ "Яйцо отварное": {
+  "ingredient_id": 299,
+  "confidence": "close"
+ },
+ "Яйцо перепелиное": {
+  "ingredient_id": 5299,
+  "confidence": "exact"
+ },
+ "Яйцо сырое": {
+  "ingredient_id": 4395,
+  "confidence": "exact"
+ },
+ "Ямс": {
+  "ingredient_id": 3179,
+  "confidence": "exact"
+ },
+ "Ячмень": {
+  "ingredient_id": 3391,
+  "confidence": "exact"
+ },
+ "бульон": {
+  "ingredient_id": 7644,
+  "confidence": "close"
+ },
+ "вода": {
+  "ingredient_id": 8211,
+  "confidence": "close"
+ },
+ "дрожжи": {
+  "ingredient_id": 8151,
+  "confidence": "close"
+ },
+ "кабачок": {
+  "ingredient_id": 2399,
+  "confidence": "exact"
+ },
+ "повидло": {
+  "ingredient_id": 1924,
+  "confidence": "close"
+ },
+ "цедра мандарина": {
+  "ingredient_id": 2211,
+  "confidence": "close"
+ }
+}

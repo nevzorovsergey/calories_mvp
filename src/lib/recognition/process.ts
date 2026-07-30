@@ -51,14 +51,30 @@ export async function processMeal(params: ProcessMealParams): Promise<void> {
       return;
     }
 
-    // Первичная пользовательская версия = предложение модели (§5.1, шаг 11).
-    await createInitialMealItems(supabase, mealId, recognition.items);
-
     const { data: dish } = await supabase
       .from("recognitions")
       .select("dish_name_ru")
       .eq("id", recognition.recognitionId)
       .single();
+
+    // v3-dish: состава ещё нет и до выбора пользователя не будет. Статус
+    // 'awaiting_choice', а не 'ready': приём пищи без состава, помеченный
+    // готовым, попал бы в дневной итог нулём — то есть выглядел бы как честно
+    // посчитанная еда без калорий.
+    if (recognition.dishCandidates.length > 0) {
+      await supabase
+        .from("meals")
+        .update({
+          status: "awaiting_choice",
+          primary_recognition_id: recognition.recognitionId,
+          dish_name_ru: dish?.dish_name_ru ?? null,
+        })
+        .eq("id", mealId);
+      return;
+    }
+
+    // Первичная пользовательская версия = предложение модели (§5.1, шаг 11).
+    await createInitialMealItems(supabase, mealId, recognition.items);
 
     await supabase
       .from("meals")
