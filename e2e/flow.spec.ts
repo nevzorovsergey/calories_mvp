@@ -70,7 +70,9 @@ test.describe("Съёмка и отправка", () => {
     await signIn(user);
     await page.goto(`/meal/${mealId}`);
 
-    await expect(page.getByRole("heading", { name: "Распознаём состав" })).toBeVisible();
+    // «Блюдо», а не «состав»: при съёмке модель отвечает названием, состав
+    // приходит из справочника после выбора человека.
+    await expect(page.getByRole("heading", { name: "Распознаём блюдо" })).toBeVisible();
     await expect(page.getByText(/Экран можно закрыть/)).toBeVisible();
   });
 

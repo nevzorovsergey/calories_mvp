@@ -60,14 +60,29 @@ export interface ModelConfig {
 
 export const MODELS_CONFIG = {
   /**
-   * Модель, которая вызывается автоматически в момент фотографирования.
+   * Что вызывается автоматически в момент фотографирования: модель отвечает
+   * названием блюда, состав приходит из справочника после выбора человека.
    *
-   * GPT-5.1: единственная в замере, кто ни разу не сбоил, назвала все
-   * обязательные ингредиенты на всех пяти фото и на всех пяти построила
-   * согласованную масштабную цепочку. При этом вдвое дешевле Claude Sonnet 5
-   * и втрое — по стоимости одного распознавания.
+   * Выбрана прогоном scripts/bench-dish.ts от 2026-07-30: ноль сбоев, три
+   * различимых варианта и верное название первым на всех пяти фото, 7 секунд
+   * и 1.50 ₽ за пятёрку.
+   *
+   * Версия промпта здесь обязательна, а не для красоты: одна и та же модель
+   * стоит в списке дважды под разными промптами (A/B), и поиск по одному лишь
+   * `id` вернул бы ту, что раньше лежит в массиве, — то есть выбор зависел бы
+   * от порядка строк ниже.
    */
   defaultModelId: "google/gemini-3-flash-preview",
+  defaultPromptVersion: "v3-dish" as PromptVersion,
+
+  /**
+   * Запасной путь: «распознать состав нейросетью», когда среди трёх названий
+   * нужного не оказалось. Разбор на ингредиенты — то, чем распознавание было
+   * до справочника блюд, и v2-scale здесь ровно та же связка, что раньше
+   * работала первой.
+   */
+  ingredientsModelId: "google/gemini-3-flash-preview",
+  ingredientsPromptVersion: "v2-scale" as PromptVersion,
 
   models: [
     {
@@ -260,16 +275,38 @@ export function getModel(
   );
 }
 
-export function getDefaultModel(): ModelConfig {
+function requireModel(
+  modelId: string,
+  promptVersion: PromptVersion,
+  field: string,
+): ModelConfig {
   const model = MODELS_CONFIG.models.find(
-    (m) => m.id === MODELS_CONFIG.defaultModelId && m.enabled,
+    (m) => m.id === modelId && m.promptVersion === promptVersion && m.enabled,
   );
   if (!model) {
     throw new Error(
-      `defaultModelId=${MODELS_CONFIG.defaultModelId} отсутствует в MODELS_CONFIG.models или выключен`,
+      `${field}=${variantKey(modelId, promptVersion)} отсутствует в MODELS_CONFIG.models или выключен`,
     );
   }
   return model;
+}
+
+/** Распознавание при съёмке: три названия блюда (v3-dish). */
+export function getDefaultModel(): ModelConfig {
+  return requireModel(
+    MODELS_CONFIG.defaultModelId,
+    MODELS_CONFIG.defaultPromptVersion,
+    "defaultModelId",
+  );
+}
+
+/** Запасной путь: разбор фотографии на ингредиенты. */
+export function getIngredientsModel(): ModelConfig {
+  return requireModel(
+    MODELS_CONFIG.ingredientsModelId,
+    MODELS_CONFIG.ingredientsPromptVersion,
+    "ingredientsModelId",
+  );
 }
 
 /** Модели, доступные для ручного перепрогона (FR-CONF-3). */

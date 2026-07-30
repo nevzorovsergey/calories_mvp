@@ -26,11 +26,26 @@ export interface ProcessMealParams {
   imageBase64: string;
   imageMimeType: string;
   userHint: string | null;
+  /**
+   * Автоматический прогон при съёмке. Запасной разбор на ингредиенты — уже не
+   * он: его запросил человек, и `is_primary` (по схеме — «автоматический при
+   * съёмке») обязан остаться у первого. За основу берётся всё равно новый —
+   * это `meals.primary_recognition_id`, и он ставится ниже независимо от флага.
+   */
+  isPrimary?: boolean;
+  /**
+   * Куда откатить приём пищи, если модель не ответила. По умолчанию 'failed' —
+   * экран с причиной и кнопкой «Повторить». Запасной разбор передаёт сюда
+   * 'awaiting_choice': там уже лежат три названия от первой модели, и терять
+   * их из-за сбоя второй нельзя — выбор блюда должен остаться доступным.
+   */
+  statusOnFailure?: string;
 }
 
 export async function processMeal(params: ProcessMealParams): Promise<void> {
   const { supabase, mealId, userId, model, imageBase64, imageMimeType, userHint } =
     params;
+  const statusOnFailure = params.statusOnFailure ?? "failed";
 
   try {
     const recognition = await runRecognition({
@@ -41,13 +56,16 @@ export async function processMeal(params: ProcessMealParams): Promise<void> {
       imageBase64,
       imageMimeType,
       userHint,
-      isPrimary: true,
+      isPrimary: params.isPrimary ?? true,
     });
 
     if (recognition.status === "failed") {
       // Причина уже записана в `recognitions.error_text` (FR-LLM-3) — экран
       // приёма пищи покажет её рядом с кнопкой «Повторить» (FR-LLM-1).
-      await supabase.from("meals").update({ status: "failed" }).eq("id", mealId);
+      await supabase
+        .from("meals")
+        .update({ status: statusOnFailure })
+        .eq("id", mealId);
       return;
     }
 
@@ -61,7 +79,12 @@ export async function processMeal(params: ProcessMealParams): Promise<void> {
     // 'awaiting_choice', а не 'ready': приём пищи без состава, помеченный
     // готовым, попал бы в дневной итог нулём — то есть выглядел бы как честно
     // посчитанная еда без калорий.
-    if (recognition.dishCandidates.length > 0) {
+    //
+    // Условие по версии промпта, а не по числу кандидатов: пустая тройка — это
+    // «модель не поняла, что на фото», и такой приём пищи обязан доехать до
+    // экрана выбора, где есть запасной разбор состава и ручной ввод. По
+    // прошлому условию он молча становился 'ready' с нулевым составом.
+    if (model.promptVersion === "v3-dish") {
       await supabase
         .from("meals")
         .update({

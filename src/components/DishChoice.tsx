@@ -13,6 +13,11 @@ import { useState } from "react";
  * Предвыбран не «обычный» размер, а тот, что предложила модель. Иначе её оценка
  * пропадает зря, и H8 — «типовой вес точнее модельной оценки» — становится
  * нечем проверять: сравнивать будет не с чем.
+ *
+ * Третий выход — «распознать состав нейросетью». Справочник знает русские
+ * домашние блюда и не знает всего остального: если человек сфотографировал то,
+ * чего в нём нет, ручной ввод — слишком дорогая расплата за промах справочника.
+ * Запасной путь возвращает ровно то распознавание, что работало до него.
  */
 
 export interface DishOption {
@@ -48,9 +53,29 @@ export default function DishChoice({
     suggestedPortion ?? "medium",
   );
   const [saving, setSaving] = useState(false);
+  const [recognizing, setRecognizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const portion = dish?.portions.find((p) => p.size === size) ?? null;
+  const busy = saving || recognizing;
+
+  async function recognizeIngredients() {
+    setRecognizing(true);
+    setError(null);
+    const response = await fetch(`/api/meals/${mealId}/ingredients`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      setError(body.error ?? "Не удалось запустить распознавание");
+      setRecognizing(false);
+      return;
+    }
+    // Статус уже 'processing' — сервер перерисует экран в «Распознаём состав»
+    // вместе с опросом. Флаг не снимаем: до перерисовки кнопка должна остаться
+    // занятой, иначе успеет прилететь второе нажатие.
+    router.refresh();
+  }
 
   async function save() {
     if (!dish?.ingredient_id) return;
@@ -79,7 +104,9 @@ export default function DishChoice({
       <section className="rounded-2xl bg-card p-4">
         <h1 className="mb-1 text-section font-semibold">Что это?</h1>
         <p className="mb-3 text-caption text-ink-secondary">
-          Модель предложила несколько вариантов. Выберите тот, что ближе.
+          {options.length === 0
+            ? "Модель не смогла назвать блюдо. Можно разобрать фотографию на ингредиенты или ввести состав руками."
+            : "Модель предложила несколько вариантов. Выберите тот, что ближе."}
         </p>
 
         <ul className="flex flex-col gap-2">
@@ -152,25 +179,51 @@ export default function DishChoice({
 
       {error && <p className="text-caption text-danger">{error}</p>}
 
-      <button
-        type="button"
-        onClick={save}
-        disabled={!dish?.ingredient_id || saving}
-        className="tap-target w-full rounded-xl bg-accent px-4 py-3 font-medium text-white disabled:opacity-50"
-      >
-        {saving
-          ? "Сохраняем…"
-          : portion
-            ? `Сохранить · ${Math.round(portion.grams)} г`
-            : "Сохранить"}
-      </button>
+      {options.length > 0 && (
+        <button
+          type="button"
+          onClick={save}
+          disabled={!dish?.ingredient_id || busy}
+          className="tap-target w-full rounded-xl bg-accent px-4 py-3 font-medium text-white disabled:opacity-50"
+        >
+          {saving
+            ? "Сохраняем…"
+            : portion
+              ? `Сохранить · ${Math.round(portion.grams)} г`
+              : "Сохранить"}
+        </button>
+      )}
 
-      <a
-        href={`/meal/${mealId}/edit`}
-        className="tap-target inline-flex justify-center rounded-xl bg-card px-4 py-3 text-accent"
-      >
-        Ничего не подходит — ввести вручную
-      </a>
+      {/* Оба запасных выхода рядом и подписаны одним заголовком: это не две
+          равноправные кнопки под «Сохранить», а один ответ «здесь нет моего
+          блюда», у которого два продолжения — подороже и подешевле. */}
+      <section className="rounded-2xl bg-card p-4">
+        <h2 className="mb-1 text-caption text-ink-secondary">
+          {options.length === 0 ? "Что можно сделать" : "Ничего не подходит?"}
+        </h2>
+        <div className="mt-3 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={recognizeIngredients}
+            disabled={busy}
+            className="tap-target w-full rounded-xl bg-surface px-4 py-3 text-left text-accent disabled:opacity-50"
+          >
+            <span className="block font-medium">
+              {recognizing ? "Запускаем…" : "Распознать состав нейросетью"}
+            </span>
+            <span className="block text-micro text-ink-secondary">
+              Модель разберёт фотографию на ингредиенты и оценит вес — 10–40 секунд
+            </span>
+          </button>
+
+          <a
+            href={`/meal/${mealId}/edit`}
+            className="tap-target w-full rounded-xl bg-surface px-4 py-3 text-accent"
+          >
+            <span className="block font-medium">Ввести состав вручную</span>
+          </a>
+        </div>
+      </section>
     </div>
   );
 }

@@ -28,7 +28,7 @@ import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { config as loadEnv } from "dotenv";
 import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js";
-import { getDefaultModel, getEnabledModels, getModel } from "../config/models";
+import { getEnabledModels, getIngredientsModel, getModel } from "../config/models";
 import { NUTRIENTS } from "../config/nutrients";
 import { runRecognition } from "../src/lib/recognition/run";
 import { createInitialMealItems } from "../src/lib/recognition/meal-items";
@@ -313,7 +313,11 @@ async function main() {
     // ── 5. Распознавание ────────────────────────────────────────────────────
     phase("5. Вызов модели и запись результата");
     const modelArg = args.indexOf("--model");
-    const model = modelArg >= 0 ? getModel(args[modelArg + 1])! : getDefaultModel();
+    // Разбор на ингредиенты, а не модель по умолчанию: дальше проверяются
+    // recognition_items, маппинг на справочник и первичные meal_items — всё то,
+    // чего у v3-dish нет по устройству.
+    const model =
+      modelArg >= 0 ? getModel(args[modelArg + 1])! : getIngredientsModel();
     console.log(`  модель: ${model.label} (${model.id}), промпт ${model.promptVersion}`);
 
     const recognition = await runRecognition({

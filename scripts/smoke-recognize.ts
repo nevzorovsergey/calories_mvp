@@ -11,7 +11,7 @@
 
 import { readFileSync } from "node:fs";
 import { config as loadEnv } from "dotenv";
-import { MODELS_CONFIG, getDefaultModel, getModel } from "../config/models";
+import { MODELS_CONFIG, getIngredientsModel, getModel } from "../config/models";
 import { computeCost, recognizeDish } from "../src/lib/llm/polza";
 import { runScaleChecks } from "../src/lib/llm/scale-check";
 
@@ -42,7 +42,9 @@ async function main() {
                 .join("\n"),
           );
         })())
-      : getDefaultModel();
+      : // Не модель по умолчанию: та отвечает названием блюда, а печатает этот
+        // скрипт состав и масштабную цепочку. Для v3-dish есть bench-dish.ts.
+        getIngredientsModel();
 
   console.log(`Модель: ${model.label} (${model.id}), промпт ${model.promptVersion}`);
 

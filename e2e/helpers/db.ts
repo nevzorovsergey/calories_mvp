@@ -178,9 +178,13 @@ export async function seedCatalogDish(ingredientIds: number[]): Promise<number> 
 /**
  * Приём пищи, который сервер уже принял, но ещё не распознал (§5.1).
  *
- * `ageMs` сдвигает `created_at` в прошлое: именно по нему экран решает, идёт
- * обработка или зависла, так что состаренная строка — единственный способ
- * проверить ветку «не завершилось», не выжидая три минуты в тесте.
+ * `ageMs` сдвигает время строки в прошлое: по нему экран решает, идёт обработка
+ * или зависла, так что состаренная строка — единственный способ проверить
+ * ветку «не завершилось», не выжидая три минуты в тесте.
+ *
+ * Стареет и `updated_at`: отсчёт идёт от него, потому что в `processing` можно
+ * попасть и позже съёмки — с экрана выбора блюда, запустив разбор состава.
+ * Триггер `meals_touch_updated_at` стоит на update, вставке он не мешает.
  */
 export async function seedProcessingMeal(
   userId: string,
@@ -203,10 +207,137 @@ export async function seedProcessingMeal(
     photo_height: 768,
     status: "processing",
     created_at: createdAt,
+    updated_at: createdAt,
     eaten_at: createdAt,
   });
 
   return { mealId };
+}
+
+/**
+ * Русское блюдо со справочными порциями S/M/L — как позиции Povarenok после
+ * импорта. Отличается от `seedCatalogDish` не составом, а порциями: там две
+ * штуки в терминах FNDDS («1 кусок»), здесь три в терминах экрана выбора, где
+ * порядковый номер порции и есть размер.
+ */
+export async function seedRussianDish(ingredientIds: number[]): Promise<number> {
+  const db = admin();
+
+  const { data: dish } = await db
+    .from("ingredients")
+    .upsert(
+      {
+        source: "manual",
+        source_id: "e2e-dish-borsch",
+        name_en: "e2e test borsch",
+        name_ru: "борщ тестовый",
+        kind: "dish",
+        state: "cooked",
+      },
+      { onConflict: "source,source_id" },
+    )
+    .select("id")
+    .single();
+  if (!dish) throw new Error("не удалось завести тестовое блюдо");
+  const dishId = dish.id as number;
+
+  const { data: nutrients } = await db.from("nutrients").select("id, code");
+  const idByCode = new Map((nutrients ?? []).map((n) => [n.code as string, n.id as number]));
+  const per100g = { energy_kcal: 60, protein: 3, fat: 2, carbs: 7 } as const;
+  await db.from("ingredient_nutrients").upsert(
+    (Object.keys(per100g) as (keyof typeof per100g)[]).map((code) => ({
+      ingredient_id: dishId,
+      nutrient_id: idByCode.get(code)!,
+      amount_per_100g: per100g[code],
+    })),
+    { onConflict: "ingredient_id,nutrient_id" },
+  );
+
+  await db.from("ingredient_portions").delete().eq("ingredient_id", dishId);
+  await db.from("ingredient_portions").insert([
+    { ingredient_id: dishId, seq: 1, label_en: "small", label_ru: "маленькая", gram_weight: 180, is_default: false },
+    { ingredient_id: dishId, seq: 2, label_en: "medium", label_ru: "обычная", gram_weight: 300, is_default: true },
+    { ingredient_id: dishId, seq: 3, label_en: "large", label_ru: "большая", gram_weight: 450, is_default: false },
+  ]);
+
+  await db.from("ingredient_components").delete().eq("dish_id", dishId);
+  await db.from("ingredient_components").insert([
+    { dish_id: dishId, seq: 1, ingredient_id: ingredientIds[0] ?? null, name_en_fallback: "egg, fried", gram_weight: 180, share: 0.6 },
+    { dish_id: dishId, seq: 2, ingredient_id: ingredientIds[1] ?? null, name_en_fallback: "bacon, cooked", gram_weight: 120, share: 0.4 },
+  ]);
+
+  return dishId;
+}
+
+export interface SeededChoice {
+  mealId: string;
+  recognitionId: string;
+  dishId: number;
+}
+
+/**
+ * Приём пищи, остановившийся на выборе блюда: распознавание v3-dish отработало,
+ * три названия записаны, состава ещё нет.
+ *
+ * Третий кандидат намеренно без привязки к справочнику — это штатный исход
+ * (см. match-dish.ts), и экран обязан показывать такой вариант нажатым, но
+ * недоступным, а не прятать его.
+ */
+export async function seedAwaitingChoiceMeal(
+  userId: string,
+  dishId: number,
+): Promise<SeededChoice> {
+  const db = admin();
+  const mealId = randomUUID();
+  const bytes = readFileSync(join(process.cwd(), "fixtures", "sent-dish-3.jpg"));
+  const sentPath = `${userId}/${mealId}/sent.jpg`;
+  await db.storage.from("meals").upload(sentPath, bytes, { contentType: "image/jpeg" });
+
+  await db.from("meals").insert({
+    id: mealId,
+    user_id: userId,
+    meal_date: new Date().toISOString().slice(0, 10),
+    photo_sent_path: sentPath,
+    photo_sha256: createHash("sha256").update(bytes).digest("hex"),
+    photo_width: 1024,
+    photo_height: 768,
+    status: "awaiting_choice",
+    dish_name_ru: "борщ",
+  });
+
+  const { data: recognition } = await db
+    .from("recognitions")
+    .insert({
+      meal_id: mealId,
+      model_id: "google/gemini-3-flash-preview",
+      model_label: "Gemini 3 Flash (по названию блюда)",
+      vendor: "google",
+      prompt_version: "v3-dish",
+      image_detail: "high",
+      is_primary: true,
+      status: "ok",
+      dish_name_ru: "борщ",
+      overall_confidence: 0.8,
+      // Модель предложила большую порцию — экран обязан предвыбрать именно её,
+      // иначе её оценку не с чем сравнивать (H8).
+      portion_size: "large",
+      portion_reasoning: "глубокая тарелка полная до краёв",
+      latency_ms: 7000,
+      cost_rub_actual: 0.3,
+    })
+    .select("id")
+    .single();
+  const recognitionId = recognition!.id as string;
+
+  await db.from("recognition_dish_candidates").insert([
+    { recognition_id: recognitionId, position: 1, name_ru: "борщ", confidence: 0.8, why: "свёкла и капуста в бульоне", ingredient_id: dishId, match_score: 0.9, match_source: "povarenok" },
+    { recognition_id: recognitionId, position: 2, name_ru: "щи", confidence: 0.15, why: "капуста без свёклы", ingredient_id: null, match_score: null, match_source: null },
+    { recognition_id: recognitionId, position: 3, name_ru: "суп харчо", confidence: 0.05, why: "красный бульон", ingredient_id: null, match_score: null, match_source: null },
+  ]);
+
+  await db.from("meals").update({ primary_recognition_id: recognitionId }).eq("id", mealId);
+
+  return { mealId, recognitionId, dishId };
 }
 
 export interface SeededMeal {

@@ -17,7 +17,7 @@ import ComparisonTable from "@/components/ComparisonTable";
 import RecognitionWatcher from "@/components/RecognitionWatcher";
 import DishChoice, { type DishOption } from "@/components/DishChoice";
 import { loadDishChoice } from "@/lib/data/dish-choice";
-import { getDefaultModel, getEnabledModels } from "@config/models";
+import { getDefaultModel, getEnabledModels, getIngredientsModel } from "@config/models";
 
 /**
  * Детальный экран приёма пищи (§11.6) и сравнение моделей (§11.7).
@@ -46,7 +46,7 @@ export default async function MealPage({
   const { data: meal } = await supabase
     .from("meals")
     .select(
-      "id, meal_date, eaten_at, created_at, status, dish_name_ru, photo_sent_path, user_hint, primary_recognition_id",
+      "id, meal_date, eaten_at, created_at, updated_at, status, dish_name_ru, photo_sent_path, user_hint, primary_recognition_id",
     )
     .eq("id", id)
     .single();
@@ -119,7 +119,14 @@ export default async function MealPage({
   // экрана (§5.1). Показываем ход и опрашиваем статус, пока не истечёт срок:
   // `after()` не переживает передеплой, поэтому у ожидания обязан быть предел,
   // иначе «Распознаём…» рискует остаться навсегда.
-  const stuckFor = Date.now() - new Date(meal.created_at).getTime();
+  //
+  // Отсчёт от `updated_at`, а не от `created_at`: в `processing` приём пищи
+  // попадает не только при съёмке, но и позже — когда с экрана выбора блюда
+  // запускают разбор состава. У приёма пищи из истории `created_at` давно
+  // просрочен, и запасное распознавание показывалось бы зависшим, не начавшись.
+  // Триггер `meals_touch_updated_at` обновляет колонку на каждой правке.
+  const startedAt = meal.updated_at ?? meal.created_at;
+  const stuckFor = Date.now() - new Date(startedAt).getTime();
   const stalled = stuckFor >= STALE_AFTER_MS;
 
   // Распознавание по названию (v3-dish) закончилось, но состава ещё нет: его
@@ -157,7 +164,11 @@ export default async function MealPage({
   }
 
   if (meal.status === "processing" && !stalled) {
-    const model = getDefaultModel();
+    // Какой из двух прогонов идёт, видно по тому, что уже отработало: назвать
+    // блюдо просят один раз, при съёмке. Есть такое распознавание — значит
+    // сейчас работает запасной разбор состава, запущенный с экрана выбора.
+    const dishDone = okRecognitions.some((r) => r.prompt_version === "v3-dish");
+    const model = dishDone ? getIngredientsModel() : getDefaultModel();
     return (
       <div className="px-4 pt-4">
         <header className="mb-3">
@@ -175,11 +186,17 @@ export default async function MealPage({
         {/* aria-live, а не role="status" на самом заголовке: роль подменила бы
             heading, и экран потерял бы точку входа в навигации по заголовкам. */}
         <div className="rounded-2xl bg-card p-4" aria-live="polite">
-          <h1 className="mb-1 text-section font-semibold">Распознаём состав</h1>
+          <h1 className="mb-1 text-section font-semibold">
+            {dishDone ? "Распознаём состав" : "Распознаём блюдо"}
+          </h1>
           {/* FR-CAP-5: какая модель работает — видно, это часть эксперимента. */}
           <p className="mb-3 text-caption text-ink-secondary">
-            Модель «{model.label}» разбирает фотографию, обычно это 10–40 секунд.
-            Экран можно закрыть — результат появится в ленте дня сам.
+            Модель «{model.label}»{" "}
+            {dishDone
+              ? "разбирает фотографию на ингредиенты"
+              : "определяет, что на фотографии"}
+            , обычно это 10–40 секунд. Экран можно закрыть — результат появится в
+            ленте дня сам.
           </p>
           <div className="flex flex-col gap-2">
             <span className="skeleton h-4 w-2/3" aria-hidden />
