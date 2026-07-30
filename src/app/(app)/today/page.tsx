@@ -97,6 +97,12 @@ export default async function TodayPage({
                 </span>
                 {meal.status === "processing" ? (
                   <span className="skeleton h-4 w-14" aria-label="Загрузка" />
+                ) : meal.status === "awaiting_choice" ? (
+                  // Состава ещё нет: распознавание по названию закончилось, но
+                  // блюдо не выбрано. Ноль ккал здесь был бы арифметически
+                  // верным и при этом ложью — приём пищи выглядел бы как
+                  // честно посчитанная еда без калорий.
+                  <span className="text-caption text-accent">Выбрать блюдо</span>
                 ) : (
                   <span
                     className={`tnum text-body ${meal.untouched ? "text-warning" : ""}`}

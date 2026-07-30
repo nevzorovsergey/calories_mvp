@@ -15,6 +15,8 @@ import MoveMealButton from "@/components/MoveMealButton";
 import ModelProposal from "@/components/ModelProposal";
 import ComparisonTable from "@/components/ComparisonTable";
 import RecognitionWatcher from "@/components/RecognitionWatcher";
+import DishChoice, { type DishOption } from "@/components/DishChoice";
+import { loadDishChoice } from "@/lib/data/dish-choice";
 import { getDefaultModel, getEnabledModels } from "@config/models";
 
 /**
@@ -119,6 +121,40 @@ export default async function MealPage({
   // иначе «Распознаём…» рискует остаться навсегда.
   const stuckFor = Date.now() - new Date(meal.created_at).getTime();
   const stalled = stuckFor >= STALE_AFTER_MS;
+
+  // Распознавание по названию (v3-dish) закончилось, но состава ещё нет: его
+  // определит выбор человека. Экран доступен и позже из истории — распознавание
+  // фоновое, и пользователь мог уйти с экрана до его конца. Ровно ради этого
+  // его в фон и уносили.
+  if (meal.status === "awaiting_choice") {
+    const choice = await loadDishChoice(supabase, meal.primary_recognition_id);
+    return (
+      <div className="px-4 pt-4">
+        <header className="mb-3">
+          <BackLink href={dayHref} label={dayLabel} />
+        </header>
+
+        {photoUrl && (
+          <img
+            src={photoUrl}
+            alt="Фото блюда"
+            className="mb-4 w-full rounded-2xl object-cover"
+          />
+        )}
+
+        <DishChoice
+          mealId={id}
+          options={choice.options as DishOption[]}
+          suggestedPortion={choice.suggestedPortion}
+        />
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <MoveMealButton mealId={id} mealDate={meal.meal_date} today={today} />
+          <DeleteMealButton mealId={id} />
+        </div>
+      </div>
+    );
+  }
 
   if (meal.status === "processing" && !stalled) {
     const model = getDefaultModel();
