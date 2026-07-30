@@ -119,9 +119,27 @@ export const imageQualitySchema = z.object({
 
 export const PORTION_SIZES = ["small", "medium", "large"] as const;
 
+/**
+ * `confidence` принимается терпимо, и это осознанно.
+ *
+ * Границы `minimum`/`maximum` вырезаются из JSON Schema перед отправкой (их не
+ * принимает часть вендоров, см. UNSUPPORTED_KEYWORDS), поэтому модель узнаёт про
+ * диапазон только из текста описания — и часть моделей его игнорирует. На
+ * прогоне bench-dish Inkling вернул 95 вместо 0.95, и весь ответ упал по
+ * `Too big`, хотя названия блюд в нём были верные.
+ *
+ * Ронять распознавание из-за косметического поля нельзя: `confidence` влияет
+ * только на порядок вариантов, который и так задан позицией в массиве. Проценты
+ * приводим к долям, остальное зажимаем в диапазон.
+ */
+const confidenceSchema = z
+  .number()
+  .transform((value) => (value > 1 ? value / 100 : value))
+  .transform((value) => Math.min(Math.max(value, 0), 1));
+
 export const dishCandidateSchema = z.object({
   name_ru: z.string(),
-  confidence: z.number().min(0).max(1),
+  confidence: confidenceSchema,
   why: z.string(),
 });
 

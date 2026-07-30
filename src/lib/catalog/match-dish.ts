@@ -81,7 +81,14 @@ export async function matchDishCandidates(
   const used = new Set<number>();
   const results: DishMatch[] = [];
 
-  for (const [index, candidate] of candidates.entries()) {
+  // «Ровно три» схемой не обеспечить: minItems/maxItems вырезаются из JSON
+  // Schema перед отправкой (их не принимает часть вендоров, см.
+  // UNSUPPORTED_KEYWORDS в llm/schema.ts), так что требование живёт только в
+  // тексте промпта. На прогоне GPT-5.1 вернул четыре варианта на борще —
+  // добавив к гипотезам «кусок белого хлеба с маслом», то есть соседнюю еду с
+  // тарелки. Обрезаем здесь, а не в интерфейсе: лишние варианты не должны
+  // доехать ни до базы, ни до экрана.
+  for (const [index, candidate] of candidates.slice(0, 3).entries()) {
     const rows = await searchDishes(supabase, candidate.name_ru, 5);
     const best = rows.find(
       (row) => row.match_score >= DISH_MATCH_THRESHOLD && !used.has(row.id),
