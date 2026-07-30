@@ -112,7 +112,7 @@ export default async function TodayPage({
         </ul>
       )}
 
-      <CaptureButton mealDate={date} />
+      <CaptureButton mealDate={date} today={today} />
     </div>
   );
 }

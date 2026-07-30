@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getMealItems, loadItemsNutrition, signPhoto } from "@/lib/data/meals";
+import { getMealItems, getProfile, loadItemsNutrition, signPhoto } from "@/lib/data/meals";
 import { sumNutrition } from "@/lib/nutrition/calc";
 import { formatMealDate, formatNumber, formatTime, localDateIso } from "@/lib/format";
 import BackLink from "@/components/BackLink";
@@ -11,6 +11,7 @@ import NutrientPanel from "@/components/NutrientPanel";
 import Per100gLine from "@/components/Per100gLine";
 import ModelRerun from "@/components/ModelRerun";
 import DeleteMealButton from "@/components/DeleteMealButton";
+import MoveMealButton from "@/components/MoveMealButton";
 import ModelProposal from "@/components/ModelProposal";
 import ComparisonTable from "@/components/ComparisonTable";
 import RecognitionWatcher from "@/components/RecognitionWatcher";
@@ -49,9 +50,10 @@ export default async function MealPage({
     .single();
   if (!meal) notFound();
 
-  const [items, photoUrl] = await Promise.all([
+  const [items, photoUrl, profile] = await Promise.all([
     getMealItems(supabase, id),
     signPhoto(supabase, meal.photo_sent_path),
+    getProfile(supabase, user.id),
   ]);
   // Разбивка по позициям нужна дважды: для итогов и для строки «на 100 г»
   // у каждого продукта (FR-DET-6). Порядок совпадает с `items`.
@@ -90,7 +92,10 @@ export default async function MealPage({
   const primaryItems = primary ? (itemsByRecognition.get(primary.id) ?? []) : [];
 
   const untouched = items.every((i) => i.origin === "model_kept");
-  const today = localDateIso();
+  // Часовой пояс профиля, как на «Сегодня»: иначе поздний ужин у пользователя
+  // из другого пояса показывался бы вчерашним, а перенос предлагал бы не тот
+  // день в качестве «сегодня».
+  const today = localDateIso(profile?.timezone);
   // Назад — на день приёма пищи, а не на «сегодня»: иначе из истории
   // возвращаешься не туда, откуда пришёл. День недели в кнопку не влезает.
   const dayHref = `/today?date=${meal.meal_date}`;
@@ -152,7 +157,10 @@ export default async function MealPage({
           giveUpAfterMs={Math.max(STALE_AFTER_MS - stuckFor, 0)}
         />
 
-        <div className="mt-4">
+        {/* Промах с датой замечают сразу после отправки, ещё до состава: дата
+            от распознавания не зависит, и ждать его конца незачем. */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <MoveMealButton mealId={id} mealDate={meal.meal_date} today={today} />
           <DeleteMealButton mealId={id} />
         </div>
       </div>
@@ -200,7 +208,8 @@ export default async function MealPage({
             </Link>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <MoveMealButton mealId={id} mealDate={meal.meal_date} today={today} />
           <DeleteMealButton mealId={id} />
         </div>
       </div>
@@ -288,6 +297,9 @@ export default async function MealPage({
         {/* Перепрогон гоняет модель по сохранённому снимку — у приёма пищи из
             справочника его нет, и кнопка вела бы в заведомую ошибку. */}
         {!isManual && <ModelRerun mealId={id} models={availableModels} />}
+        {/* Рядом с «Редактировать», а не в подвале у удаления: перенос даты —
+            такая же правка приёма пищи, и искать её будут здесь. */}
+        <MoveMealButton mealId={id} mealDate={meal.meal_date} today={today} />
       </div>
 
       {primary && (

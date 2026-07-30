@@ -16,6 +16,7 @@ import {
   Preloader,
 } from "konsta/react";
 import { preparePhoto, type PreparedPhoto } from "@/lib/image";
+import { formatMealDate } from "@/lib/format";
 
 interface MealResponse {
   meal_id?: string;
@@ -130,8 +131,19 @@ function readJson({ status, text }: UploadOutcome): MealResponse {
  * Пользователь ждёт только отправку фотографии. Распознавание идёт на сервере
  * и переживает закрытие экрана (§5.1), поэтому здесь нет и не должно быть
  * ожидания модели — только загрузка с честными процентами.
+ *
+ * FR-CAP-8: если открыт не сегодняшний день, перед предпросмотром спрашиваем
+ * дату. Листать дни назад нужно, чтобы дописать пропущенное, но выйти оттуда
+ * легко забыть — и свежий обед молча уезжает в чужие итоги. Вопрос задаётся
+ * только вне сегодняшнего дня: в обычном случае лишнего шага нет.
  */
-export default function CaptureButton({ mealDate }: { mealDate: string }) {
+export default function CaptureButton({
+  mealDate,
+  today,
+}: {
+  mealDate: string;
+  today: string;
+}) {
   const router = useRouter();
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -139,9 +151,13 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
   const [sourcePicker, setSourcePicker] = useState(false);
   const [photo, setPhoto] = useState<PreparedPhoto | null>(null);
   const [hint, setHint] = useState("");
-  const [phase, setPhase] = useState<"idle" | "preview" | "sending">("idle");
+  const [phase, setPhase] = useState<"idle" | "date" | "preview" | "sending">("idle");
+  const [date, setDate] = useState(mealDate);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+
+  /** Вне сегодняшнего дня дата — не очевидность, а выбор, который надо подтвердить. */
+  const asksDate = mealDate !== today;
 
   async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -151,7 +167,7 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
     try {
       const result = await preparePhoto(file);
       setPhoto(result);
-      setPhase("preview");
+      setPhase(asksDate ? "date" : "preview");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -174,7 +190,14 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
     setPhoto(null);
     setHint("");
     setProgress(0);
+    setDate(mealDate);
     setPhase("idle");
+  }
+
+  /** Ответ на вопрос о дате: выбранный день запоминаем и идём к предпросмотру. */
+  function chooseDate(value: string) {
+    setDate(value);
+    setPhase("preview");
   }
 
   async function submit() {
@@ -189,7 +212,7 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
       if (photo.archive) {
         form.append("archive", photo.archive.blob, "archive.jpg");
       }
-      form.append("meal_date", mealDate);
+      form.append("meal_date", date);
       form.append("photo_width", String(photo.sent.width));
       form.append("photo_height", String(photo.sent.height));
       if (hint.trim()) form.append("user_hint", hint.trim());
@@ -278,76 +301,150 @@ export default function CaptureButton({ mealDate }: { mealDate: string }) {
         </ActionsGroup>
       </Actions>
 
-      <Popup opened={phase !== "idle"} onBackdropClick={() => phase === "preview" && reset()}>
+      <Popup
+        opened={phase !== "idle"}
+        onBackdropClick={() =>
+          (phase === "preview" || phase === "date") && reset()
+        }
+      >
         <div className="mx-auto flex h-full max-w-screen-sm flex-col overflow-y-auto p-4">
-          <h2 className="mb-3 text-section font-semibold">Проверьте кадр</h2>
+          {phase === "date" ? (
+            <>
+              <h2 className="mb-1 text-section font-semibold">К какому дню отнести?</h2>
+              <p className="mb-4 text-caption text-ink-secondary">
+                Открыт день «{formatMealDate(mealDate, today)}», а не сегодняшний.
+                Блюдо попадёт в итоги того дня, который вы выберете.
+              </p>
 
-          {photo && (
-            <img
-              src={photo.previewUrl}
-              alt="Предпросмотр снимка"
-              className="mb-3 w-full rounded-2xl object-cover"
-            />
-          )}
+              <div className="mb-5 flex flex-col gap-2">
+                <Button onClick={() => chooseDate(mealDate)} className="tap-target">
+                  Да, к «{formatMealDate(mealDate, today)}»
+                </Button>
+                <Button outline onClick={() => chooseDate(today)} className="tap-target">
+                  Нет, я съел это сегодня
+                </Button>
+              </div>
 
-          <div className="mb-3 flex items-start gap-2 rounded-xl bg-card p-3 text-caption text-ink-secondary">
-            <CreditCard size={18} className="mt-0.5 shrink-0 text-accent" />
-            <span>
-              Положите рядом банковскую карту — оценка веса будет точнее. Её
-              размер одинаков во всём мире, поэтому это самый надёжный эталон.
-            </span>
-          </div>
+              <label
+                className="mb-1 block text-caption text-ink-secondary"
+                htmlFor="capture-date"
+              >
+                Или выберите другую дату
+              </label>
+              <input
+                id="capture-date"
+                type="date"
+                value={date}
+                max={today}
+                onChange={(event) => setDate(event.target.value)}
+                className="mb-2 w-full rounded-xl bg-card p-3 text-body"
+              />
+              <Button
+                outline
+                onClick={() => chooseDate(date)}
+                disabled={!date}
+                className="tap-target"
+              >
+                Отнести к выбранной дате
+              </Button>
 
-          <label className="mb-1 block text-caption text-ink-secondary" htmlFor="hint">
-            Подсказка (что это, как готовили) — необязательно
-          </label>
-          <textarea
-            id="hint"
-            value={hint}
-            onChange={(e) => setHint(e.target.value)}
-            rows={2}
-            disabled={phase === "sending"}
-            placeholder="Например: гречка с куриной грудкой, жарил на подсолнечном масле"
-            className="mb-4 w-full rounded-xl bg-card p-3 text-body"
-          />
+              <div className="mt-4">
+                <Button clear onClick={reset} className="tap-target">
+                  Отмена
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="mb-3 text-section font-semibold">Проверьте кадр</h2>
 
-          {error && (
-            <p className="mb-3 text-caption text-error" role="alert">
-              {error}
-            </p>
-          )}
+              {/* Дата видна и на предпросмотре: вопрос задан раньше, но отправлять
+                  вслепую человек не должен — ответ всегда можно поправить. */}
+              {asksDate && (
+                <div className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-card p-3 text-caption">
+                  <span>
+                    День приёма пищи:{" "}
+                    <span className="font-medium">{formatMealDate(date, today)}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPhase("date")}
+                    disabled={phase === "sending"}
+                    className="shrink-0 text-accent"
+                  >
+                    Изменить
+                  </button>
+                </div>
+              )}
 
-          {phase === "sending" ? (
-            <div className="flex flex-col items-center gap-2 py-4 text-center">
-              <Preloader />
-              {/* FR-CAP-5: показываем ровно тот шаг, который идёт сейчас.
-                  Раньше здесь висело «Распознаём моделью …» с самого начала —
-                  и когда вставала отправка, надпись уводила в сторону модели,
-                  которую ещё даже не вызывали. */}
-              {progress < 100 ? (
-                <>
-                  <p className="text-body" role="status">
-                    Отправляем фото… {progress}%
-                  </p>
-                  <p className="text-caption text-ink-secondary">
-                    Не закрывайте экран, пока фото не уйдёт.
-                  </p>
-                </>
-              ) : (
-                <p className="text-body" role="status">
-                  Сохраняем…
+              {photo && (
+                <img
+                  src={photo.previewUrl}
+                  alt="Предпросмотр снимка"
+                  className="mb-3 w-full rounded-2xl object-cover"
+                />
+              )}
+
+              <div className="mb-3 flex items-start gap-2 rounded-xl bg-card p-3 text-caption text-ink-secondary">
+                <CreditCard size={18} className="mt-0.5 shrink-0 text-accent" />
+                <span>
+                  Положите рядом банковскую карту — оценка веса будет точнее. Её
+                  размер одинаков во всём мире, поэтому это самый надёжный эталон.
+                </span>
+              </div>
+
+              <label className="mb-1 block text-caption text-ink-secondary" htmlFor="hint">
+                Подсказка (что это, как готовили) — необязательно
+              </label>
+              <textarea
+                id="hint"
+                value={hint}
+                onChange={(e) => setHint(e.target.value)}
+                rows={2}
+                disabled={phase === "sending"}
+                placeholder="Например: гречка с куриной грудкой, жарил на подсолнечном масле"
+                className="mb-4 w-full rounded-xl bg-card p-3 text-body"
+              />
+
+              {error && (
+                <p className="mb-3 text-caption text-error" role="alert">
+                  {error}
                 </p>
               )}
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <Button outline onClick={reset} className="tap-target">
-                Отмена
-              </Button>
-              <Button onClick={submit} className="tap-target">
-                Отправить
-              </Button>
-            </div>
+
+              {phase === "sending" ? (
+                <div className="flex flex-col items-center gap-2 py-4 text-center">
+                  <Preloader />
+                  {/* FR-CAP-5: показываем ровно тот шаг, который идёт сейчас.
+                      Раньше здесь висело «Распознаём моделью …» с самого начала —
+                      и когда вставала отправка, надпись уводила в сторону модели,
+                      которую ещё даже не вызывали. */}
+                  {progress < 100 ? (
+                    <>
+                      <p className="text-body" role="status">
+                        Отправляем фото… {progress}%
+                      </p>
+                      <p className="text-caption text-ink-secondary">
+                        Не закрывайте экран, пока фото не уйдёт.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-body" role="status">
+                      Сохраняем…
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button outline onClick={reset} className="tap-target">
+                    Отмена
+                  </Button>
+                  <Button onClick={submit} className="tap-target">
+                    Отправить
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </Popup>
