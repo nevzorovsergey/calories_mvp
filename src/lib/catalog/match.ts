@@ -112,20 +112,27 @@ async function searchCandidates(
 ): Promise<SearchRow[]> {
   const normalized = term?.trim();
   if (!normalized) return [];
-  const { data, error } = await supabase.rpc("search_ingredients", {
+  // `search_raw_ingredients`, а не `search_ingredients` с kinds: ['ingredient'] —
+  // это отдельная функция с ЗАШИТЫМ `kind = 'ingredient'` (миграция 0015).
+  //
+  // Разница не косметическая. Пока вид сравнивался с параметром, планировщик не
+  // мог доказать предикат частичных индексов, а `exists` по синонимам внутри
+  // цепочки OR не давал сложить триграммные условия в bitmap: similarity
+  // считалась на каждой строке сырья. После импорта 122 607 блюд это стоило
+  // 800–1000 мс на КАЖДЫЙ распознанный ингредиент.
+  //
+  // Разделение сырья и блюд остаётся главным: в справочнике 128 040 готовых
+  // блюд, и они забирают точные совпадения себе. «chicken breast» без фильтра —
+  // это «Chicken breast, stewed, skin eaten», а не сырая грудка. Здесь
+  // считается КБЖУ распознанного ингредиента, на котором стоит H1.
+  const { data, error } = await supabase.rpc("search_raw_ingredients", {
     q: normalized,
     max_results: 20,
-    // Только сырьё, и это указано явно, хотя совпадает со значением по умолчанию
-    // (миграция 0007). Справочник с 0006 содержит ещё 5432 готовых блюда FNDDS,
-    // и они забирают точные совпадения себе: «chicken breast» без фильтра — это
-    // «Chicken breast, stewed, skin eaten», а не сырая грудка. Здесь считается
-    // КБЖУ распознанного ингредиента, на котором стоит H1.
-    kinds: ["ingredient"],
   });
   if (error) {
     // Маппинг — не критичный путь: если справочник недоступен, ингредиент
     // просто станет unmatched и получит нутриенты от модели.
-    console.error("search_ingredients failed", error);
+    console.error("search_raw_ingredients failed", error);
     return [];
   }
   return (data ?? []) as SearchRow[];
