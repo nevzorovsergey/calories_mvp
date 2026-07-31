@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  buildDishBreakdown,
+  portionWeight,
+  type DishBreakdown,
+  type PortionSize,
+} from "@/lib/catalog/dish-breakdown";
 
 /**
  * Выбор блюда и размера порции (тикет 10 спеки .scratch/russian-dish-catalog).
@@ -10,10 +16,8 @@ import { createClient } from "@/lib/supabase/server";
  * `recognition_dish_candidates` остаются нетронутыми навсегда — предложение
  * модели и версия пользователя не перезаписывают друг друга (§1.3 PRD).
  *
- * Раскладка считается от `ingredient_components.share`, а не от `gram_weight`:
- * граммы в справочнике записаны для средней порции, а пользователь мог выбрать
- * маленькую или большую. Доля — единственное, на что можно опираться при
- * масштабировании (та же семантика, что у FNDDS, см. миграцию 0006).
+ * Сама раскладка живёт в `@/lib/catalog/dish-breakdown`: тем же расчётом
+ * таблица сравнения показывает, во что обошлось бы предложение v3-dish.
  */
 export const dynamic = "force-dynamic";
 
@@ -26,8 +30,6 @@ interface Payload {
   /** Обязателен при portion_size = 'custom'. */
   weight_g?: number | null;
 }
-
-const PORTION_SEQ: Record<string, number> = { small: 1, medium: 2, large: 3 };
 
 export async function PUT(
   request: Request,
@@ -52,91 +54,56 @@ export async function PUT(
 
   // Вес порции: из справочника либо введённый руками.
   let weight = payload.weight_g ?? null;
-  if (payload.portion_size !== "custom") {
-    const { data: portion, error } = await supabase
-      .from("ingredient_portions")
-      .select("gram_weight")
-      .eq("ingredient_id", payload.dish_id)
-      .eq("seq", PORTION_SEQ[payload.portion_size])
-      .maybeSingle();
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+  let breakdown: DishBreakdown | null;
+  try {
+    if (payload.portion_size !== "custom") {
+      weight = await portionWeight(
+        supabase,
+        payload.dish_id,
+        payload.portion_size as PortionSize,
+      );
     }
-    weight = portion ? Number(portion.gram_weight) : null;
-  }
-  if (!weight || weight <= 0) {
+    if (!weight || weight <= 0) {
+      return NextResponse.json(
+        { error: "Не удалось определить вес порции" },
+        { status: 400 },
+      );
+    }
+    breakdown = await buildDishBreakdown(supabase, payload.dish_id, weight);
+  } catch (error) {
     return NextResponse.json(
-      { error: "Не удалось определить вес порции" },
-      { status: 400 },
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
     );
   }
-
-  const { data: components, error: componentsError } = await supabase
-    .from("ingredient_components")
-    .select("seq, ingredient_id, name_en_fallback, share")
-    .eq("dish_id", payload.dish_id)
-    .order("seq");
-  if (componentsError) {
-    return NextResponse.json({ error: componentsError.message }, { status: 500 });
-  }
-  if (!components?.length) {
+  if (!breakdown) {
     return NextResponse.json(
       { error: "У блюда нет состава в справочнике" },
       { status: 422 },
     );
   }
 
-  const ids = components
-    .map((c) => c.ingredient_id as number | null)
-    .filter((v): v is number => v !== null);
-
-  const [{ data: names }, { data: nutrients }] = await Promise.all([
-    supabase.from("ingredients").select("id, name_ru").in("id", ids),
-    supabase
-      .from("ingredient_nutrients")
-      .select("ingredient_id, amount_per_100g, nutrients!inner(code)")
-      .in("ingredient_id", ids)
-      .in("nutrients.code", ["energy_kcal", "protein", "fat", "carbs"]),
-  ]);
-
-  const nameById = new Map((names ?? []).map((n) => [n.id as number, n.name_ru as string]));
-  const per100 = new Map<number, Record<string, number>>();
-  for (const row of nutrients ?? []) {
-    const id = row.ingredient_id as number;
-    const code = (row.nutrients as unknown as { code: string }).code;
-    const bucket = per100.get(id) ?? {};
-    bucket[code] = Number(row.amount_per_100g);
-    per100.set(id, bucket);
-  }
-
   // Пользовательская версия пересобирается целиком: выбор блюда — это новый
   // ответ на вопрос «что я съел», а не правка предыдущего.
   await supabase.from("meal_items").delete().eq("meal_id", mealId);
 
-  const rows = components.map((c, index) => {
-    const ingredientId = c.ingredient_id as number | null;
-    const macros = ingredientId ? per100.get(ingredientId) ?? {} : {};
-    return {
-      meal_id: mealId,
-      position: index,
-      ingredient_id: ingredientId,
-      name_ru:
-        (ingredientId ? nameById.get(ingredientId) : null) ??
-        (c.name_en_fallback as string | null) ??
-        "без названия",
-      weight_g: Number((Number(c.share) * weight).toFixed(1)),
-      // Состав пришёл из справочника целиком — и позиции, и их нутриенты.
-      nutrition_source: "catalog",
-      // Четвёртое значение origin: без него аналитика H1 считала бы раскладку
-      // справочника за предложение модели, и «доля оставленного без изменений»
-      // потеряла бы смысл ровно там, где её сравнивают с H7.
-      origin: "catalog_dish",
-      kcal_per_100g: macros.energy_kcal ?? null,
-      protein_per_100g: macros.protein ?? null,
-      fat_per_100g: macros.fat ?? null,
-      carbs_per_100g: macros.carbs ?? null,
-    };
-  });
+  const rows = breakdown.components.map((c, index) => ({
+    meal_id: mealId,
+    position: index,
+    ingredient_id: c.ingredient_id,
+    name_ru: c.name_ru,
+    weight_g: c.weight_g,
+    // Состав пришёл из справочника целиком — и позиции, и их нутриенты.
+    nutrition_source: "catalog",
+    // Четвёртое значение origin: без него аналитика H1 считала бы раскладку
+    // справочника за предложение модели, и «доля оставленного без изменений»
+    // потеряла бы смысл ровно там, где её сравнивают с H7.
+    origin: "catalog_dish",
+    kcal_per_100g: c.per100g.energy_kcal ?? null,
+    protein_per_100g: c.per100g.protein ?? null,
+    fat_per_100g: c.per100g.fat ?? null,
+    carbs_per_100g: c.per100g.carbs ?? null,
+  }));
 
   const { error: insertError } = await supabase.from("meal_items").insert(rows);
   if (insertError) {

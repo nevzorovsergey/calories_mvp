@@ -2,6 +2,7 @@ import { test, expect } from "./helpers/fixtures";
 import {
   admin,
   seedAwaitingChoiceMeal,
+  seedIngredientsRun,
   seedRecognisedMeal,
   seedRussianDish,
 } from "./helpers/db";
@@ -135,6 +136,46 @@ test.describe("Выбор блюда", () => {
       .eq("id", ready.mealId)
       .single();
     expect(meal?.status).toBe("ready");
+  });
+
+  test("в сравнении моделей у распознавания по названию есть вес и БЖУ", async ({
+    page,
+    user,
+    signIn,
+    catalogIds,
+  }) => {
+    // Ровно то, что делает человек: сфотографировал, названия не подошли,
+    // запустил разбор состава. В таблице сравнения оказываются оба прогона.
+    const dishId = await seedRussianDish(catalogIds);
+    const { mealId } = await seedAwaitingChoiceMeal(user.id, dishId);
+    await seedIngredientsRun(mealId, catalogIds);
+
+    await signIn(user);
+    await page.goto(`/meal/${mealId}`);
+    await waitForHydration(page);
+
+    await expect(page.getByRole("heading", { name: "Сравнение моделей" })).toBeVisible();
+
+    // Колонка v3-dish идёт первой: распознавания упорядочены по created_at.
+    // У неё нет ни `recognition_items`, ни `nutrition_catalog` — и до тикета
+    // она стояла нулевой, а сравнивать «блюдо целиком» было не с чем.
+    const rowByLabel = (label: string) =>
+      page
+        .getByRole("row")
+        .filter({ has: page.getByRole("rowheader", { name: label, exact: true }) });
+
+    // Модель предложила большую порцию, у блюда это 450 г (seedRussianDish).
+    await expect(rowByLabel("Общий вес, г").getByRole("cell").first()).toHaveText("450");
+
+    for (const label of ["Калории, ккал", "Белки, г", "Жиры, г", "Углеводы, г"]) {
+      await expect(rowByLabel(label).getByRole("cell").first()).not.toHaveText("0");
+    }
+
+    // Цифры посчитаны, а не измерены моделью — и страница обязана это сказать,
+    // иначе колонка выглядит как оценка веса, которой модель не делала.
+    await expect(
+      page.getByText(/борщ, большая порция — вес и БЖУ посчитаны по справочнику/),
+    ).toBeVisible();
   });
 });
 

@@ -16,7 +16,7 @@ import ModelProposal from "@/components/ModelProposal";
 import ComparisonTable from "@/components/ComparisonTable";
 import RecognitionWatcher from "@/components/RecognitionWatcher";
 import DishChoice, { type DishOption } from "@/components/DishChoice";
-import { loadDishChoice } from "@/lib/data/dish-choice";
+import { loadDishChoice, loadDishProposal, type DishProposal } from "@/lib/data/dish-choice";
 import { getDefaultModel, getEnabledModels, getIngredientsModel } from "@config/models";
 
 /**
@@ -269,6 +269,25 @@ export default async function MealPage({
     );
   }
 
+  // Распознавание по названию (v3-dish) не пишет ни `recognition_items`, ни
+  // `nutrition_catalog`: состав у него берётся из справочника после выбора
+  // человека. В таблице сравнения такая колонка стояла нулевой — достраиваем
+  // её на лету из того, что модель предложила сама (FR-CMP-1). Считаем только
+  // когда таблица вообще будет показана.
+  const dishProposals = new Map<string, DishProposal>();
+  if (okRecognitions.length > 1) {
+    const itemless = okRecognitions.filter(
+      (r) => (itemsByRecognition.get(r.id) ?? []).length === 0,
+    );
+    const proposals = await Promise.all(
+      itemless.map((r) => loadDishProposal(supabase, r.id)),
+    );
+    itemless.forEach((r, index) => {
+      const proposal = proposals[index];
+      if (proposal) dishProposals.set(r.id, proposal);
+    });
+  }
+
   return (
     <div className="px-4 pt-4">
       <header className="mb-3">
@@ -384,20 +403,30 @@ export default async function MealPage({
 
       {okRecognitions.length > 1 && (
         <ComparisonTable
-          recognitions={okRecognitions.map((r) => ({
-            id: r.id,
-            model_label: r.model_label,
-            prompt_version: r.prompt_version,
-            total_weight_g: Number(r.total_weight_g),
-            nutrition: (r.nutrition_catalog ?? {}) as Record<string, number>,
-            scale_mode: r.scale_mode,
-            latency_ms: r.latency_ms,
-            items: (itemsByRecognition.get(r.id) ?? []).map((i) => ({
-              name_ru: i.name_ru as string,
-              weight_g: Number(i.weight_g),
-              ingredient_id: (i.ingredient_id as number | null) ?? null,
-            })),
-          }))}
+          recognitions={okRecognitions.map((r) => {
+            const proposal = dishProposals.get(r.id);
+            return {
+              id: r.id,
+              model_label: r.model_label,
+              prompt_version: r.prompt_version,
+              total_weight_g: proposal?.weight_g ?? Number(r.total_weight_g),
+              nutrition:
+                proposal?.nutrition ??
+                ((r.nutrition_catalog ?? {}) as Record<string, number>),
+              scale_mode: r.scale_mode,
+              latency_ms: r.latency_ms,
+              basis: proposal
+                ? `${proposal.dishName}, ${proposal.portionLabel ?? "типовая порция"} — вес и БЖУ посчитаны по справочнику`
+                : null,
+              items:
+                proposal?.items ??
+                (itemsByRecognition.get(r.id) ?? []).map((i) => ({
+                  name_ru: i.name_ru as string,
+                  weight_g: Number(i.weight_g),
+                  ingredient_id: (i.ingredient_id as number | null) ?? null,
+                })),
+            };
+          })}
           userTotals={totals}
           userWeight={items.reduce((sum, i) => sum + Number(i.weight_g), 0)}
           userItems={items.map((i) => ({

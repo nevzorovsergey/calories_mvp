@@ -20,6 +20,13 @@ export interface ComparisonRecognition {
   scale_mode: string | null;
   latency_ms: number | null;
   items: { name_ru: string; weight_g: number; ingredient_id: number | null }[];
+  /**
+   * На чём держатся цифры, если они не из самого ответа модели: у v3-dish
+   * распознавание даёт название блюда, а вес и БЖУ считаются из справочника по
+   * предложенной порции. Без этой сноски колонка выглядела бы как измерение,
+   * которого модель не делала.
+   */
+  basis?: string | null;
 }
 
 export interface ComparisonUserItem {
@@ -129,6 +136,18 @@ export default function ComparisonTable({
           </tbody>
         </table>
       </div>
+
+      {recognitions.some((r) => r.basis) && (
+        <ul className="mt-2 px-1 text-micro text-ink-secondary">
+          {recognitions
+            .filter((r) => r.basis)
+            .map((r) => (
+              <li key={r.id}>
+                {r.model_label} ({r.prompt_version}): {r.basis}
+              </li>
+            ))}
+        </ul>
+      )}
 
       <h3 className="mt-4 mb-2 text-caption text-ink-secondary uppercase">
         Отклонение от вашей версии

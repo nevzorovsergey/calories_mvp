@@ -340,6 +340,104 @@ export async function seedAwaitingChoiceMeal(
   return { mealId, recognitionId, dishId };
 }
 
+/**
+ * Второй прогон по тому же снимку: разбор на ингредиенты после того, как выбор
+ * блюда человека не устроил. Так у приёма пищи оказываются оба распознавания
+ * сразу — а значит, и таблица сравнения, ради которой всё и затевалось.
+ *
+ * Позиции намеренно не совпадают с составом блюда из справочника: два подхода
+ * и режут еду по-разному, и сравнение обязано это показывать, а не прятать.
+ */
+export async function seedIngredientsRun(
+  mealId: string,
+  catalogIds: number[] = [],
+): Promise<string> {
+  const db = admin();
+
+  const { data: recognition } = await db
+    .from("recognitions")
+    .insert({
+      meal_id: mealId,
+      model_id: "google/gemini-3-flash-preview",
+      model_label: "Gemini 3 Flash (preview)",
+      vendor: "google",
+      prompt_version: "v2-scale",
+      image_detail: "high",
+      is_primary: false,
+      status: "ok",
+      dish_name_ru: "борщ",
+      total_weight_g: 420,
+      overall_confidence: 0.6,
+      scale_refs_count: 1,
+      has_scale_ref: true,
+      image_angle: "45_degrees",
+      scale_mode: "container",
+      scale_chain: { scale_mode: "container", consistency_flags: [] },
+      nutrition_catalog: { energy_kcal: 380, protein: 14, fat: 18, carbs: 40 },
+      nutrition_model: { energy_kcal: 375, protein: 14, fat: 17, carbs: 41 },
+      latency_ms: 19000,
+      cost_rub_actual: 1.2,
+    })
+    .select("id")
+    .single();
+
+  const recognitionId = recognition!.id as string;
+
+  const modelItems = [
+    { name_ru: "свёкла варёная", name_en: "beet, cooked", weight_g: 120, kcal: 44, protein: 1.7, fat: 0.2, carbs: 10, ingredient_id: catalogIds[0] ?? null },
+    { name_ru: "капуста белокочанная", name_en: "cabbage", weight_g: 100, kcal: 25, protein: 1.3, fat: 0.1, carbs: 6, ingredient_id: catalogIds[1] ?? null },
+  ];
+
+  const { data: insertedItems } = await db
+    .from("recognition_items")
+    .insert(
+      modelItems.map((item, position) => ({
+        recognition_id: recognitionId,
+        position,
+        name_ru: item.name_ru,
+        name_en: item.name_en,
+        weight_g: item.weight_g,
+        weight_confidence: 0.6,
+        visible: true,
+        kcal_per_100g: item.kcal,
+        protein_per_100g: item.protein,
+        fat_per_100g: item.fat,
+        carbs_per_100g: item.carbs,
+        ingredient_id: item.ingredient_id,
+        match_status: item.ingredient_id ? "exact" : "unmatched",
+        match_score: item.ingredient_id ? 1 : null,
+      })),
+    )
+    .select("id, position");
+
+  const itemIds = (insertedItems ?? [])
+    .sort((a, b) => (a.position as number) - (b.position as number))
+    .map((r) => r.id as string);
+
+  await db.from("meal_items").insert(
+    modelItems.map((item, position) => ({
+      meal_id: mealId,
+      position,
+      ingredient_id: item.ingredient_id,
+      name_ru: item.name_ru,
+      weight_g: item.weight_g,
+      nutrition_source: item.ingredient_id ? "catalog" : "model",
+      origin: "model_kept",
+      source_item_id: itemIds[position],
+      kcal_per_100g: item.kcal,
+      protein_per_100g: item.protein,
+      fat_per_100g: item.fat,
+      carbs_per_100g: item.carbs,
+    })),
+  );
+
+  // Разбор состава доводит приём пищи до готового — как это делает
+  // src/lib/recognition/process.ts после запасного прогона.
+  await db.from("meals").update({ status: "ready" }).eq("id", mealId);
+
+  return recognitionId;
+}
+
 export interface SeededMeal {
   mealId: string;
   recognitionId: string;
