@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getProfile } from "@/lib/data/meals";
 import {
   formatPercent,
   sliceMape,
@@ -12,32 +10,19 @@ import {
 import { formatNumber } from "@/lib/format";
 
 /**
- * «Лаборатория» — экран владельца (§11.9).
+ * «Лаборатория» — метрики эксперимента (§11.9).
  *
  * Внутренний не значит неряшливый: этим экраном пользуются чаще всех
  * остальных, и читаемость таблиц здесь напрямую влияет на скорость выводов.
  * Та же дизайн-система, те же токены; отличия только функциональные —
  * горизонтальный скролл с закреплённой первой колонкой и табличные цифры.
+ *
+ * Проверка админства — в layout раздела, одна на все его страницы.
  */
 export const dynamic = "force-dynamic";
 
 export default async function LabPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const profile = await getProfile(supabase, user.id);
-  if (!profile?.is_admin) {
-    return (
-      <div className="px-4 pt-4">
-        <div className="rounded-2xl bg-card p-6 text-center">
-          <p className="font-medium">Экран доступен только владельцу</p>
-        </div>
-      </div>
-    );
-  }
 
   const [{ data: comparisons }, { data: agreement }, { data: failed }] =
     await Promise.all([
@@ -68,7 +53,7 @@ export default async function LabPage() {
     (failed ?? []).reduce((sum, r) => sum + Number(r.cost_rub_actual ?? 0), 0);
 
   return (
-    <div className="px-4 pt-4">
+    <div className="max-w-5xl">
       <h1 className="mb-1 text-title font-semibold">Лаборатория</h1>
       <p className="mb-6 text-caption text-ink-secondary">
         {rows.length} успешных распознаваний, {(failed ?? []).length} неудачных,{" "}

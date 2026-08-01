@@ -19,8 +19,8 @@
     "db:migrate": "tsx scripts/apply-migrations.ts",
     "db:check": "tsx scripts/apply-migrations.ts --check",
     "user:create": "tsx scripts/create-user.ts",
-    "test:ui": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts e2e/catalog-add.spec.ts e2e/meal-date.spec.ts e2e/dish-choice.spec.ts",
-    "test:ui:headed": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts e2e/catalog-add.spec.ts e2e/meal-date.spec.ts e2e/dish-choice.spec.ts --headed",
+    "test:ui": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts e2e/catalog-add.spec.ts e2e/meal-date.spec.ts e2e/dish-choice.spec.ts e2e/lab.spec.ts",
+    "test:ui:headed": "playwright test e2e/screens.spec.ts e2e/flow.spec.ts e2e/catalog-add.spec.ts e2e/meal-date.spec.ts e2e/dish-choice.spec.ts e2e/lab.spec.ts --headed",
     "test:ui:live": "E2E_LIVE=1 playwright test e2e/live.spec.ts",
     "test:ui:report": "playwright show-report e2e/report"
   },

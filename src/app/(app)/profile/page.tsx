@@ -48,7 +48,7 @@ export default async function ProfilePage() {
           className="mt-6 flex items-center gap-2 rounded-2xl bg-card p-4 text-accent"
         >
           <FlaskConical size={20} />
-          Лаборатория: метрики, стоимость, выгрузка
+          Лаборатория: метрики, справочник, разбор по пользователям
         </Link>
       )}
 

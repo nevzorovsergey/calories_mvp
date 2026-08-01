@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, Sheet } from "konsta/react";
+import { REFERENCE_OBJECTS, WEIGHT_METHODS } from "@/lib/weight-evidence";
 
 /**
  * Модалка «Откуда вес?» (§11.5).
@@ -15,26 +16,10 @@ import { Button, Sheet } from "konsta/react";
  * реально был» — то есть точность самой детекции эталонов.
  */
 
-const METHODS = [
-  { value: "scale", label: "Взвесил на весах" },
-  { value: "package_label", label: "Указано на упаковке" },
-  { value: "menu", label: "Указано в меню или на ценнике" },
-  { value: "recipe", label: "Сам готовил, знаю раскладку" },
-  { value: "measuring", label: "Мерная посуда (стакан, ложка)" },
-  { value: "eyeball", label: "Прикинул на глаз" },
-];
-
-const REFERENCE_OPTIONS = [
-  { value: "coin", label: "Монета" },
-  { value: "bank_card", label: "Банковская карта" },
-  { value: "ruler", label: "Линейка" },
-  { value: "cutlery", label: "Столовые приборы" },
-  { value: "smartphone", label: "Смартфон" },
-  { value: "wristwatch", label: "Часы или браслет" },
-  { value: "hand", label: "Ладонь" },
-  { value: "standard_plate", label: "Стандартная тарелка" },
-  { value: "none", label: "Ничего из этого" },
-];
+// Сами варианты — в @/lib/weight-evidence: их читает ещё и лаборатория, когда
+// показывает ответы словами, а не кодами.
+const METHODS = WEIGHT_METHODS;
+const REFERENCE_OPTIONS = REFERENCE_OBJECTS;
 
 export default function WeightEvidenceSheet({
   mealId,
