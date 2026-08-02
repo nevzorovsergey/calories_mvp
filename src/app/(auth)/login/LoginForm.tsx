@@ -3,7 +3,70 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { App, Button, Page } from "konsta/react";
-import { createClient } from "@/lib/supabase/client";
+
+/**
+ * Сколько раз пробуем войти, прежде чем показать ошибку.
+ *
+ * Повтор открывает новое соединение, а зависание — это состояние конкретного
+ * соединения, а не сервера. Второй попытки хватает, дальше честнее показать
+ * ошибку, чем молча держать человека в ожидании.
+ */
+const SIGN_IN_ATTEMPTS = 2;
+
+/**
+ * Потолок на попытку. До Vercel канал быстрый, так что пять секунд здесь — это
+ * уже «не приедет», а не «медленно»; на сломанном канале до Supabase пришлось
+ * закладывать вдвое больше.
+ */
+const ATTEMPT_TIMEOUT_MS = 5_000;
+
+const NETWORK_MESSAGE =
+  "Сеть не ответила. Проверьте соединение и нажмите «Войти» ещё раз.";
+
+/** Итог попытки: либо вошли, либо есть что показать человеку. */
+type Attempt =
+  | { ok: true }
+  | { ok: false; message: string; retryable: boolean };
+
+async function attemptSignIn(email: string, password: string): Promise<Attempt> {
+  let response: Response;
+  try {
+    response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+    });
+  } catch {
+    // Сюда попадают и обрыв по потолку, и офлайн — для человека это одно и то
+    // же: ответа нет, надо повторить.
+    return { ok: false, message: NETWORK_MESSAGE, retryable: true };
+  }
+
+  if (response.ok) return { ok: true };
+
+  const body = (await response.json().catch(() => ({}))) as {
+    error?: string;
+    retryable?: boolean;
+  };
+
+  // §13.8: сообщение объясняет, что произошло и что делать дальше.
+  if (body.retryable) {
+    return { ok: false, message: NETWORK_MESSAGE, retryable: true };
+  }
+  if (body.error === "Invalid login credentials") {
+    return {
+      ok: false,
+      message: "Неверный email или пароль. Проверьте раскладку и попробуйте ещё раз.",
+      retryable: false,
+    };
+  }
+  return {
+    ok: false,
+    message: `Не удалось войти: ${body.error ?? "сервер ответил ошибкой"}`,
+    retryable: false,
+  };
+}
 
 /**
  * Вход (§11.1). Email + пароль, больше ничего: регистрации нет, восстановления
@@ -22,16 +85,16 @@ export default function LoginForm() {
     setPending(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    let result: Attempt = { ok: true };
+    for (let attempt = 1; attempt <= SIGN_IN_ATTEMPTS; attempt += 1) {
+      result = await attemptSignIn(email, password);
+      // Повторяем только молчание сети: неверный пароль второй попыткой не
+      // исправить, а лишний запрос выглядел бы как подбор.
+      if (result.ok || !result.retryable) break;
+    }
 
-    if (error) {
-      // §13.8: сообщение объясняет, что произошло и что делать.
-      setError(
-        error.message === "Invalid login credentials"
-          ? "Неверный email или пароль. Проверьте раскладку и попробуйте ещё раз."
-          : `Не удалось войти: ${error.message}`,
-      );
+    if (!result.ok) {
+      setError(result.message);
       setPending(false);
       return;
     }
