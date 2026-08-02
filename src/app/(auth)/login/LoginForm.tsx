@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { App, Button, Page } from "konsta/react";
+import { apiPost } from "@/lib/api";
 
 /**
  * Сколько раз пробуем войти, прежде чем показать ошибку.
@@ -12,13 +13,6 @@ import { App, Button, Page } from "konsta/react";
  * ошибку, чем молча держать человека в ожидании.
  */
 const SIGN_IN_ATTEMPTS = 2;
-
-/**
- * Потолок на попытку. До Vercel канал быстрый, так что пять секунд здесь — это
- * уже «не приедет», а не «медленно»; на сломанном канале до Supabase пришлось
- * закладывать вдвое больше.
- */
-const ATTEMPT_TIMEOUT_MS = 5_000;
 
 const NETWORK_MESSAGE =
   "Сеть не ответила. Проверьте соединение и нажмите «Войти» ещё раз.";
@@ -31,12 +25,7 @@ type Attempt =
 async function attemptSignIn(email: string, password: string): Promise<Attempt> {
   let response: Response;
   try {
-    response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
-    });
+    response = await apiPost("/api/auth/login", { email, password });
   } catch {
     // Сюда попадают и обрыв по потолку, и офлайн — для человека это одно и то
     // же: ответа нет, надо повторить.

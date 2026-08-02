@@ -32,7 +32,6 @@ export default async function ProfilePage() {
       <p className="mb-6 text-caption text-ink-secondary">{user.email}</p>
 
       <ReferenceObjectsEditor
-        userId={user.id}
         initial={(references ?? []).map((r) => ({
           id: r.id as string,
           type: r.type as string,

@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api";
 
 /**
  * Поиск по справочнику с автодополнением (FR-EDIT-3, FR-EDIT-4).
  *
- * Ходит в RPC `search_ingredients` (миграция 0007): точное совпадение по
- * имени/алиасу, затем триграммы, с фильтром по `kind`. Для `unmatched`-позиций
- * это ещё и механизм
- * самообучения справочника: выбранная пользователем привязка создаёт алиас
- * (FR-CAT-1) — этим занимается вызывающий компонент.
+ * Под маршрутом `/api/catalog/search` — RPC `search_ingredients` (миграция
+ * 0007): точное совпадение по имени/алиасу, затем триграммы, с фильтром по
+ * `kind`. Для `unmatched`-позиций это ещё и механизм самообучения справочника:
+ * выбранная пользователем привязка создаёт алиас (FR-CAT-1) — этим занимается
+ * вызывающий компонент.
  */
 
 export interface IngredientOption {
@@ -43,7 +43,10 @@ export default function IngredientSearch({
   const [query, setQuery] = useState(initialQuery);
   const [options, setOptions] = useState<IngredientOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
+  // Отдельно от пустого списка: «не нашли» и «не смогли поискать» — разные
+  // ответы, и подменять второй первым значит уверенно сообщать неправду о
+  // содержимом справочника.
+  const [failed, setFailed] = useState(false);
   const requestId = useRef(0);
   // Массив-проп на каждом рендере новый, и в зависимостях эффекта он крутил бы
   // запрос без конца. Сравниваем по содержимому.
@@ -53,31 +56,36 @@ export default function IngredientSearch({
     const term = query.trim();
     if (term.length < 2) {
       setOptions([]);
+      setFailed(false);
       return;
     }
 
     const current = ++requestId.current;
     setLoading(true);
     const timer = setTimeout(async () => {
-      const { data, error } = await supabase.rpc("search_ingredients", {
-        q: term,
-        max_results: 20,
-        kinds: kindsKey.split(","),
-      });
-      // Ответ на устаревший запрос игнорируем: иначе быстрый набор текста
-      // подменяет свежие результаты старыми.
-      if (current !== requestId.current) return;
-      setLoading(false);
-      if (error) {
+      const params = new URLSearchParams({ q: term, kinds: kindsKey, limit: "20" });
+      let found: IngredientOption[] = [];
+      let broke = false;
+      try {
+        const response = await apiFetch(`/api/catalog/search?${params}`);
+        // Ответ на устаревший запрос игнорируем: иначе быстрый набор текста
+        // подменяет свежие результаты старыми.
+        if (current !== requestId.current) return;
+        if (!response.ok) throw new Error(`сервер ответил ${response.status}`);
+        const body = (await response.json()) as { options?: IngredientOption[] };
+        found = body.options ?? [];
+      } catch (error) {
+        if (current !== requestId.current) return;
         console.error(error);
-        setOptions([]);
-        return;
+        broke = true;
       }
-      setOptions((data ?? []) as IngredientOption[]);
+      setLoading(false);
+      setFailed(broke);
+      setOptions(found);
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [query, supabase, kindsKey]);
+  }, [query, kindsKey]);
 
   return (
     <div>
@@ -95,7 +103,13 @@ export default function IngredientSearch({
 
       {loading && <p className="mt-2 text-caption text-ink-secondary">Ищем…</p>}
 
-      {!loading && query.trim().length >= 2 && options.length === 0 && (
+      {!loading && failed && (
+        <p className="mt-2 text-caption text-error" role="alert">
+          Не удалось поискать — похоже, пропала связь. Наберите ещё раз.
+        </p>
+      )}
+
+      {!loading && !failed && query.trim().length >= 2 && options.length === 0 && (
         <p className="mt-2 text-caption text-ink-secondary">
           Ничего не нашли. Попробуйте другое название — например, английское.
         </p>

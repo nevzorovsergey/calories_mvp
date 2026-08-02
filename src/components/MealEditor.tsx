@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, Link2, Plus, Trash2, Undo2 } from "lucide-react";
 import { Button } from "konsta/react";
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch, apiPost } from "@/lib/api";
 import {
   formatInputNumber,
   formatNumber,
@@ -60,7 +60,6 @@ export default function MealEditor({
   hasEvidence: boolean;
 }) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   const [dishName, setDishName] = useState(initialDishName);
   const [items, setItems] = useState<EditorItem[]>(initialItems);
@@ -141,21 +140,18 @@ export default function MealEditor({
     }
   }
 
+  // Пустая карта — не ошибка, а «КБЖУ у позиции нет»: вызывающий код по этому
+  // признаку оставляет значения от модели и помечает источник как `model`.
   async function fetchNutrients(ingredientId: number): Promise<NutrientMap> {
-    const { data, error } = await supabase
-      .from("ingredient_nutrients")
-      .select("amount_per_100g, nutrients(code)")
-      .eq("ingredient_id", ingredientId);
-    if (error) {
+    try {
+      const response = await apiFetch(`/api/catalog/${ingredientId}`);
+      if (!response.ok) return {};
+      const { entry } = (await response.json()) as { entry: { per100g: NutrientMap } };
+      return entry.per100g;
+    } catch (error) {
       console.error(error);
       return {};
     }
-    const map: NutrientMap = {};
-    for (const row of data ?? []) {
-      const code = (row as { nutrients?: { code?: string } }).nutrients?.code;
-      if (code) map[code] = Number((row as { amount_per_100g: number }).amount_per_100g);
-    }
-    return map;
   }
 
   /**
@@ -182,18 +178,16 @@ export default function MealEditor({
     setRebinding(null);
 
     if (target && target.ingredient_id === null && target.name_ru) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from("ingredient_aliases").insert({
+      // Привязка уже показана на экране, и человек её не ждёт: алиас — это
+      // польза для будущих распознаваний, а не часть текущего действия.
+      // Поэтому промах здесь только логируем, а не выносим в интерфейс.
+      try {
+        await apiPost("/api/catalog/aliases", {
           ingredient_id: option.id,
-          alias: target.name_ru.toLowerCase().trim(),
-          lang: "ru",
-          source: "user_mapping",
-          created_by: user.id,
+          alias: target.name_ru.trim(),
         });
-        // Конфликт по (alias, lang) — нормальная ситуация: алиас уже есть.
+      } catch (error) {
+        console.error(error);
       }
     }
   }

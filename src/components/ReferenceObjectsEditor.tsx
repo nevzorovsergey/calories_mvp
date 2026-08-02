@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch, apiPost } from "@/lib/api";
 import { REFERENCE_PRESETS, type ReferencePreset } from "@config/reference-objects";
 
 /**
@@ -15,10 +15,8 @@ import { REFERENCE_PRESETS, type ReferencePreset } from "@config/reference-objec
  * просто не подставляется.
  */
 export default function ReferenceObjectsEditor({
-  userId,
   initial,
 }: {
-  userId: string;
   initial: {
     id: string;
     type: string;
@@ -28,47 +26,54 @@ export default function ReferenceObjectsEditor({
   }[];
 }) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
   const [saving, setSaving] = useState<string | null>(null);
   const [rows, setRows] = useState(initial);
+  const [error, setError] = useState<string | null>(null);
 
   const selectedByLabel = new Map(rows.map((r) => [r.label, r]));
 
   async function toggle(preset: ReferencePreset) {
     setSaving(preset.key);
+    setError(null);
     const existing = selectedByLabel.get(preset.label);
 
-    if (existing) {
-      await supabase.from("user_reference_objects").delete().eq("id", existing.id);
-      setRows((current) => current.filter((r) => r.id !== existing.id));
-    } else {
-      const { data } = await supabase
-        .from("user_reference_objects")
-        .insert({
-          user_id: userId,
-          type: preset.type,
-          label: preset.label,
-          true_size_mm: preset.trueSizeMm,
-          size_axis: preset.sizeAxis,
-        })
-        .select("id, type, label, true_size_mm, size_axis")
-        .single();
-      if (data) {
+    // Список меняем только после ответа сервера. Галочка, которая встала сразу,
+    // а на деле не сохранилась, — это молчаливая потеря настройки: человек
+    // уверен, что сообщил модели размер, а его в подсказке нет.
+    try {
+      if (existing) {
+        const response = await apiFetch(
+          `/api/profile/reference-objects?id=${encodeURIComponent(existing.id)}`,
+          { method: "DELETE" },
+        );
+        if (!response.ok) throw new Error(`сервер ответил ${response.status}`);
+        setRows((current) => current.filter((r) => r.id !== existing.id));
+      } else {
+        const response = await apiPost("/api/profile/reference-objects", {
+          key: preset.key,
+        });
+        if (!response.ok) throw new Error(`сервер ответил ${response.status}`);
+        const { object } = (await response.json()) as {
+          object: {
+            id: string;
+            type: string;
+            label: string;
+            true_size_mm: number | string;
+            size_axis: string;
+          };
+        };
         setRows((current) => [
           ...current,
-          {
-            id: data.id as string,
-            type: data.type as string,
-            label: data.label as string,
-            true_size_mm: Number(data.true_size_mm),
-            size_axis: data.size_axis as string,
-          },
+          { ...object, true_size_mm: Number(object.true_size_mm) },
         ]);
       }
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setError("Не удалось сохранить — проверьте связь и попробуйте ещё раз.");
+    } finally {
+      setSaving(null);
     }
-
-    setSaving(null);
-    router.refresh();
   }
 
   return (
@@ -107,6 +112,12 @@ export default function ReferenceObjectsEditor({
           );
         })}
       </ul>
+
+      {error && (
+        <p className="mt-2 text-caption text-error" role="alert">
+          {error}
+        </p>
+      )}
     </section>
   );
 }

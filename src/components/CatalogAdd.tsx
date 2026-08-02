@@ -1,15 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Preloader } from "konsta/react";
-import { createClient } from "@/lib/supabase/client";
 import IngredientSearch, { type IngredientOption } from "@/components/IngredientSearch";
-import {
-  defaultWeight,
-  loadCatalogEntry,
-  type CatalogEntry,
-} from "@/lib/catalog/entry";
+import { defaultWeight, type CatalogEntry } from "@/lib/catalog/entry";
+import { apiFetch } from "@/lib/api";
 import { formatInputNumber } from "@/lib/format";
 
 /**
@@ -29,7 +25,6 @@ import { formatInputNumber } from "@/lib/format";
  */
 export default function CatalogAdd({ mealDate }: { mealDate: string }) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   const [entry, setEntry] = useState<CatalogEntry | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +37,17 @@ export default function CatalogAdd({ mealDate }: { mealDate: string }) {
   async function select(option: IngredientOption) {
     setLoading(true);
     setError(null);
-    const loaded = await loadCatalogEntry(supabase, option.id);
+
+    let loaded: CatalogEntry | null = null;
+    try {
+      const response = await apiFetch(`/api/catalog/${option.id}`);
+      if (response.ok) {
+        ({ entry: loaded } = (await response.json()) as { entry: CatalogEntry });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
     setLoading(false);
     if (!loaded) {
       setError("Не удалось открыть позицию справочника");
